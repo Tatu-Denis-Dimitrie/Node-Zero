@@ -1,35 +1,41 @@
 #include "raylib.h"
+#include "../GameAPI/Entities/Game.h"
+#include "Rendering/PlayerRenderer.h"
+#include "UI/HUD.h"
 
 int main()
 {
-    // Initialization
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    InitWindow(screenWidth, screenHeight, "NodeZero - Raylib Test");
+    InitWindow(screenWidth, screenHeight, "NodeZero - Arrow Character");
 
-    SetTargetFPS(60);
+    Game game;
+    game.Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
-    // Main game loop
+    const float centerX = screenWidth / 2.0f;
+    const float centerY = screenHeight / 2.0f;
+
     while (!WindowShouldClose())
     {
-        // Update
+        float deltaTime = GetFrameTime();
+        game.Update(deltaTime);
         
-        // Draw
+        IPlayer& player = game.GetPlayer();
+        float playerRotation = static_cast<float>(player.GetRotation());
+        
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
 
-            DrawText("Congratulations! Raylib is working!", 190, 200, 20, LIGHTGRAY);
+            PlayerRenderer::DrawArrow(centerX, centerY, 30.0f, playerRotation, MAROON);
             
-            DrawCircle(screenWidth/2, screenHeight/2 + 50, 50, MAROON);
-            
-            DrawFPS(10, 10);
+            HUD::DrawTitle("Triughi desenat", 10, 10, 20, DARKGRAY);
+            HUD::DrawDebugInfo(10, 40);
 
         EndDrawing();
     }
 
-    // De-initialization
     CloseWindow();
 
     return 0;
