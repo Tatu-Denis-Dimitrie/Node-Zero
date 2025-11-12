@@ -128,13 +128,15 @@
   </ItemDefinitionGroup>
 
   <ItemGroup>
-    <ClInclude Include="Enums\Direction.h" />
+    <ClInclude Include="GameAPI.h" />
     <ClInclude Include="Core\IGame.h" />
     <ClInclude Include="Core\IPlayer.h" />
+    <ClInclude Include="Core\GameFactory.h" />
     <ClInclude Include="Entities\Game.h" />
     <ClInclude Include="Entities\Player.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\GameFactory.cpp" />
     <ClCompile Include="Entities\Game.cpp" />
     <ClCompile Include="Entities\Player.cpp" />
   </ItemGroup>

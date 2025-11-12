@@ -6,14 +6,13 @@
 class Player : public IPlayer
 {
 private:
-    Rotation m_Rotation;
+    float m_RotationDegrees;
 
 public:
     Player();
 
-    Rotation GetRotation() const override;
-    void SetRotation(Rotation rotation) override;
+    float GetRotationDegrees() const override;
+    void SetRotationDegrees(float degrees) override;
     
-    void Rotate(Direction direction) override;
     void Update(float deltaTime) override;
 };

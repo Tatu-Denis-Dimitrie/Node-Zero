@@ -16,9 +16,6 @@
     <Filter Include="Header Files\Interfaces">
       <UniqueIdentifier>{e8a9c5f1-8d7f-4b2a-9c3d-1f6e8a9b4c5d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Enums">
-      <UniqueIdentifier>{f9b0d6e2-9e8f-4c3a-ad4e-2g7f9b0c5d6e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Entities">
       <UniqueIdentifier>{a1c2d3e4-f5b6-4a7b-8c9d-0e1f2a3b4c5d}</UniqueIdentifier>
     </Filter>
@@ -27,14 +24,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameAPI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Core\IPlayer.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="Core\IGame.h">
       <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Enums\Direction.h">
-      <Filter>Header Files\Enums</Filter>
+    <ClInclude Include="Core\GameFactory.h">
+      <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="Entities\Player.h">
       <Filter>Header Files\Entities</Filter>
@@ -44,6 +44,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Core\GameFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Entities\Player.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>

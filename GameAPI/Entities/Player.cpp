@@ -1,41 +1,21 @@
 #include "Player.h"
 
 Player::Player()
-    : m_Rotation(Rotation::North)
+    : m_RotationDegrees(0.0f)
 {
 }
 
-Rotation Player::GetRotation() const
+float Player::GetRotationDegrees() const
 {
-    return m_Rotation;
+    return m_RotationDegrees;
 }
 
-void Player::SetRotation(Rotation rotation)
+void Player::SetRotationDegrees(float degrees)
 {
-    m_Rotation = rotation;
-}
-
-void Player::Rotate(Direction direction)
-{
-    switch (direction)
-    {
-    case Direction::Up:
-        m_Rotation = Rotation::North;
-        break;
-    case Direction::Down:
-        m_Rotation = Rotation::South;
-        break;
-    case Direction::Left:
-        m_Rotation = Rotation::West;
-        break;
-    case Direction::Right:
-        m_Rotation = Rotation::East;
-        break;
-    case Direction::None:
-        break;
-    }
+    m_RotationDegrees = degrees;
 }
 
 void Player::Update(float deltaTime)
 {
+    // Update logic aici (animatii, efecte, etc.)
 }

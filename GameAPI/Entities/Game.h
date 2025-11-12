@@ -3,7 +3,6 @@
 #include "../Core/IGame.h"
 #include "Player.h"
 
-// Implementare concreta pentru logica jocului
 class Game : public IGame
 {
 private:

@@ -1,15 +1,13 @@
 #pragma once
 
-#include "../Enums/Direction.h"
-
+// Interfata pentru jucator (caracterul principal - sageata)
 class IPlayer
 {
 public:
     virtual ~IPlayer() = default;
 
-    virtual Rotation GetRotation() const = 0;
-    virtual void SetRotation(Rotation rotation) = 0;
+    virtual float GetRotationDegrees() const = 0;
+    virtual void SetRotationDegrees(float degrees) = 0;
     
-    virtual void Rotate(Direction direction) = 0;
     virtual void Update(float deltaTime) = 0;
 };
