@@ -131,14 +131,21 @@
     <ClInclude Include="GameAPI.h" />
     <ClInclude Include="Core\IGame.h" />
     <ClInclude Include="Core\IPlayer.h" />
+    <ClInclude Include="Core\IEnemy.h" />
+    <ClInclude Include="Core\IPosition.h" />
     <ClInclude Include="Core\GameFactory.h" />
+    <ClInclude Include="Enums\EnemyTypes.h" />
     <ClInclude Include="Entities\Game.h" />
     <ClInclude Include="Entities\Player.h" />
+    <ClInclude Include="Entities\Enemy.h" />
+    <ClInclude Include="Entities\Position.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\GameFactory.cpp" />
     <ClCompile Include="Entities\Game.cpp" />
     <ClCompile Include="Entities\Player.cpp" />
+    <ClCompile Include="Entities\Enemy.cpp" />
+    <ClCompile Include="Entities\Position.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
