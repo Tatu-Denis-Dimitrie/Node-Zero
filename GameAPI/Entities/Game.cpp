@@ -10,7 +10,6 @@ void Game::Initialize(float screenWidth, float screenHeight)
     m_ScreenWidth = screenWidth;
     m_ScreenHeight = screenHeight;
     
-    // Jucatorul incepe cu rotatia 0 (pointand in sus)
     m_Player.SetRotationDegrees(0.0f);
 }
 

@@ -2,7 +2,6 @@
 
 #include "../Core/IPlayer.h"
 
-// Implementare concreta pentru jucator
 class Player : public IPlayer
 {
 private:

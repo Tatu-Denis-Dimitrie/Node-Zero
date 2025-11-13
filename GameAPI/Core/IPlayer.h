@@ -1,6 +1,5 @@
 #pragma once
 
-// Interfata pentru jucator (caracterul principal - sageata)
 class IPlayer
 {
 public:
