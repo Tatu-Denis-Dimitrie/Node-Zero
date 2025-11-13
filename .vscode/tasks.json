@@ -1,0 +1,57 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure (Download Raylib)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-B",
+                "${workspaceFolder}/build",
+                "-S",
+                "${workspaceFolder}"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build with Visual Studio (Debug)",
+            "type": "shell",
+            "command": "&'C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/msbuild.exe'",
+            "args": [
+                "${workspaceFolder}/NodeZero.sln",
+                "/t:GameUI",
+                "/p:Configuration=Debug",
+                "/p:Platform=x64"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile",
+            "options": {
+                "shell": {
+                    "executable": "powershell.exe"
+                }
+            }
+        },
+        {
+            "label": "Build with Visual Studio (Release)",
+            "type": "shell",
+            "command": "&'C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/msbuild.exe'",
+            "args": [
+                "${workspaceFolder}/NodeZero.sln",
+                "/t:GameUI",
+                "/p:Configuration=Release",
+                "/p:Platform=x64"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile",
+            "options": {
+                "shell": {
+                    "executable": "powershell.exe"
+                }
+            }
+        }
+    ]
+}
