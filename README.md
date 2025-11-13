@@ -17,6 +17,7 @@ cmake -B build -S .
 
 # Build Raylib (first time only)
 cmake --build build --config Debug
+cmake --build build --config Release
 
 # Build and run in VS Code
 # Ctrl+Shift+B to build
