@@ -131,10 +131,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Rendering\PlayerRenderer.cpp" />
+    <ClCompile Include="Rendering\BulletRenderer.cpp" />
     <ClCompile Include="UI\HUD.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Rendering\PlayerRenderer.h" />
+    <ClInclude Include="Rendering\BulletRenderer.h" />
     <ClInclude Include="UI\HUD.h" />
   </ItemGroup>
   <ItemGroup>

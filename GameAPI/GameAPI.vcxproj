@@ -139,6 +139,7 @@
     <ClInclude Include="Entities\Player.h" />
     <ClInclude Include="Entities\Enemy.h" />
     <ClInclude Include="Entities\Position.h" />
+    <ClInclude Include="Entities\Bullet.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Core\GameFactory.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="Entities\Player.cpp" />
     <ClCompile Include="Entities\Enemy.cpp" />
     <ClCompile Include="Entities\Position.cpp" />
+    <ClCompile Include="Entities\Bullet.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
