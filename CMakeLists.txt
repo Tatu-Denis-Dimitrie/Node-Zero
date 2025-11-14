@@ -30,21 +30,17 @@ FetchContent_MakeAvailable(raylib)
 # =============================================================================
 # GameAPI Library
 # =============================================================================
+# Automatically find all source and header files in GameAPI
+file(GLOB_RECURSE GAMEAPI_SOURCES 
+    "GameAPI/*.cpp"
+)
+file(GLOB_RECURSE GAMEAPI_HEADERS 
+    "GameAPI/*.h"
+)
+
 add_library(GameAPI STATIC
-    # Core
-    GameAPI/Core/GameFactory.cpp
-    GameAPI/Core/GameFactory.h
-    GameAPI/Core/IGame.h
-    GameAPI/Core/IPlayer.h
-
-    # Entities
-    GameAPI/Entities/Game.cpp
-    GameAPI/Entities/Game.h
-    GameAPI/Entities/Player.cpp
-    GameAPI/Entities/Player.h
-
-    # Main header
-    GameAPI/GameAPI.h
+    ${GAMEAPI_SOURCES}
+    ${GAMEAPI_HEADERS}
 )
 
 target_include_directories(GameAPI PUBLIC
@@ -54,12 +50,17 @@ target_include_directories(GameAPI PUBLIC
 # =============================================================================
 # GameUI Executable
 # =============================================================================
+# Automatically find all source and header files in GameUI
+file(GLOB_RECURSE GAMEUI_SOURCES 
+    "GameUI/*.cpp"
+)
+file(GLOB_RECURSE GAMEUI_HEADERS 
+    "GameUI/*.h"
+)
+
 add_executable(GameUI
-    GameUI/main.cpp
-    GameUI/Rendering/PlayerRenderer.cpp
-    GameUI/Rendering/PlayerRenderer.h
-    GameUI/UI/HUD.cpp
-    GameUI/UI/HUD.h
+    ${GAMEUI_SOURCES}
+    ${GAMEUI_HEADERS}
 )
 
 target_include_directories(GameUI PRIVATE
