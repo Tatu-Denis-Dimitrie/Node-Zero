@@ -2,28 +2,28 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run GameUI (Visual Studio Debug)",
+            "name": "Run GameUI (Debug)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/x64/Debug/GameUI.exe",
+            "program": "${workspaceFolder}/build/bin/Debug/GameUI.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "console": "integratedTerminal",
-            "preLaunchTask": "Build with Visual Studio (Debug)"
+            "preLaunchTask": "CMake: Build (Debug)"
         },
         {
-            "name": "Run GameUI (Visual Studio Release)",
+            "name": "Run GameUI (Release)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/x64/Release/GameUI.exe",
+            "program": "${workspaceFolder}/build/bin/Release/GameUI.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "console": "integratedTerminal",
-            "preLaunchTask": "Build with Visual Studio (Release)"
+            "preLaunchTask": "CMake: Build (Release)"
         }
     ]
 }

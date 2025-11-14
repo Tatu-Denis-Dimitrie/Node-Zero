@@ -2,56 +2,61 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "CMake: Configure (Download Raylib)",
+            "label": "CMake: Configure",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "-B",
                 "${workspaceFolder}/build",
-                "-S",
-                "${workspaceFolder}"
+                "-G",
+                "Visual Studio 17 2022"
             ],
             "group": "build",
             "problemMatcher": []
         },
         {
-            "label": "Build with Visual Studio (Debug)",
+            "label": "CMake: Build (Debug)",
             "type": "shell",
-            "command": "&'C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/msbuild.exe'",
+            "command": "cmake",
             "args": [
-                "${workspaceFolder}/NodeZero.sln",
-                "/t:GameUI",
-                "/p:Configuration=Debug",
-                "/p:Platform=x64"
+                "--build",
+                "${workspaceFolder}/build",
+                "--config",
+                "Debug"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": "$msCompile",
-            "options": {
-                "shell": {
-                    "executable": "powershell.exe"
-                }
-            }
+            "dependsOn": ["CMake: Configure"]
         },
         {
-            "label": "Build with Visual Studio (Release)",
+            "label": "CMake: Build (Release)",
             "type": "shell",
-            "command": "&'C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/msbuild.exe'",
+            "command": "cmake",
             "args": [
-                "${workspaceFolder}/NodeZero.sln",
-                "/t:GameUI",
-                "/p:Configuration=Release",
-                "/p:Platform=x64"
+                "--build",
+                "${workspaceFolder}/build",
+                "--config",
+                "Release"
             ],
             "group": "build",
             "problemMatcher": "$msCompile",
-            "options": {
-                "shell": {
-                    "executable": "powershell.exe"
-                }
-            }
+            "dependsOn": ["CMake: Configure"]
+        },
+        {
+            "label": "CMake: Clean",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "--target",
+                "clean"
+            ],
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }

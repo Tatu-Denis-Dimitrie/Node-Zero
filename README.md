@@ -12,12 +12,8 @@ A 2D game built with Raylib and C++.
 ### Setup & Run
 
 ```bash
-# Generate build files and download Raylib
-cmake -B build -S .
-
-# Build Raylib (first time only)
-cmake --build build --config Debug
-cmake --build build --config Release
+# Generate build files
+cmake -B build -G "Visual Studio 17 2022"
 
 # Build and run in VS Code
 # Ctrl+Shift+B to build
@@ -28,6 +24,7 @@ cmake --build build --config Release
 
 ```
 GameAPI/    # Game logic (Core + Entities)
+GameTests/  # Tests
 GameUI/     # UI + Rendering + entry point
 build/      # Generated files (like node_modules)
 ```
