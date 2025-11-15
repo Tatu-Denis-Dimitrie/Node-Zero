@@ -1,77 +1,163 @@
-#include <cmath>
 #include <vector>
+#include <algorithm>
 
-#include "../NodeZero.Core/GameAPI.h"
-#include "../NodeZero.Core/Entities/Bullet.h"
-#include "Rendering/PlayerRenderer.h"
-#include "Rendering/BulletRenderer.h"
-#include "UI/HUD.h"
+// NodeZero.Core includes
+#include "../NodeZero.Core/include/IGame.h"
+#include "../NodeZero.Core/include/INode.h"
+#include "../NodeZero.Core/include/GameFactory.h"
+#include "../NodeZero.Core/include/Config/GameConfig.h"
+#include "../NodeZero.Core/include/Systems/ICollisionSystem.h"
+
+// NodeZero.UI includes
+#include "include/Renderer.h"
+#include "include/InputHandler.h"
+#include "include/UI.h"
+
+// Raylib
 #include "raylib.h"
-#include "raymath.h"
 
-int main() {
-    const int screenWidth = 1200;
-    const int screenHeight = 800;
+// Include implementations
+#include "../NodeZero.Core/src/GameFactory.cpp"
+#include "../NodeZero.Core/src/Systems/CollisionSystem.cpp"
 
-    InitWindow(screenWidth, screenHeight, "NodeZero - Arrow Character");
+int main()
+{
+    const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
+    const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
+
+    InitWindow(screenWidth, screenHeight, "NodeZero - Nodebuster Clone");
 
     IGame* game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
-    const float centerX = screenWidth / 2.0f;
-    const float centerY = screenHeight / 2.0f;
+    CollisionSystem collisionSystem;
 
-    std::vector<Bullet> bullets;
+    // Damage zone configuration
+    const float damageZoneSize = 100.0f; // Mărimea zonei pătrate de damage
+    const float damagePerSecond = 50.0f;  // Damage pe secundă în zonă
 
-    while (!WindowShouldClose()) {
+    // Node spawner configuration
+    float spawnTimer = 0.0f;
+    const float spawnInterval = 2.0f; // Spawn la fiecare 2 secunde
+
+    SetTargetFPS(60);
+
+    while (!WindowShouldClose())
+    {
         float deltaTime = GetFrameTime();
 
-        Vector2 mousePos = GetMousePosition();
+        // Input handling
+        Vector2 mousePos = InputHandler::GetMousePosition();
 
-        float deltaX = mousePos.x - centerX;
-        float deltaY = mousePos.y - centerY;
-        float angleRadians = atan2f(deltaY, deltaX);
-        float angleDegrees = angleRadians * RAD2DEG;
+        // Spawn noduri automat
+        spawnTimer += deltaTime;
+        if (spawnTimer >= spawnInterval)
+        {
+            spawnTimer = 0.0f;
 
-        float adjustedAngle = angleDegrees + 90.0f;
+            // Spawn pe marginea dreaptă a ecranului, la o poziție aleatorie pe verticală
+            float spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
+            float spawnX = static_cast<float>(screenWidth + 50);
 
-        IPlayer& player = game->GetPlayer();
-        player.SetRotationDegrees(adjustedAngle);
+            // Variază tipul, mărimea și viteza
+            NodeShape randomShape = static_cast<NodeShape>(GetRandomValue(0, 2)); // Circle, Square, Triangle
+            float randomSize = static_cast<float>(GetRandomValue(20, 50));
+            float randomSpeed = static_cast<float>(GetRandomValue(50, 150));
 
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-            bullets.emplace_back(centerX, centerY, adjustedAngle);
+            game->SpawnNode(spawnX, spawnY);
+
+            // Configurare nod spawn-uit
+            const auto& nodes = game->GetNodes();
+            if (!nodes.empty())
+            {
+                INode* lastNode = nodes.back();
+                // Notă: ar trebui să avem o metodă SetShape/SetSize în INode pentru configurare completă
+            }
         }
 
-        for (auto& bullet : bullets) {
-            bullet.Update(deltaTime);
+        // Damage zone damage
+        const auto& nodes = game->GetNodes();
+        for (INode* node : nodes)
+        {
+            if (node->GetState() != NodeState::Active)
+                continue;
+
+            float nodeX = node->GetPosition().GetX();
+            float nodeY = node->GetPosition().GetY();
+            float nodeSize = node->GetSize();
+
+            // Verifică dacă nodul se intersectează cu zona de damage (pătrată)
+            bool inDamageZone = collisionSystem.CheckRectCollision(
+                mousePos.x - damageZoneSize / 2, mousePos.y - damageZoneSize / 2, damageZoneSize, damageZoneSize,
+                nodeX - nodeSize, nodeY - nodeSize, nodeSize * 2, nodeSize * 2
+            );
+
+            if (inDamageZone)
+            {
+                node->TakeDamage(damagePerSecond * deltaTime);
+            }
         }
 
-        bullets.erase(
-            std::remove_if(bullets.begin(), bullets.end(), 
-                [screenWidth, screenHeight](const Bullet& b) {
-                    return b.IsOutOfBounds(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
-                }),
-            bullets.end()
-        );
-
+        // Update game
         game->Update(deltaTime);
 
+        // Rendering
         BeginDrawing();
-
         ClearBackground(RAYWHITE);
 
-        PlayerRenderer::DrawArrow(centerX, centerY, 30.0f, adjustedAngle, MAROON);
+        // Draw damage zone (pătrat roșu semi-transparent în jurul mouse-ului)
+        DrawRectangle(
+            static_cast<int>(mousePos.x - damageZoneSize / 2),
+            static_cast<int>(mousePos.y - damageZoneSize / 2),
+            static_cast<int>(damageZoneSize),
+            static_cast<int>(damageZoneSize),
+            Color{255, 0, 0, 50} // Roșu semi-transparent
+        );
+        DrawRectangleLines(
+            static_cast<int>(mousePos.x - damageZoneSize / 2),
+            static_cast<int>(mousePos.y - damageZoneSize / 2),
+            static_cast<int>(damageZoneSize),
+            static_cast<int>(damageZoneSize),
+            RED
+        );
 
-        for (const auto& bullet : bullets) {
-            BulletRenderer::DrawBullet(bullet.GetX(), bullet.GetY(), 8.0f, bullet.GetRotationDegrees(), RED);
+        // Draw nodes with HP represented by fill
+        for (const INode* node : nodes)
+        {
+            if (node->GetState() == NodeState::Active)
+            {
+                float x = node->GetPosition().GetX();
+                float y = node->GetPosition().GetY();
+                float size = node->GetSize();
+                float hpPercentage = node->GetHP() / node->GetMaxHP();
+
+                // Draw node with HP fill
+                switch (node->GetShape())
+                {
+                case NodeShape::Circle:
+                    Renderer::DrawCircleNode(x, y, size, hpPercentage, BLUE);
+                    break;
+                case NodeShape::Square:
+                    Renderer::DrawSquareNode(x, y, size, hpPercentage, GREEN);
+                    break;
+                case NodeShape::Triangle:
+                    Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);
+                    break;
+                default:
+                    Renderer::DrawCircleNode(x, y, size, hpPercentage, PURPLE);
+                    break;
+                }
+            }
         }
 
-        HUD::DrawTitle("Desenata sageata", 10, 10, 20, DARKGRAY);
-        HUD::DrawDebugInfo(10, 40);
+        // Draw UI
+        UI::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
+        UI::DrawDebugInfo(10, 40);
 
         EndDrawing();
     }
 
+    // Cleanup game
     GameFactory::DestroyGame(game);
     CloseWindow();
 
