@@ -8,9 +8,11 @@
 #include "INode.h"
 #include "Systems/ICollisionSystem.h"
 #include "Systems/IScoreSystem.h"
+#include "Events/EventManager.h"
 #include "include/InputHandler.h"
 #include "include/Renderer.h"
 #include "include/UI.h"
+#include "include/GameEventLogger.h"
 #include "raylib.h"
 
 int main() {
@@ -21,6 +23,12 @@ int main() {
 
     std::unique_ptr<IGame> game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
+
+    // Setup Event System (Observer Pattern)
+    auto eventLogger = std::make_shared<NodeZero::GameEventLogger>();
+    game->GetEventManager().Subscribe("NodeSpawned", eventLogger);
+    game->GetEventManager().Subscribe("NodeDestroyed", eventLogger);
+    game->GetEventManager().Subscribe("NodeDamaged", eventLogger);
 
     std::unique_ptr<ICollisionSystem> collisionSystem = GameFactory::CreateCollisionSystem();
     std::unique_ptr<IScoreSystem> scoreSystem = GameFactory::CreateScoreSystem();

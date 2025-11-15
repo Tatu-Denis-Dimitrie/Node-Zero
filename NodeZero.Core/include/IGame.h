@@ -5,6 +5,10 @@
 class INode;
 class ILevel;
 
+namespace NodeZero {
+    class EventManager;
+}
+
 class IGame
 {
 public:
@@ -21,4 +25,10 @@ public:
     virtual const std::vector<INode*>& GetNodes() const = 0;
 
     virtual void SpawnNode(float x, float y) = 0;
+
+    /**
+     * @brief Get the event manager for subscribing to game events
+     * @return Reference to the game's event manager
+     */
+    virtual NodeZero::EventManager& GetEventManager() = 0;
 };

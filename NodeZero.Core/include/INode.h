@@ -1,21 +1,14 @@
 #pragma once
 
+#include "IPosition.h"
 #include "Enums/NodeState.h"
 
-class IPosition
-{
-public:
-    virtual ~IPosition() = default;
-
-    virtual float GetX() const = 0;
-    virtual float GetY() const = 0;
-
-    virtual void SetX(float x) = 0;
-    virtual void SetY(float y) = 0;
-
-    virtual void Move(float deltaX, float deltaY) = 0;
-};
-
+/**
+ * @brief Interface for game node entities
+ *
+ * Represents interactive elements in the game (enemies, obstacles, etc.)
+ * that have position, shape, state, and health.
+ */
 class INode
 {
 public:

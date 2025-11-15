@@ -1,8 +1,7 @@
 #pragma once
 
-class ICollisionSystem
-{
-public:
+class ICollisionSystem {
+   public:
     virtual ~ICollisionSystem() = default;
 
     virtual bool CheckCircleCollision(float x1, float y1, float radius1,

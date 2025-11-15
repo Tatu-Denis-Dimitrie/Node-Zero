@@ -1,8 +1,7 @@
 #pragma once
 
-class IScoreSystem
-{
-public:
+class IScoreSystem {
+   public:
     virtual ~IScoreSystem() = default;
 
     virtual void AddScore(int points) = 0;

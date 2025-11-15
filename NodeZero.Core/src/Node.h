@@ -3,9 +3,8 @@
 #include "../include/INode.h"
 #include "Position.h"
 
-class Node : public INode
-{
-private:
+class Node : public INode {
+   private:
     Position m_Position;
     NodeShape m_Shape;
     NodeState m_State;
@@ -14,7 +13,7 @@ private:
     float m_HP;
     float m_MaxHP;
 
-public:
+   public:
     Node(NodeShape shape, float size, float speed);
 
     IPosition& GetPosition() override;

@@ -2,14 +2,13 @@
 
 #include "../../include/Systems/IScoreSystem.h"
 
-class ScoreSystem : public IScoreSystem
-{
-private:
+class ScoreSystem : public IScoreSystem {
+   private:
     int m_Score;
     int m_HighScore;
     int m_Multiplier;
 
-public:
+   public:
     ScoreSystem();
 
     void AddScore(int points) override;

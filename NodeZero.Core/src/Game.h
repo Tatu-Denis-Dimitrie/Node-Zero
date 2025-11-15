@@ -1,17 +1,20 @@
 #pragma once
 
-#include "../include/IGame.h"
-#include "../include/INode.h"
 #include <vector>
 
-class Game : public IGame
-{
-private:
+#include "../include/IGame.h"
+#include "../include/INode.h"
+#include "../include/Events/EventManager.h"
+
+class Game : public IGame {
+   private:
     std::vector<INode*> m_Nodes;
     float m_ScreenWidth;
     float m_ScreenHeight;
+    NodeZero::EventManager m_EventManager;
+    float m_ElapsedTime;
 
-public:
+   public:
     Game();
     ~Game();
 
@@ -25,6 +28,8 @@ public:
 
     void SpawnNode(float x, float y) override;
 
-private:
+    NodeZero::EventManager& GetEventManager() override;
+
+   private:
     INode* CreateNode(NodeShape shape, float size, float speed);
 };

@@ -2,13 +2,12 @@
 
 #include "../include/INode.h"
 
-class Position : public IPosition
-{
-private:
+class Position : public IPosition {
+   private:
     float m_X;
     float m_Y;
 
-public:
+   public:
     Position(float x = 0.0f, float y = 0.0f);
 
     float GetX() const override;
