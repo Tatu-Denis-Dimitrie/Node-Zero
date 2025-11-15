@@ -3,16 +3,16 @@
 #include <vector>
 
 #include "Config/GameConfig.h"
+#include "Events/EventManager.h"
 #include "GameFactory.h"
 #include "IGame.h"
 #include "INode.h"
 #include "Systems/ICollisionSystem.h"
 #include "Systems/IScoreSystem.h"
-#include "Events/EventManager.h"
+#include "include/GameEventLogger.h"
 #include "include/InputHandler.h"
 #include "include/Renderer.h"
 #include "include/UI.h"
-#include "include/GameEventLogger.h"
 #include "raylib.h"
 
 int main() {
@@ -25,7 +25,7 @@ int main() {
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
     // Setup Event System (Observer Pattern)
-    auto eventLogger = std::make_shared<NodeZero::GameEventLogger>();
+    auto eventLogger = std::make_shared<GameEventLogger>();
     game->GetEventManager().Subscribe("NodeSpawned", eventLogger);
     game->GetEventManager().Subscribe("NodeDestroyed", eventLogger);
     game->GetEventManager().Subscribe("NodeDamaged", eventLogger);

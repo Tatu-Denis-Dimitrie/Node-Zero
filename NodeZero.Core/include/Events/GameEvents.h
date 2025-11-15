@@ -1,34 +1,22 @@
 #pragma once
-#include "IEvent.h"
-#include "Enums/NodeState.h"
 #include "Enums/GameState.h"
+#include "Enums/NodeState.h"
+#include "IEvent.h"
 #include "Types/Vector2.h"
 
-namespace NodeZero {
-
-/**
- * @brief Base class for all game events with timestamp support
- */
 class GameEvent : public IEvent {
-public:
+   public:
     explicit GameEvent(float timestamp) : m_timestamp(timestamp) {}
     virtual ~GameEvent() = default;
 
     float GetTimestamp() const override { return m_timestamp; }
 
-private:
+   private:
     float m_timestamp;
 };
 
-// ============================================================================
-// Node Events
-// ============================================================================
-
-/**
- * @brief Event fired when a new node is spawned
- */
 class NodeSpawnedEvent : public GameEvent {
-public:
+   public:
     NodeSpawnedEvent(float timestamp, NodeShape shape, Vector2 position, float size, int hp)
         : GameEvent(timestamp), m_shape(shape), m_position(position), m_size(size), m_hp(hp) {}
 
@@ -39,18 +27,15 @@ public:
     float GetSize() const { return m_size; }
     int GetHP() const { return m_hp; }
 
-private:
+   private:
     NodeShape m_shape;
     Vector2 m_position;
     float m_size;
     int m_hp;
 };
 
-/**
- * @brief Event fired when a node takes damage
- */
 class NodeDamagedEvent : public GameEvent {
-public:
+   public:
     NodeDamagedEvent(float timestamp, Vector2 position, int damage, int remainingHP)
         : GameEvent(timestamp), m_position(position), m_damage(damage), m_remainingHP(remainingHP) {}
 
@@ -60,17 +45,14 @@ public:
     int GetDamage() const { return m_damage; }
     int GetRemainingHP() const { return m_remainingHP; }
 
-private:
+   private:
     Vector2 m_position;
     int m_damage;
     int m_remainingHP;
 };
 
-/**
- * @brief Event fired when a node is destroyed
- */
 class NodeDestroyedEvent : public GameEvent {
-public:
+   public:
     NodeDestroyedEvent(float timestamp, NodeShape shape, Vector2 position, int scoreGained)
         : GameEvent(timestamp), m_shape(shape), m_position(position), m_scoreGained(scoreGained) {}
 
@@ -80,21 +62,14 @@ public:
     Vector2 GetPosition() const { return m_position; }
     int GetScoreGained() const { return m_scoreGained; }
 
-private:
+   private:
     NodeShape m_shape;
     Vector2 m_position;
     int m_scoreGained;
 };
 
-// ============================================================================
-// Score Events
-// ============================================================================
-
-/**
- * @brief Event fired when the score changes
- */
 class ScoreChangedEvent : public GameEvent {
-public:
+   public:
     ScoreChangedEvent(float timestamp, int newScore, int delta, float multiplier)
         : GameEvent(timestamp), m_newScore(newScore), m_delta(delta), m_multiplier(multiplier) {}
 
@@ -104,17 +79,14 @@ public:
     int GetDelta() const { return m_delta; }
     float GetMultiplier() const { return m_multiplier; }
 
-private:
+   private:
     int m_newScore;
     int m_delta;
     float m_multiplier;
 };
 
-/**
- * @brief Event fired when the score multiplier changes
- */
 class MultiplierChangedEvent : public GameEvent {
-public:
+   public:
     MultiplierChangedEvent(float timestamp, float newMultiplier, float oldMultiplier)
         : GameEvent(timestamp), m_newMultiplier(newMultiplier), m_oldMultiplier(oldMultiplier) {}
 
@@ -123,20 +95,13 @@ public:
     float GetNewMultiplier() const { return m_newMultiplier; }
     float GetOldMultiplier() const { return m_oldMultiplier; }
 
-private:
+   private:
     float m_newMultiplier;
     float m_oldMultiplier;
 };
 
-// ============================================================================
-// Game State Events
-// ============================================================================
-
-/**
- * @brief Event fired when the game state changes
- */
 class GameStateChangedEvent : public GameEvent {
-public:
+   public:
     GameStateChangedEvent(float timestamp, GameState newState, GameState oldState)
         : GameEvent(timestamp), m_newState(newState), m_oldState(oldState) {}
 
@@ -145,16 +110,13 @@ public:
     GameState GetNewState() const { return m_newState; }
     GameState GetOldState() const { return m_oldState; }
 
-private:
+   private:
     GameState m_newState;
     GameState m_oldState;
 };
 
-/**
- * @brief Event fired when the game is over
- */
 class GameOverEvent : public GameEvent {
-public:
+   public:
     GameOverEvent(float timestamp, int finalScore)
         : GameEvent(timestamp), m_finalScore(finalScore) {}
 
@@ -162,8 +124,6 @@ public:
 
     int GetFinalScore() const { return m_finalScore; }
 
-private:
+   private:
     int m_finalScore;
 };
-
-} // namespace NodeZero

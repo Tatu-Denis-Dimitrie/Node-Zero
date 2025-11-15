@@ -1,19 +1,12 @@
 #pragma once
-#include "Events/IEventListener.h"
-#include "Events/GameEvents.h"
-#include <memory>
 #include <iostream>
+#include <memory>
 
-namespace NodeZero {
+#include "Events/GameEvents.h"
+#include "Events/IEventListener.h"
 
-/**
- * @brief Example event listener that logs game events to console
- *
- * Demonstrates how to implement the Observer pattern by listening
- * to game events and reacting to them (in this case, logging).
- */
 class GameEventLogger : public IEventListener {
-public:
+   public:
     GameEventLogger() = default;
     virtual ~GameEventLogger() = default;
 
@@ -24,22 +17,18 @@ public:
 
         if (eventType == "NodeSpawned") {
             HandleNodeSpawned(std::static_pointer_cast<NodeSpawnedEvent>(event));
-        }
-        else if (eventType == "NodeDestroyed") {
+        } else if (eventType == "NodeDestroyed") {
             HandleNodeDestroyed(std::static_pointer_cast<NodeDestroyedEvent>(event));
-        }
-        else if (eventType == "NodeDamaged") {
+        } else if (eventType == "NodeDamaged") {
             HandleNodeDamaged(std::static_pointer_cast<NodeDamagedEvent>(event));
-        }
-        else if (eventType == "ScoreChanged") {
+        } else if (eventType == "ScoreChanged") {
             HandleScoreChanged(std::static_pointer_cast<ScoreChangedEvent>(event));
-        }
-        else if (eventType == "GameStateChanged") {
+        } else if (eventType == "GameStateChanged") {
             HandleGameStateChanged(std::static_pointer_cast<GameStateChangedEvent>(event));
         }
     }
 
-private:
+   private:
     void HandleNodeSpawned(const std::shared_ptr<NodeSpawnedEvent>& event) {
         std::cout << "[EVENT] Node spawned at ("
                   << event->GetPosition().x << ", "
@@ -77,5 +66,3 @@ private:
                   << std::endl;
     }
 };
-
-} // namespace NodeZero

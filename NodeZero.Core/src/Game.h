@@ -2,16 +2,16 @@
 
 #include <vector>
 
+#include "../include/Events/EventManager.h"
 #include "../include/IGame.h"
 #include "../include/INode.h"
-#include "../include/Events/EventManager.h"
 
 class Game : public IGame {
    private:
     std::vector<INode*> m_Nodes;
     float m_ScreenWidth;
     float m_ScreenHeight;
-    NodeZero::EventManager m_EventManager;
+    EventManager m_EventManager;
     float m_ElapsedTime;
 
    public:
@@ -28,7 +28,7 @@ class Game : public IGame {
 
     void SpawnNode(float x, float y) override;
 
-    NodeZero::EventManager& GetEventManager() override;
+    EventManager& GetEventManager() override;
 
    private:
     INode* CreateNode(NodeShape shape, float size, float speed);

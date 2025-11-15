@@ -1,10 +1,8 @@
 #include "Events/EventManager.h"
 
-namespace NodeZero {
-
 void EventManager::Subscribe(const std::string& eventType, std::shared_ptr<IEventListener> listener) {
     if (!listener) {
-        return; // Ignore null listeners
+        return;
     }
 
     m_listeners[eventType].push_back(listener);
@@ -20,10 +18,8 @@ void EventManager::Unsubscribe(const std::string& eventType, std::shared_ptr<IEv
         auto& listeners = it->second;
         listeners.erase(
             std::remove(listeners.begin(), listeners.end(), listener),
-            listeners.end()
-        );
+            listeners.end());
 
-        // Remove empty entries to keep map clean
         if (listeners.empty()) {
             m_listeners.erase(it);
         }
@@ -39,7 +35,6 @@ void EventManager::Publish(const std::shared_ptr<IEvent>& event) {
     auto it = m_listeners.find(eventType);
 
     if (it != m_listeners.end()) {
-        // Create a copy of listeners to avoid issues if a listener modifies subscriptions
         auto listenersCopy = it->second;
 
         for (const auto& listener : listenersCopy) {
@@ -53,5 +48,3 @@ void EventManager::Publish(const std::shared_ptr<IEvent>& event) {
 void EventManager::Clear() {
     m_listeners.clear();
 }
-
-} // namespace NodeZero
