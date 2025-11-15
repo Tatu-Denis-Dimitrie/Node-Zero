@@ -1,8 +1,5 @@
 #include "../include/INode.h"
 
-/// <summary>
-/// Implementare concretă pentru poziționare
-/// </summary>
 class Position : public IPosition
 {
 private:

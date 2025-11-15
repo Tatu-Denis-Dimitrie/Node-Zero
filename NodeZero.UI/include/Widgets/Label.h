@@ -3,9 +3,6 @@
 #include "IWidget.h"
 #include <string>
 
-/// <summary>
-/// Widget de tip etichetă de text
-/// </summary>
 class Label : public IWidget
 {
 private:
@@ -25,13 +22,7 @@ public:
     bool IsActive() const override;
     void SetActive(bool active) override;
 
-    /// <summary>
-    /// Setează textul etichetei
-    /// </summary>
     void SetText(const char* text);
 
-    /// <summary>
-    /// Obține textul etichetei
-    /// </summary>
     const char* GetText() const;
 };

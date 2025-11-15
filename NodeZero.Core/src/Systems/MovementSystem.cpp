@@ -1,9 +1,6 @@
 #include "../../include/Systems/IMovementSystem.h"
 #include <cmath>
 
-/// <summary>
-/// Implementare concretă a sistemului de mișcare
-/// </summary>
 class MovementSystem : public IMovementSystem
 {
 public:

@@ -6,9 +6,6 @@
 #include <vector>
 #include <memory>
 
-/// <summary>
-/// Widget container pentru meniuri
-/// </summary>
 class Menu : public IWidget
 {
 private:
@@ -24,13 +21,7 @@ public:
     bool IsActive() const override;
     void SetActive(bool active) override;
 
-    /// <summary>
-    /// Adaugă un widget în meniu
-    /// </summary>
     void AddWidget(std::unique_ptr<IWidget> widget);
 
-    /// <summary>
-    /// Șterge toate widget-urile
-    /// </summary>
     void Clear();
 };

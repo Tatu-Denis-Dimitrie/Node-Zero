@@ -20,12 +20,11 @@ void Label::Draw()
 
 void Label::Update()
 {
-    // Labels nu necesită actualizare
 }
 
 bool Label::IsHovered() const
 {
-    return false; // Labels nu sunt interactive
+    return false;
 }
 
 bool Label::IsActive() const

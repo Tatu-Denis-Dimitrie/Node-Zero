@@ -2,9 +2,6 @@
 
 #include "IWidget.h"
 
-/// <summary>
-/// Widget de tip slider (pentru setări)
-/// </summary>
 class Slider : public IWidget
 {
 private:
@@ -29,13 +26,7 @@ public:
     bool IsActive() const override;
     void SetActive(bool active) override;
 
-    /// <summary>
-    /// Obține valoarea curentă a slider-ului
-    /// </summary>
     float GetValue() const;
 
-    /// <summary>
-    /// Setează valoarea curentă a slider-ului
-    /// </summary>
     void SetValue(float value);
 };

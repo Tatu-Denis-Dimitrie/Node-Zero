@@ -1,14 +1,9 @@
 #include "../include/INode.h"
 
-// Forward declaration pentru Position
 class Position;
 
-// Include Position implementation
 #include "Position.cpp"
 
-/// <summary>
-/// Implementare concretă a unui nod (entitate inamică)
-/// </summary>
 class Node : public INode
 {
 private:
@@ -28,8 +23,7 @@ public:
         , m_Size(size)
         , m_Speed(speed)
     {
-        // HP-ul depinde de mărimea nodului
-        m_MaxHP = size * 2.0f; // Noduri mai mari = mai mult HP
+        m_MaxHP = size * 2.0f;
         m_HP = m_MaxHP;
     }
 
@@ -91,7 +85,7 @@ public:
         m_Position.SetX(x);
         m_Position.SetY(y);
         m_State = NodeState::Active;
-        m_HP = m_MaxHP; // Reset HP la spawn
+        m_HP = m_MaxHP;
     }
 
     void Kill() override
@@ -104,7 +98,6 @@ public:
         if (m_State != NodeState::Active)
             return;
 
-        // Mișcare orizontală spre stânga
         m_Position.Move(-m_Speed * deltaTime, 0.0f);
     }
 };

@@ -1,27 +1,19 @@
-#include <vector>
 #include <algorithm>
+#include <vector>
 
-// NodeZero.Core includes
+#include "../NodeZero.Core/include/Config/GameConfig.h"
+#include "../NodeZero.Core/include/GameFactory.h"
 #include "../NodeZero.Core/include/IGame.h"
 #include "../NodeZero.Core/include/INode.h"
-#include "../NodeZero.Core/include/GameFactory.h"
-#include "../NodeZero.Core/include/Config/GameConfig.h"
 #include "../NodeZero.Core/include/Systems/ICollisionSystem.h"
-
-// NodeZero.UI includes
-#include "include/Renderer.h"
-#include "include/InputHandler.h"
-#include "include/UI.h"
-
-// Raylib
-#include "raylib.h"
-
-// Include implementations
 #include "../NodeZero.Core/src/GameFactory.cpp"
 #include "../NodeZero.Core/src/Systems/CollisionSystem.cpp"
+#include "include/InputHandler.h"
+#include "include/Renderer.h"
+#include "include/UI.h"
+#include "raylib.h"
 
-int main()
-{
+int main() {
     const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
     const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
 
@@ -33,34 +25,29 @@ int main()
     CollisionSystem collisionSystem;
 
     // Damage zone configuration
-    const float damageZoneSize = 100.0f; // Mărimea zonei pătrate de damage
-    const float damagePerSecond = 50.0f;  // Damage pe secundă în zonă
+    const float damageZoneSize = 100.0f;
+    const float damagePerSecond = 50.0f;
 
     // Node spawner configuration
     float spawnTimer = 0.0f;
-    const float spawnInterval = 2.0f; // Spawn la fiecare 2 secunde
+    const float spawnInterval = 2.0f;
 
-    SetTargetFPS(60);
+    SetTargetFPS(240);
 
-    while (!WindowShouldClose())
-    {
+    while (!WindowShouldClose()) {
         float deltaTime = GetFrameTime();
 
-        // Input handling
         Vector2 mousePos = InputHandler::GetMousePosition();
 
         // Spawn noduri automat
         spawnTimer += deltaTime;
-        if (spawnTimer >= spawnInterval)
-        {
+        if (spawnTimer >= spawnInterval) {
             spawnTimer = 0.0f;
 
-            // Spawn pe marginea dreaptă a ecranului, la o poziție aleatorie pe verticală
             float spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
             float spawnX = static_cast<float>(screenWidth + 50);
 
-            // Variază tipul, mărimea și viteza
-            NodeShape randomShape = static_cast<NodeShape>(GetRandomValue(0, 2)); // Circle, Square, Triangle
+            NodeShape randomShape = static_cast<NodeShape>(GetRandomValue(0, 2));  // Circle, Square, Triangle
             float randomSize = static_cast<float>(GetRandomValue(20, 50));
             float randomSpeed = static_cast<float>(GetRandomValue(50, 150));
 
@@ -68,17 +55,14 @@ int main()
 
             // Configurare nod spawn-uit
             const auto& nodes = game->GetNodes();
-            if (!nodes.empty())
-            {
+            if (!nodes.empty()) {
                 INode* lastNode = nodes.back();
-                // Notă: ar trebui să avem o metodă SetShape/SetSize în INode pentru configurare completă
             }
         }
 
         // Damage zone damage
         const auto& nodes = game->GetNodes();
-        for (INode* node : nodes)
-        {
+        for (INode* node : nodes) {
             if (node->GetState() != NodeState::Active)
                 continue;
 
@@ -89,21 +73,18 @@ int main()
             // Verifică dacă nodul se intersectează cu zona de damage (pătrată)
             bool inDamageZone = collisionSystem.CheckRectCollision(
                 mousePos.x - damageZoneSize / 2, mousePos.y - damageZoneSize / 2, damageZoneSize, damageZoneSize,
-                nodeX - nodeSize, nodeY - nodeSize, nodeSize * 2, nodeSize * 2
-            );
+                nodeX - nodeSize, nodeY - nodeSize, nodeSize * 2, nodeSize * 2);
 
-            if (inDamageZone)
-            {
+            if (inDamageZone) {
                 node->TakeDamage(damagePerSecond * deltaTime);
             }
         }
 
-        // Update game
         game->Update(deltaTime);
 
         // Rendering
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(Color{40, 40, 40, 255});
 
         // Draw damage zone (pătrat roșu semi-transparent în jurul mouse-ului)
         DrawRectangle(
@@ -111,41 +92,35 @@ int main()
             static_cast<int>(mousePos.y - damageZoneSize / 2),
             static_cast<int>(damageZoneSize),
             static_cast<int>(damageZoneSize),
-            Color{255, 0, 0, 50} // Roșu semi-transparent
-        );
+            Color{255, 0, 0, 50});
         DrawRectangleLines(
             static_cast<int>(mousePos.x - damageZoneSize / 2),
             static_cast<int>(mousePos.y - damageZoneSize / 2),
             static_cast<int>(damageZoneSize),
             static_cast<int>(damageZoneSize),
-            RED
-        );
+            RED);
 
         // Draw nodes with HP represented by fill
-        for (const INode* node : nodes)
-        {
-            if (node->GetState() == NodeState::Active)
-            {
+        for (const INode* node : nodes) {
+            if (node->GetState() == NodeState::Active) {
                 float x = node->GetPosition().GetX();
                 float y = node->GetPosition().GetY();
                 float size = node->GetSize();
                 float hpPercentage = node->GetHP() / node->GetMaxHP();
 
-                // Draw node with HP fill
-                switch (node->GetShape())
-                {
-                case NodeShape::Circle:
-                    Renderer::DrawCircleNode(x, y, size, hpPercentage, BLUE);
-                    break;
-                case NodeShape::Square:
-                    Renderer::DrawSquareNode(x, y, size, hpPercentage, GREEN);
-                    break;
-                case NodeShape::Triangle:
-                    Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);
-                    break;
-                default:
-                    Renderer::DrawCircleNode(x, y, size, hpPercentage, PURPLE);
-                    break;
+                switch (node->GetShape()) {
+                    case NodeShape::Circle:
+                        Renderer::DrawCircleNode(x, y, size, hpPercentage, BLUE);
+                        break;
+                    case NodeShape::Square:
+                        Renderer::DrawSquareNode(x, y, size, hpPercentage, GREEN);
+                        break;
+                    case NodeShape::Triangle:
+                        Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);
+                        break;
+                    default:
+                        Renderer::DrawCircleNode(x, y, size, hpPercentage, PURPLE);
+                        break;
                 }
             }
         }
@@ -157,7 +132,6 @@ int main()
         EndDrawing();
     }
 
-    // Cleanup game
     GameFactory::DestroyGame(game);
     CloseWindow();
 

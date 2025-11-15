@@ -2,9 +2,6 @@
 #include "../../include/Config/GameConfig.h"
 #include <algorithm>
 
-/// <summary>
-/// Implementare concretă a sistemului de punctaj
-/// </summary>
 class ScoreSystem : public IScoreSystem
 {
 private:

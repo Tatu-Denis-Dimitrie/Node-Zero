@@ -1,93 +1,79 @@
 #include "../include/Renderer.h"
-#include "raymath.h"
+
 #include <cmath>
 
-void Renderer::DrawArrow(float x, float y, float size, float rotationDegrees, Color color)
-{
-    float rotation = rotationDegrees * DEG2RAD;
+#include "raymath.h"
 
-    Vector2 point1 = { 0.0f, -size };
-    Vector2 point2 = { -size * 0.6f, size };
-    Vector2 point3 = { size * 0.6f, size };
+void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, Color color) {
+    if (hpPercentage > 0.0f) {
+        float fillHeight = size * 2.0f * hpPercentage;
+        float topY = y + size - fillHeight;
 
-    float cosRot = cosf(rotation);
-    float sinRot = sinf(rotation);
+        for (int i = 0; i < static_cast<int>(fillHeight); i++) {
+            float currentY = y + size - i;
+            float distFromCenter = currentY - y;
 
-    Vector2 rotatedPoint1 = {
-        point1.x * cosRot - point1.y * sinRot + x,
-        point1.x * sinRot + point1.y * cosRot + y
-    };
+            float widthAtHeight = sqrtf(size * size - distFromCenter * distFromCenter);
 
-    Vector2 rotatedPoint2 = {
-        point2.x * cosRot - point2.y * sinRot + x,
-        point2.x * sinRot + point2.y * cosRot + y
-    };
-
-    Vector2 rotatedPoint3 = {
-        point3.x * cosRot - point3.y * sinRot + x,
-        point3.x * sinRot + point3.y * cosRot + y
-    };
-
-    DrawTriangle(rotatedPoint1, rotatedPoint2, rotatedPoint3, color);
-    DrawTriangleLines(rotatedPoint1, rotatedPoint2, rotatedPoint3, BLACK);
-}
-
-void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, Color color)
-{
-    // Desenează conturul complet (gol)
-    DrawCircleLines(static_cast<int>(x), static_cast<int>(y), size, BLACK);
-
-    // Desenează umplerea bazată pe HP
-    if (hpPercentage > 0.0f)
-    {
-        float fillRadius = size * hpPercentage;
-        DrawCircleV({ x, y }, fillRadius, color);
+            if (widthAtHeight > 0) {
+                DrawLine(
+                    static_cast<int>(x - widthAtHeight),
+                    static_cast<int>(currentY),
+                    static_cast<int>(x + widthAtHeight),
+                    static_cast<int>(currentY),
+                    color);
+            }
+        }
     }
+
+    DrawCircleLines(static_cast<int>(x), static_cast<int>(y), size, BLACK);
 }
 
-void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, Color color)
-{
-    // Desenează conturul complet (gol)
+void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, Color color) {
+    if (hpPercentage > 0.0f) {
+        float fillHeight = size * 2.0f * hpPercentage;
+        DrawRectangle(
+            static_cast<int>(x - size),
+            static_cast<int>(y + size - fillHeight),
+            static_cast<int>(size * 2),
+            static_cast<int>(fillHeight),
+            color);
+    }
+
     DrawRectangleLines(
         static_cast<int>(x - size),
         static_cast<int>(y - size),
         static_cast<int>(size * 2),
         static_cast<int>(size * 2),
-        BLACK
-    );
-
-    // Desenează umplerea bazată pe HP
-    if (hpPercentage > 0.0f)
-    {
-        float fillSize = size * hpPercentage;
-        DrawRectangle(
-            static_cast<int>(x - fillSize),
-            static_cast<int>(y - fillSize),
-            static_cast<int>(fillSize * 2),
-            static_cast<int>(fillSize * 2),
-            color
-        );
-    }
+        BLACK);
 }
 
-void Renderer::DrawTriangleNode(float x, float y, float size, float hpPercentage, Color color)
-{
-    // Punctele pentru conturul complet
-    Vector2 point1 = { x, y - size };
-    Vector2 point2 = { x - size * 0.866f, y + size * 0.5f };
-    Vector2 point3 = { x + size * 0.866f, y + size * 0.5f };
+void Renderer::DrawTriangleNode(float x, float y, float size, float hpPercentage, Color color) {
+    Vector2 point1 = {x, y - size};
+    Vector2 point2 = {x - size * 0.866f, y + size * 0.5f};
+    Vector2 point3 = {x + size * 0.866f, y + size * 0.5f};
 
-    // Desenează conturul complet (gol)
-    DrawTriangleLines(point1, point2, point3, BLACK);
+    if (hpPercentage > 0.0f) {
+        float triangleHeight = size * 1.5f;
+        float fillHeight = triangleHeight * hpPercentage;
 
-    // Desenează umplerea bazată pe HP
-    if (hpPercentage > 0.0f)
-    {
-        float fillSize = size * hpPercentage;
-        Vector2 fillPoint1 = { x, y - fillSize };
-        Vector2 fillPoint2 = { x - fillSize * 0.866f, y + fillSize * 0.5f };
-        Vector2 fillPoint3 = { x + fillSize * 0.866f, y + fillSize * 0.5f };
+        for (int i = 0; i < static_cast<int>(fillHeight); i++) {
+            float currentY = y + size * 0.5f - i;
+            float distFromBottom = i;
+            float distFromTop = triangleHeight - distFromBottom;
 
-        DrawTriangle(fillPoint1, fillPoint2, fillPoint3, color);
+            float widthAtHeight = (size * 0.866f * 2.0f) * (distFromTop / triangleHeight);
+
+            if (widthAtHeight > 0) {
+                DrawLine(
+                    static_cast<int>(x - widthAtHeight / 2.0f),
+                    static_cast<int>(currentY),
+                    static_cast<int>(x + widthAtHeight / 2.0f),
+                    static_cast<int>(currentY),
+                    color);
+            }
+        }
     }
+
+    DrawTriangleLines(point1, point2, point3, BLACK);
 }

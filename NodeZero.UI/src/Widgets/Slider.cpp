@@ -21,7 +21,6 @@ void Slider::Draw()
     if (!m_IsActive)
         return;
 
-    // Desenează bara
     DrawRectangle(
         static_cast<int>(m_X),
         static_cast<int>(m_Y),
@@ -38,11 +37,9 @@ void Slider::Draw()
         BLACK
     );
 
-    // Calculează poziția mânerului
     float normalizedValue = (m_CurrentValue - m_MinValue) / (m_MaxValue - m_MinValue);
     float handleX = m_X + normalizedValue * m_Width;
 
-    // Desenează mânerul
     DrawCircle(
         static_cast<int>(handleX),
         static_cast<int>(m_Y + m_Height / 2),

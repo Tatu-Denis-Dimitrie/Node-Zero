@@ -1,9 +1,6 @@
 #include "../../include/Systems/ICollisionSystem.h"
 #include <cmath>
 
-/// <summary>
-/// Implementare concretă a sistemului de coliziuni
-/// </summary>
 class CollisionSystem : public ICollisionSystem
 {
 public:

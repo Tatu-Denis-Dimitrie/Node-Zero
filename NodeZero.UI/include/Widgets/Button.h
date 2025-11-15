@@ -4,9 +4,6 @@
 #include <string>
 #include <functional>
 
-/// <summary>
-/// Widget de tip buton
-/// </summary>
 class Button : public IWidget
 {
 private:
@@ -31,13 +28,7 @@ public:
     bool IsActive() const override;
     void SetActive(bool active) override;
 
-    /// <summary>
-    /// Setează callback-ul pentru click
-    /// </summary>
     void SetOnClick(std::function<void()> callback);
 
-    /// <summary>
-    /// Setează culorile butonului
-    /// </summary>
     void SetColors(Color normal, Color hover, Color pressed, Color text);
 };

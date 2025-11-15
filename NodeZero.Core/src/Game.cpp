@@ -3,13 +3,8 @@
 #include <algorithm>
 #include <vector>
 
-// Include Node implementation (care include și Position)
-// În viitor, acest cod ar trebui să fie într-un factory separat
 #include "Node.cpp"
 
-/// <summary>
-/// Implementare concretă a jocului
-/// </summary>
 class Game : public IGame
 {
 private:
@@ -26,7 +21,6 @@ public:
 
     ~Game()
     {
-        // Cleanup
         for (INode* node : m_Nodes)
         {
             delete node;
@@ -42,13 +36,11 @@ public:
 
     void Update(float deltaTime) override
     {
-        // Actualizează toate nodurile
         for (INode* node : m_Nodes)
         {
             node->Update(deltaTime);
         }
 
-        // Șterge nodurile moarte sau care au ieșit din ecran
         m_Nodes.erase(
             std::remove_if(m_Nodes.begin(), m_Nodes.end(),
                 [this](INode* node) {
@@ -81,15 +73,12 @@ public:
 
     void SpawnNode(float x, float y) override
     {
-        // Creează un nod nou (pentru moment, folosim valori default)
-        // Într-o implementare completă, ar fi configurat din parametri
         INode* node = CreateNode(NodeShape::Circle, 30.0f, 100.0f);
         node->Spawn(x, y);
         m_Nodes.push_back(node);
     }
 
 private:
-    // Helper pentru a crea noduri - va fi mutat în factory pattern
     INode* CreateNode(NodeShape shape, float size, float speed)
     {
         return new Node(shape, size, speed);

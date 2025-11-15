@@ -46,7 +46,6 @@ void Button::Draw()
         BLACK
     );
 
-    // Centrează textul
     int textWidth = MeasureText(m_Text.c_str(), 20);
     int textX = static_cast<int>(m_X + (m_Width - textWidth) / 2);
     int textY = static_cast<int>(m_Y + (m_Height - 20) / 2);
