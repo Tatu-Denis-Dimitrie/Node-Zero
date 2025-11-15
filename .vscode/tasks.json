@@ -68,7 +68,7 @@
                 "--config",
                 "Debug",
                 "--target",
-                "GameTests"
+                "NodeZero.Tests"
             ],
             "group": "test",
             "problemMatcher": "$msCompile",
@@ -77,7 +77,7 @@
         {
             "label": "CMake: Run Tests",
             "type": "shell",
-            "command": "${workspaceFolder}/build/bin/Debug/GameTests.exe",
+            "command": "${workspaceFolder}/build/bin/Debug/NodeZero.Tests.exe",
             "args": [],
             "group": {
                 "kind": "test",

@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run GameUI (Debug)",
+            "name": "Run NodeZero.UI (Debug)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Debug/GameUI.exe",
+            "program": "${workspaceFolder}/build/bin/Debug/NodeZero.UI.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -14,10 +14,10 @@
             "preLaunchTask": "CMake: Build (Debug)"
         },
         {
-            "name": "Run GameUI (Release)",
+            "name": "Run NodeZero.UI (Release)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Release/GameUI.exe",
+            "program": "${workspaceFolder}/build/bin/Release/NodeZero.UI.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

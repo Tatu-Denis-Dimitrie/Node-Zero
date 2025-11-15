@@ -46,48 +46,48 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 # =============================================================================
-# GameAPI Library
+# NodeZero.Core Library
 # =============================================================================
-# Automatically find all source and header files in GameAPI
-file(GLOB_RECURSE GAMEAPI_SOURCES 
-    "GameAPI/*.cpp"
+# Automatically find all source and header files in NodeZero.Core
+file(GLOB_RECURSE GAMEAPI_SOURCES
+    "NodeZero.Core/*.cpp"
 )
-file(GLOB_RECURSE GAMEAPI_HEADERS 
-    "GameAPI/*.h"
+file(GLOB_RECURSE GAMEAPI_HEADERS
+    "NodeZero.Core/*.h"
 )
 
-add_library(GameAPI STATIC
+add_library(NodeZero.Core STATIC
     ${GAMEAPI_SOURCES}
     ${GAMEAPI_HEADERS}
 )
 
-target_include_directories(GameAPI PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/GameAPI
+target_include_directories(NodeZero.Core PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core
 )
 
 # =============================================================================
-# GameUI Executable
+# NodeZero.UI Executable
 # =============================================================================
-# Automatically find all source and header files in GameUI
-file(GLOB_RECURSE GAMEUI_SOURCES 
-    "GameUI/*.cpp"
+# Automatically find all source and header files in NodeZero.UI
+file(GLOB_RECURSE GAMEUI_SOURCES
+    "NodeZero.UI/*.cpp"
 )
-file(GLOB_RECURSE GAMEUI_HEADERS 
-    "GameUI/*.h"
+file(GLOB_RECURSE GAMEUI_HEADERS
+    "NodeZero.UI/*.h"
 )
 
-add_executable(GameUI
+add_executable(NodeZero.UI
     ${GAMEUI_SOURCES}
     ${GAMEUI_HEADERS}
 )
 
-target_include_directories(GameUI PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/GameUI
-    ${CMAKE_CURRENT_SOURCE_DIR}/GameAPI
+target_include_directories(NodeZero.UI PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core
 )
 
-target_link_libraries(GameUI PRIVATE
-    GameAPI
+target_link_libraries(NodeZero.UI PRIVATE
+    NodeZero.Core
     raylib
 )
 
@@ -96,44 +96,44 @@ target_link_libraries(GameUI PRIVATE
 # =============================================================================
 if(WIN32)
     # Windows-specific settings
-    target_link_libraries(GameUI PRIVATE winmm)
+    target_link_libraries(NodeZero.UI PRIVATE winmm)
 endif()
 
 if(APPLE)
     # macOS-specific settings
-    target_link_libraries(GameUI PRIVATE "-framework IOKit" "-framework Cocoa" "-framework OpenGL")
+    target_link_libraries(NodeZero.UI PRIVATE "-framework IOKit" "-framework Cocoa" "-framework OpenGL")
 endif()
 
 # =============================================================================
-# GameTests Executable
+# NodeZero.Tests Executable
 # =============================================================================
-# Automatically find all test files in GameTests
+# Automatically find all test files in NodeZero.Tests
 file(GLOB_RECURSE GAMETESTS_SOURCES
-    "GameTests/*.cpp"
+    "NodeZero.Tests/*.cpp"
 )
 
-add_executable(GameTests
+add_executable(NodeZero.Tests
     ${GAMETESTS_SOURCES}
 )
 
-target_include_directories(GameTests PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/GameAPI
+target_include_directories(NodeZero.Tests PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core
 )
 
-target_link_libraries(GameTests PRIVATE
-    GameAPI
+target_link_libraries(NodeZero.Tests PRIVATE
+    NodeZero.Core
     gtest_main
     gtest
 )
 
 # Add tests to CTest
 include(GoogleTest)
-gtest_discover_tests(GameTests)
+gtest_discover_tests(NodeZero.Tests)
 
 # =============================================================================
 # Installation
 # =============================================================================
-install(TARGETS GameUI
+install(TARGETS NodeZero.UI
     RUNTIME DESTINATION bin
 )
 

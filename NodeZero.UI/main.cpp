@@ -1,8 +1,8 @@
 #include <cmath>
 #include <vector>
 
-#include "../GameAPI/GameAPI.h"
-#include "../GameAPI/Entities/Bullet.h"
+#include "../NodeZero.Core/GameAPI.h"
+#include "../NodeZero.Core/Entities/Bullet.h"
 #include "Rendering/PlayerRenderer.h"
 #include "Rendering/BulletRenderer.h"
 #include "UI/HUD.h"

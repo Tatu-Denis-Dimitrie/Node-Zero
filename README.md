@@ -23,8 +23,8 @@ cmake -B build -G "Visual Studio 17 2022"
 ## Project Structure
 
 ```
-GameAPI/    # Game logic (Core + Entities)
-GameTests/  # Tests
-GameUI/     # UI + Rendering + entry point
-build/      # Generated files (like node_modules)
+NodeZero.Core/   # Game logic (Core + Entities)
+NodeZero.Tests/  # Tests
+NodeZero.UI/     # UI + Rendering + entry point
+build/           # Generated files (like node_modules)
 ```
