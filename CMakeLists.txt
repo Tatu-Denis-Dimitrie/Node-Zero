@@ -48,42 +48,48 @@ enable_testing()
 # =============================================================================
 # NodeZero.Core Library
 # =============================================================================
-# Automatically find all source and header files in NodeZero.Core
-file(GLOB_RECURSE GAMEAPI_SOURCES
-    "NodeZero.Core/*.cpp"
+# Collect all source files from the new structure
+file(GLOB_RECURSE CORE_SOURCES
+    "NodeZero.Core/src/*.cpp"
 )
-file(GLOB_RECURSE GAMEAPI_HEADERS
-    "NodeZero.Core/*.h"
+
+file(GLOB_RECURSE CORE_HEADERS
+    "NodeZero.Core/include/*.h"
 )
 
 add_library(NodeZero.Core STATIC
-    ${GAMEAPI_SOURCES}
-    ${GAMEAPI_HEADERS}
+    ${CORE_SOURCES}
+    ${CORE_HEADERS}
 )
 
 target_include_directories(NodeZero.Core PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/include
 )
 
 # =============================================================================
 # NodeZero.UI Executable
 # =============================================================================
-# Automatically find all source and header files in NodeZero.UI
-file(GLOB_RECURSE GAMEUI_SOURCES
-    "NodeZero.UI/*.cpp"
+# Main application file
+set(UI_MAIN_SOURCE "NodeZero.UI/main.cpp")
+
+# Collect UI source and header files from the new structure
+file(GLOB_RECURSE UI_SOURCES
+    "NodeZero.UI/src/*.cpp"
 )
-file(GLOB_RECURSE GAMEUI_HEADERS
-    "NodeZero.UI/*.h"
+
+file(GLOB_RECURSE UI_HEADERS
+    "NodeZero.UI/include/*.h"
 )
 
 add_executable(NodeZero.UI
-    ${GAMEUI_SOURCES}
-    ${GAMEUI_HEADERS}
+    ${UI_MAIN_SOURCE}
+    ${UI_SOURCES}
+    ${UI_HEADERS}
 )
 
 target_include_directories(NodeZero.UI PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.UI
-    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.UI/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/include
 )
 
 target_link_libraries(NodeZero.UI PRIVATE
@@ -117,7 +123,7 @@ add_executable(NodeZero.Tests
 )
 
 target_include_directories(NodeZero.Tests PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/include
 )
 
 target_link_libraries(NodeZero.Tests PRIVATE
@@ -137,20 +143,45 @@ install(TARGETS NodeZero.UI
     RUNTIME DESTINATION bin
 )
 
-# Copy assets if they exist
-if(EXISTS "${CMAKE_SOURCE_DIR}/assets")
-    install(DIRECTORY assets DESTINATION bin)
+# Copy assets
+if(EXISTS "${CMAKE_SOURCE_DIR}/NodeZero.UI/assets")
+    install(DIRECTORY NodeZero.UI/assets DESTINATION bin)
 endif()
 
 # =============================================================================
 # Print configuration summary
 # =============================================================================
 message(STATUS "")
-message(STATUS "NodeZero Configuration:")
+message(STATUS "==============================================")
+message(STATUS "NodeZero Configuration Summary")
+message(STATUS "==============================================")
 message(STATUS "  CMake version: ${CMAKE_VERSION}")
 message(STATUS "  C++ standard: ${CMAKE_CXX_STANDARD}")
 message(STATUS "  Build type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "  Raylib version: 5.5")
 message(STATUS "  Google Test version: 1.14.0")
 message(STATUS "  Testing enabled: YES")
+message(STATUS "")
+message(STATUS "Project Structure:")
+message(STATUS "  NodeZero.Core/")
+message(STATUS "    ├─ include/")
+message(STATUS "    │  ├─ Config/")
+message(STATUS "    │  ├─ Systems/")
+message(STATUS "    │  └─ Enums/")
+message(STATUS "    └─ src/")
+message(STATUS "       └─ Systems/")
+message(STATUS "")
+message(STATUS "  NodeZero.UI/")
+message(STATUS "    ├─ include/")
+message(STATUS "    │  └─ Widgets/")
+message(STATUS "    ├─ src/")
+message(STATUS "    │  └─ Widgets/")
+message(STATUS "    └─ assets/")
+message(STATUS "       ├─ sprites/")
+message(STATUS "       ├─ fonts/")
+message(STATUS "       ├─ sounds/")
+message(STATUS "       └─ shaders/")
+message(STATUS "")
+message(STATUS "  NodeZero.Tests/")
+message(STATUS "==============================================")
 message(STATUS "")
