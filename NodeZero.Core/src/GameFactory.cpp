@@ -1,40 +1,22 @@
 #include "../include/GameFactory.h"
+
+#include "../include/Config/GameConfig.h"
 #include "../include/IGame.h"
+#include "Game.h"
 #include "Systems/CollisionSystem.h"
 #include "Systems/ScoreSystem.h"
-#include "../include/Config/GameConfig.h"
-
-#include "Game.h"
 
 // Game management
-IGame* GameFactory::CreateGame()
-{
-    return new Game();
-}
-
-void GameFactory::DestroyGame(IGame* game)
-{
-    delete game;
+std::unique_ptr<IGame> GameFactory::CreateGame() {
+    return std::make_unique<Game>();
 }
 
 // CollisionSystem management
-ICollisionSystem* GameFactory::CreateCollisionSystem()
-{
-    return new CollisionSystem();
-}
-
-void GameFactory::DestroyCollisionSystem(ICollisionSystem* system)
-{
-    delete system;
+std::unique_ptr<ICollisionSystem> GameFactory::CreateCollisionSystem() {
+    return std::make_unique<CollisionSystem>();
 }
 
 // ScoreSystem management
-IScoreSystem* GameFactory::CreateScoreSystem()
-{
-    return new ScoreSystem();
-}
-
-void GameFactory::DestroyScoreSystem(IScoreSystem* system)
-{
-    delete system;
+std::unique_ptr<IScoreSystem> GameFactory::CreateScoreSystem() {
+    return std::make_unique<ScoreSystem>();
 }

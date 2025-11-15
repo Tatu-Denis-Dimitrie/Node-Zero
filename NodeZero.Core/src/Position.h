@@ -2,9 +2,6 @@
 
 #include "../include/INode.h"
 
-/// <summary>
-/// Implementare pentru poziție în spațiul 2D
-/// </summary>
 class Position : public IPosition
 {
 private:

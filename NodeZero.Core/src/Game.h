@@ -4,9 +4,6 @@
 #include "../include/INode.h"
 #include <vector>
 
-/// <summary>
-/// Implementare principală a jocului
-/// </summary>
 class Game : public IGame
 {
 private:

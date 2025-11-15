@@ -3,9 +3,6 @@
 #include "../include/INode.h"
 #include "Position.h"
 
-/// <summary>
-/// Implementare pentru entitate nod (enemy) în joc
-/// </summary>
 class Node : public INode
 {
 private:

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "Config/GameConfig.h"
@@ -18,11 +19,11 @@ int main() {
 
     InitWindow(screenWidth, screenHeight, "NodeZero - Nodebuster Clone");
 
-    IGame* game = GameFactory::CreateGame();
+    std::unique_ptr<IGame> game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
-    ICollisionSystem* collisionSystem = GameFactory::CreateCollisionSystem();
-    IScoreSystem* scoreSystem = GameFactory::CreateScoreSystem();
+    std::unique_ptr<ICollisionSystem> collisionSystem = GameFactory::CreateCollisionSystem();
+    std::unique_ptr<IScoreSystem> scoreSystem = GameFactory::CreateScoreSystem();
 
     // Damage zone configuration
     const float damageZoneSize = 100.0f;
@@ -132,10 +133,7 @@ int main() {
         EndDrawing();
     }
 
-    // Cleanup
-    GameFactory::DestroyCollisionSystem(collisionSystem);
-    GameFactory::DestroyScoreSystem(scoreSystem);
-    GameFactory::DestroyGame(game);
+    // Cleanup automat prin unique_ptr
     CloseWindow();
 
     return 0;

@@ -2,9 +2,6 @@
 
 #include "../../include/Systems/IScoreSystem.h"
 
-/// <summary>
-/// Implementare sistem de punctaj cu multiplier și high score
-/// </summary>
 class ScoreSystem : public IScoreSystem
 {
 private:

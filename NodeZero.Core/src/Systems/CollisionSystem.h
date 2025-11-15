@@ -2,9 +2,6 @@
 
 #include "../../include/Systems/ICollisionSystem.h"
 
-/// <summary>
-/// Implementare sistem de coliziuni pentru detecție geometrică
-/// </summary>
 class CollisionSystem : public ICollisionSystem
 {
 public:
