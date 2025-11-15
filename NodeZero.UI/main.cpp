@@ -75,8 +75,8 @@ int main() {
             if (node->GetState() != NodeState::Active)
                 continue;
 
-            float nodeX = node->GetPosition().GetX();
-            float nodeY = node->GetPosition().GetY();
+            float nodeX = node->GetPosition().x;
+            float nodeY = node->GetPosition().y;
             float nodeSize = node->GetSize();
 
             // Verifică dacă nodul se intersectează cu zona de damage (pătrată)
@@ -112,8 +112,8 @@ int main() {
         // Draw nodes with HP represented by fill
         for (const INode* node : nodes) {
             if (node->GetState() == NodeState::Active) {
-                float x = node->GetPosition().GetX();
-                float y = node->GetPosition().GetY();
+                float x = node->GetPosition().x;
+                float y = node->GetPosition().y;
                 float size = node->GetSize();
                 float hpPercentage = node->GetHP() / node->GetMaxHP();
 

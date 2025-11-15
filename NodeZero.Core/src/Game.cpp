@@ -32,13 +32,13 @@ void Game::Update(float deltaTime) {
         std::remove_if(m_Nodes.begin(), m_Nodes.end(),
                        [this](INode* node) {
                            bool shouldRemove = node->GetState() == NodeState::Dead ||
-                                               node->GetPosition().GetX() < -100.0f;
+                                               node->GetPosition().x < -100.0f;
                            if (shouldRemove) {
                                if (node->GetState() == NodeState::Dead) {
                                    auto event = std::make_shared<NodeDestroyedEvent>(
                                        m_ElapsedTime,
                                        node->GetShape(),
-                                       Vector2{node->GetPosition().GetX(), node->GetPosition().GetY()},
+                                       Position{node->GetPosition().x, node->GetPosition().y},
                                        100);
                                    m_EventManager.Publish(event);
                                }
@@ -70,7 +70,7 @@ void Game::SpawnNode(float x, float y) {
     auto event = std::make_shared<NodeSpawnedEvent>(
         m_ElapsedTime,
         node->GetShape(),
-        Vector2{x, y},
+        Position{x, y},
         node->GetSize(),
         static_cast<int>(node->GetHP()));
     m_EventManager.Publish(event);

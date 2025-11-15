@@ -1,21 +1,14 @@
 #pragma once
 
-#include "IPosition.h"
 #include "Enums/NodeState.h"
+#include "Types/Position.h"
 
-/**
- * @brief Interface for game node entities
- *
- * Represents interactive elements in the game (enemies, obstacles, etc.)
- * that have position, shape, state, and health.
- */
-class INode
-{
-public:
+class INode {
+   public:
     virtual ~INode() = default;
 
-    virtual IPosition& GetPosition() = 0;
-    virtual const IPosition& GetPosition() const = 0;
+    virtual Position& GetPosition() = 0;
+    virtual const Position& GetPosition() const = 0;
     virtual NodeShape GetShape() const = 0;
 
     virtual NodeState GetState() const = 0;

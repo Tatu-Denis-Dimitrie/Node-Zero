@@ -2,7 +2,7 @@
 #include "Enums/GameState.h"
 #include "Enums/NodeState.h"
 #include "IEvent.h"
-#include "Types/Vector2.h"
+#include "Types/Position.h"
 
 class GameEvent : public IEvent {
    public:
@@ -17,54 +17,54 @@ class GameEvent : public IEvent {
 
 class NodeSpawnedEvent : public GameEvent {
    public:
-    NodeSpawnedEvent(float timestamp, NodeShape shape, Vector2 position, float size, int hp)
+    NodeSpawnedEvent(float timestamp, NodeShape shape, Position position, float size, int hp)
         : GameEvent(timestamp), m_shape(shape), m_position(position), m_size(size), m_hp(hp) {}
 
     std::string GetType() const override { return "NodeSpawned"; }
 
     NodeShape GetShape() const { return m_shape; }
-    Vector2 GetPosition() const { return m_position; }
+    Position GetPosition() const { return m_position; }
     float GetSize() const { return m_size; }
     int GetHP() const { return m_hp; }
 
    private:
     NodeShape m_shape;
-    Vector2 m_position;
+    Position m_position;
     float m_size;
     int m_hp;
 };
 
 class NodeDamagedEvent : public GameEvent {
    public:
-    NodeDamagedEvent(float timestamp, Vector2 position, int damage, int remainingHP)
+    NodeDamagedEvent(float timestamp, Position position, int damage, int remainingHP)
         : GameEvent(timestamp), m_position(position), m_damage(damage), m_remainingHP(remainingHP) {}
 
     std::string GetType() const override { return "NodeDamaged"; }
 
-    Vector2 GetPosition() const { return m_position; }
+    Position GetPosition() const { return m_position; }
     int GetDamage() const { return m_damage; }
     int GetRemainingHP() const { return m_remainingHP; }
 
    private:
-    Vector2 m_position;
+    Position m_position;
     int m_damage;
     int m_remainingHP;
 };
 
 class NodeDestroyedEvent : public GameEvent {
    public:
-    NodeDestroyedEvent(float timestamp, NodeShape shape, Vector2 position, int scoreGained)
+    NodeDestroyedEvent(float timestamp, NodeShape shape, Position position, int scoreGained)
         : GameEvent(timestamp), m_shape(shape), m_position(position), m_scoreGained(scoreGained) {}
 
     std::string GetType() const override { return "NodeDestroyed"; }
 
     NodeShape GetShape() const { return m_shape; }
-    Vector2 GetPosition() const { return m_position; }
+    Position GetPosition() const { return m_position; }
     int GetScoreGained() const { return m_scoreGained; }
 
    private:
     NodeShape m_shape;
-    Vector2 m_position;
+    Position m_position;
     int m_scoreGained;
 };
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../include/INode.h"
-#include "Position.h"
 
 class Node : public INode {
    private:
@@ -16,8 +15,8 @@ class Node : public INode {
    public:
     Node(NodeShape shape, float size, float speed);
 
-    IPosition& GetPosition() override;
-    const IPosition& GetPosition() const override;
+    Position& GetPosition() override;
+    const Position& GetPosition() const override;
 
     NodeShape GetShape() const override;
     NodeState GetState() const override;
