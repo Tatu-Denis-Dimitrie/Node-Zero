@@ -1,13 +1,12 @@
 #include <algorithm>
 #include <vector>
 
-#include "../NodeZero.Core/include/Config/GameConfig.h"
-#include "../NodeZero.Core/include/GameFactory.h"
-#include "../NodeZero.Core/include/IGame.h"
-#include "../NodeZero.Core/include/INode.h"
-#include "../NodeZero.Core/include/Systems/ICollisionSystem.h"
-#include "../NodeZero.Core/src/GameFactory.cpp"
-#include "../NodeZero.Core/src/Systems/CollisionSystem.cpp"
+#include "Config/GameConfig.h"
+#include "GameFactory.h"
+#include "IGame.h"
+#include "INode.h"
+#include "Systems/ICollisionSystem.h"
+#include "Systems/IScoreSystem.h"
 #include "include/InputHandler.h"
 #include "include/Renderer.h"
 #include "include/UI.h"
@@ -22,7 +21,8 @@ int main() {
     IGame* game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
-    CollisionSystem collisionSystem;
+    ICollisionSystem* collisionSystem = GameFactory::CreateCollisionSystem();
+    IScoreSystem* scoreSystem = GameFactory::CreateScoreSystem();
 
     // Damage zone configuration
     const float damageZoneSize = 100.0f;
@@ -71,7 +71,7 @@ int main() {
             float nodeSize = node->GetSize();
 
             // Verifică dacă nodul se intersectează cu zona de damage (pătrată)
-            bool inDamageZone = collisionSystem.CheckRectCollision(
+            bool inDamageZone = collisionSystem->CheckRectCollision(
                 mousePos.x - damageZoneSize / 2, mousePos.y - damageZoneSize / 2, damageZoneSize, damageZoneSize,
                 nodeX - nodeSize, nodeY - nodeSize, nodeSize * 2, nodeSize * 2);
 
@@ -132,6 +132,9 @@ int main() {
         EndDrawing();
     }
 
+    // Cleanup
+    GameFactory::DestroyCollisionSystem(collisionSystem);
+    GameFactory::DestroyScoreSystem(scoreSystem);
     GameFactory::DestroyGame(game);
     CloseWindow();
 

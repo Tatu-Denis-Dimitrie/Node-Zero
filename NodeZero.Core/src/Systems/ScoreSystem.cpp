@@ -1,62 +1,53 @@
-#include "../../include/Systems/IScoreSystem.h"
+#include "ScoreSystem.h"
 #include "../../include/Config/GameConfig.h"
 #include <algorithm>
 
-class ScoreSystem : public IScoreSystem
+ScoreSystem::ScoreSystem()
+    : m_Score(0)
+    , m_HighScore(0)
+    , m_Multiplier(1)
 {
-private:
-    int m_Score;
-    int m_HighScore;
-    int m_Multiplier;
+}
 
-public:
-    ScoreSystem()
-        : m_Score(0)
-        , m_HighScore(0)
-        , m_Multiplier(1)
-    {
-    }
+void ScoreSystem::AddScore(int points)
+{
+    m_Score += points * m_Multiplier;
+}
 
-    void AddScore(int points) override
-    {
-        m_Score += points * m_Multiplier;
-    }
+int ScoreSystem::GetScore() const
+{
+    return m_Score;
+}
 
-    int GetScore() const override
-    {
-        return m_Score;
-    }
+void ScoreSystem::ResetScore()
+{
+    m_Score = 0;
+}
 
-    void ResetScore() override
-    {
-        m_Score = 0;
-    }
+void ScoreSystem::IncreaseMultiplier()
+{
+    m_Multiplier = std::min(m_Multiplier + 1, GameConfig::POINTS_MULTIPLIER_MAX);
+}
 
-    void IncreaseMultiplier() override
-    {
-        m_Multiplier = std::min(m_Multiplier + 1, GameConfig::POINTS_MULTIPLIER_MAX);
-    }
+void ScoreSystem::ResetMultiplier()
+{
+    m_Multiplier = 1;
+}
 
-    void ResetMultiplier() override
-    {
-        m_Multiplier = 1;
-    }
+int ScoreSystem::GetMultiplier() const
+{
+    return m_Multiplier;
+}
 
-    int GetMultiplier() const override
-    {
-        return m_Multiplier;
-    }
+int ScoreSystem::GetHighScore() const
+{
+    return m_HighScore;
+}
 
-    int GetHighScore() const override
+void ScoreSystem::UpdateHighScore()
+{
+    if (m_Score > m_HighScore)
     {
-        return m_HighScore;
+        m_HighScore = m_Score;
     }
-
-    void UpdateHighScore() override
-    {
-        if (m_Score > m_HighScore)
-        {
-            m_HighScore = m_Score;
-        }
-    }
-};
+}

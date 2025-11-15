@@ -1,86 +1,73 @@
-#include "../include/IGame.h"
-#include "../include/INode.h"
+#include "Game.h"
+#include "Node.h"
 #include <algorithm>
-#include <vector>
 
-#include "Node.cpp"
-
-class Game : public IGame
+Game::Game()
+    : m_ScreenWidth(0.0f)
+    , m_ScreenHeight(0.0f)
 {
-private:
-    std::vector<INode*> m_Nodes;
-    float m_ScreenWidth;
-    float m_ScreenHeight;
+}
 
-public:
-    Game()
-        : m_ScreenWidth(0.0f)
-        , m_ScreenHeight(0.0f)
+Game::~Game()
+{
+    for (INode* node : m_Nodes)
     {
+        delete node;
+    }
+    m_Nodes.clear();
+}
+
+void Game::Initialize(float screenWidth, float screenHeight)
+{
+    m_ScreenWidth = screenWidth;
+    m_ScreenHeight = screenHeight;
+}
+
+void Game::Update(float deltaTime)
+{
+    for (INode* node : m_Nodes)
+    {
+        node->Update(deltaTime);
     }
 
-    ~Game()
-    {
-        for (INode* node : m_Nodes)
-        {
-            delete node;
-        }
-        m_Nodes.clear();
-    }
+    m_Nodes.erase(
+        std::remove_if(m_Nodes.begin(), m_Nodes.end(),
+            [this](INode* node) {
+                bool shouldRemove = node->GetState() == NodeState::Dead ||
+                                  node->GetPosition().GetX() < -100.0f;
+                if (shouldRemove)
+                {
+                    delete node;
+                }
+                return shouldRemove;
+            }),
+        m_Nodes.end()
+    );
+}
 
-    void Initialize(float screenWidth, float screenHeight) override
-    {
-        m_ScreenWidth = screenWidth;
-        m_ScreenHeight = screenHeight;
-    }
+float Game::GetScreenWidth() const
+{
+    return m_ScreenWidth;
+}
 
-    void Update(float deltaTime) override
-    {
-        for (INode* node : m_Nodes)
-        {
-            node->Update(deltaTime);
-        }
+float Game::GetScreenHeight() const
+{
+    return m_ScreenHeight;
+}
 
-        m_Nodes.erase(
-            std::remove_if(m_Nodes.begin(), m_Nodes.end(),
-                [this](INode* node) {
-                    bool shouldRemove = node->GetState() == NodeState::Dead ||
-                                      node->GetPosition().GetX() < -100.0f;
-                    if (shouldRemove)
-                    {
-                        delete node;
-                    }
-                    return shouldRemove;
-                }),
-            m_Nodes.end()
-        );
-    }
+const std::vector<INode*>& Game::GetNodes() const
+{
+    return m_Nodes;
+}
 
-    float GetScreenWidth() const override
-    {
-        return m_ScreenWidth;
-    }
+void Game::SpawnNode(float x, float y)
+{
+    INode* node = CreateNode(NodeShape::Circle, 30.0f, 100.0f);
+    node->Spawn(x, y);
+    m_Nodes.push_back(node);
+}
 
-    float GetScreenHeight() const override
-    {
-        return m_ScreenHeight;
-    }
-
-    const std::vector<INode*>& GetNodes() const override
-    {
-        return m_Nodes;
-    }
-
-    void SpawnNode(float x, float y) override
-    {
-        INode* node = CreateNode(NodeShape::Circle, 30.0f, 100.0f);
-        node->Spawn(x, y);
-        m_Nodes.push_back(node);
-    }
-
-private:
-    INode* CreateNode(NodeShape shape, float size, float speed)
-    {
-        return new Node(shape, size, speed);
-    }
-};
+INode* Game::CreateNode(NodeShape shape, float size, float speed)
+{
+    return new Node(shape, size, speed);
+}

@@ -1,40 +1,32 @@
-#include "../include/INode.h"
+#include "Position.h"
 
-class Position : public IPosition
+Position::Position(float x, float y)
+    : m_X(x), m_Y(y)
 {
-private:
-    float m_X;
-    float m_Y;
+}
 
-public:
-    Position(float x = 0.0f, float y = 0.0f)
-        : m_X(x), m_Y(y)
-    {
-    }
+float Position::GetX() const
+{
+    return m_X;
+}
 
-    float GetX() const override
-    {
-        return m_X;
-    }
+float Position::GetY() const
+{
+    return m_Y;
+}
 
-    float GetY() const override
-    {
-        return m_Y;
-    }
+void Position::SetX(float x)
+{
+    m_X = x;
+}
 
-    void SetX(float x) override
-    {
-        m_X = x;
-    }
+void Position::SetY(float y)
+{
+    m_Y = y;
+}
 
-    void SetY(float y) override
-    {
-        m_Y = y;
-    }
-
-    void Move(float deltaX, float deltaY) override
-    {
-        m_X += deltaX;
-        m_Y += deltaY;
-    }
-};
+void Position::Move(float deltaX, float deltaY)
+{
+    m_X += deltaX;
+    m_Y += deltaY;
+}
