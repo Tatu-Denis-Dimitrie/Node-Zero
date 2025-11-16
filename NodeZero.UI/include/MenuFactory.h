@@ -8,4 +8,5 @@ class MenuFactory
 {
 public:
     static std::unique_ptr<Menu> CreateMainMenu(GameState& currentState);
+    static std::unique_ptr<Menu> CreatePauseMenu(GameState& currentState);
 };

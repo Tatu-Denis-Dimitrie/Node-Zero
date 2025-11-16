@@ -54,17 +54,16 @@ std::unique_ptr<Menu> MenuFactory::CreateMainMenu(GameState& currentState) {
         "Upgrades"
     );
     upgradesButton->SetColors(
-        Color{50, 150, 50, 255},   // Green
-        Color{80, 180, 80, 255},   // Lighter Green
-        Color{30, 120, 30, 255},   // Darker Green
+        Color{50, 150, 50, 255},  
+        Color{80, 180, 80, 255},  
+        Color{30, 120, 30, 255},   
         WHITE
     );
     upgradesButton->SetOnClick([&currentState]() {
-        currentState = GameState::Settings; // Using Settings state for Upgrades
+        currentState = GameState::Settings;
     });
     menu->AddWidget(std::move(upgradesButton));
 
-    // Quit Button
     auto quitButton = std::make_unique<Button>(
         centerX,
         startY + (buttonHeight + buttonSpacing) * 2,
@@ -73,15 +72,75 @@ std::unique_ptr<Menu> MenuFactory::CreateMainMenu(GameState& currentState) {
         "Quit"
     );
     quitButton->SetColors(
-        Color{180, 70, 70, 255},   // Red
-        Color{210, 100, 100, 255}, // Lighter Red
-        Color{150, 40, 40, 255},   // Darker Red
+        Color{180, 70, 70, 255},   
+        Color{210, 100, 100, 255}, 
+        Color{150, 40, 40, 255},   
         WHITE
     );
     quitButton->SetOnClick([&currentState]() {
         currentState = GameState::Quit;
     });
     menu->AddWidget(std::move(quitButton));
+
+    return menu;
+}
+
+std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState) {
+    auto menu = std::make_unique<Menu>();
+
+    const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
+    const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
+
+    const float buttonWidth = 300.0f;
+    const float buttonHeight = 60.0f;
+    const float buttonSpacing = 20.0f;
+    const float startY = screenHeight / 2.0f - 50.0f;
+    const float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
+
+    auto titleLabel = std::make_unique<Label>(
+        screenWidth / 2.0f - 150.0f,
+        screenHeight / 2.0f - 150.0f,
+        "GAME PAUSED",
+        40,
+        WHITE
+    );
+    menu->AddWidget(std::move(titleLabel));
+
+    auto resumeButton = std::make_unique<Button>(
+        centerX,
+        startY,
+        buttonWidth,
+        buttonHeight,
+        "Resume"
+    );
+    resumeButton->SetColors(
+        Color{50, 150, 50, 255},   
+        Color{80, 180, 80, 255},   
+        Color{30, 120, 30, 255},   
+        WHITE
+    );
+    resumeButton->SetOnClick([&currentState]() {
+        currentState = GameState::Playing;
+    });
+    menu->AddWidget(std::move(resumeButton));
+
+    auto mainMenuButton = std::make_unique<Button>(
+        centerX,
+        startY + buttonHeight + buttonSpacing,
+        buttonWidth,
+        buttonHeight,
+        "Main Menu"
+    );
+    mainMenuButton->SetColors(
+        Color{70, 130, 180, 255},  
+        Color{100, 160, 210, 255}, 
+        Color{40, 100, 150, 255},  
+        WHITE
+    );
+    mainMenuButton->SetOnClick([&currentState]() {
+        currentState = GameState::MainMenu;
+    });
+    menu->AddWidget(std::move(mainMenuButton));
 
     return menu;
 }

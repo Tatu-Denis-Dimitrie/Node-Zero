@@ -27,6 +27,7 @@ int main() {
     GameState currentState = GameState::MainMenu;
 
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
+    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState);
 
     std::unique_ptr<IGame> game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
@@ -102,12 +103,20 @@ int main() {
 
                 game->Update(deltaTime);
 
-                // Check for ESC to return to menu
+                // Check for ESC to pause
                 if (IsKeyPressed(KEY_ESCAPE)) {
-                    currentState = GameState::MainMenu;
+                    currentState = GameState::Paused;
                 }
                 break;
             }
+
+            case GameState::Paused:
+                pauseMenu->Update();
+                // Check for ESC to resume game
+                if (IsKeyPressed(KEY_ESCAPE)) {
+                    currentState = GameState::Playing;
+                }
+                break;
 
             case GameState::Settings: // Upgrades screen
                 // Check for ESC to return to menu
@@ -179,7 +188,54 @@ int main() {
                 break;
             }
 
-            case GameState::Settings: // Upgrades screen
+            case GameState::Paused: {
+                Vector2 mousePos = InputHandler::GetMousePosition();
+
+                DrawRectangle(
+                    static_cast<int>(mousePos.x - damageZoneSize / 2),
+                    static_cast<int>(mousePos.y - damageZoneSize / 2),
+                    static_cast<int>(damageZoneSize),
+                    static_cast<int>(damageZoneSize),
+                    Color{255, 0, 0, 50});
+                DrawRectangleLines(
+                    static_cast<int>(mousePos.x - damageZoneSize / 2),
+                    static_cast<int>(mousePos.y - damageZoneSize / 2),
+                    static_cast<int>(damageZoneSize),
+                    static_cast<int>(damageZoneSize),
+                    RED);
+
+                const auto& nodes = game->GetNodes();
+                for (const INode* node : nodes) {
+                    if (node->GetState() == NodeState::Active) {
+                        float x = node->GetPosition().x;
+                        float y = node->GetPosition().y;
+                        float size = node->GetSize();
+                        float hpPercentage = node->GetHP() / node->GetMaxHP();
+
+                        switch (node->GetShape()) {
+                            case NodeShape::Circle:
+                                Renderer::DrawCircleNode(x, y, size, hpPercentage, BLUE);
+                                break;
+                            case NodeShape::Square:
+                                Renderer::DrawSquareNode(x, y, size, hpPercentage, GREEN);
+                                break;
+                            case NodeShape::Triangle:
+                                Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);
+                                break;
+                            default:
+                                Renderer::DrawCircleNode(x, y, size, hpPercentage, PURPLE);
+                                break;
+                        }
+                    }
+                }
+
+                DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 150});
+
+                pauseMenu->Draw();
+                break;
+            }
+
+            case GameState::Settings: 
                 DrawText("UPGRADES", screenWidth / 2 - 100, screenHeight / 2 - 150, 40, WHITE);
                 DrawText("Coming Soon...", screenWidth / 2 - 100, screenHeight / 2 - 50, 30, GRAY);
                 DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight / 2 + 50, 20, LIGHTGRAY);
@@ -192,7 +248,6 @@ int main() {
         EndDrawing();
     }
 
-    // Cleanup automat prin unique_ptr
     CloseWindow();
 
     return 0;
