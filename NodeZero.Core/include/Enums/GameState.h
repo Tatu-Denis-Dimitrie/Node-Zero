@@ -10,5 +10,7 @@ enum class GameState
 
     GameOver,
 
-    Settings
+    Settings,
+
+    Quit
 };
