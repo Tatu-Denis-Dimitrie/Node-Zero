@@ -62,11 +62,12 @@ void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, 
         DrawTriangle(bottomLeft, bottomRight, fillTopRight, color);
     }
 
-    // Desenare contur rotat
-    DrawLineV(topLeft, topRight, BLACK);
-    DrawLineV(topRight, bottomRight, BLACK);
-    DrawLineV(bottomRight, bottomLeft, BLACK);
-    DrawLineV(bottomLeft, topLeft, BLACK);
+    // Desenare contur rotat (gros și roșu)
+    float borderThickness = 3.0f;
+    DrawLineEx(topLeft, topRight, borderThickness, RED);
+    DrawLineEx(topRight, bottomRight, borderThickness, RED);
+    DrawLineEx(bottomRight, bottomLeft, borderThickness, RED);
+    DrawLineEx(bottomLeft, topLeft, borderThickness, RED);
 }
 
 void Renderer::DrawTriangleNode(float x, float y, float size, float hpPercentage, Color color) {

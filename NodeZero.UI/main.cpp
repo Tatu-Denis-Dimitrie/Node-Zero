@@ -25,6 +25,7 @@ int main() {
     SetExitKey(KEY_NULL);
 
     GameState currentState = GameState::MainMenu;
+    GameState previousState = GameState::MainMenu;
 
     std::unique_ptr<IGame> game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
@@ -37,7 +38,7 @@ int main() {
     std::unique_ptr<ICollisionSystem> collisionSystem = GameFactory::CreateCollisionSystem();
     std::unique_ptr<IScoreSystem> scoreSystem = GameFactory::CreateScoreSystem();
 
-    const float damageZoneSize = 100.0f;
+    const float damageZoneSize = 150.0f;
     const float damagePerSecond = 50.0f;
 
     float spawnTimer = 0.0f;
@@ -50,6 +51,14 @@ int main() {
 
     while (!WindowShouldClose() && currentState != GameState::Quit) {
         float deltaTime = GetFrameTime();
+
+        // Control cursor în funcție de stare
+        if (currentState == GameState::Playing && previousState != GameState::Playing) {
+            HideCursor();  // Ascunde cursorul când intri în Playing
+        } else if (currentState != GameState::Playing && previousState == GameState::Playing) {
+            ShowCursor();  // Arată cursorul când ieși din Playing
+        }
+        previousState = currentState;
 
         switch (currentState) {
             case GameState::MainMenu:
@@ -181,20 +190,6 @@ int main() {
             case GameState::Playing: {
                 Vector2 mousePos = InputHandler::GetMousePosition();
 
-                // Draw damage zone (pătrat roșu semi-transparent în jurul mouse-ului)
-                DrawRectangle(
-                    static_cast<int>(mousePos.x - damageZoneSize / 2),
-                    static_cast<int>(mousePos.y - damageZoneSize / 2),
-                    static_cast<int>(damageZoneSize),
-                    static_cast<int>(damageZoneSize),
-                    Color{255, 0, 0, 50});
-                DrawRectangleLines(
-                    static_cast<int>(mousePos.x - damageZoneSize / 2),
-                    static_cast<int>(mousePos.y - damageZoneSize / 2),
-                    static_cast<int>(damageZoneSize),
-                    static_cast<int>(damageZoneSize),
-                    RED);
-
                 // Draw nodes with HP represented by fill
                 const auto& nodes = game->GetNodes();
                 for (const INode* node : nodes) {
@@ -222,6 +217,49 @@ int main() {
                     }
                 }
 
+                // Draw damage zone DUPĂ noduri pentru blending (pătrat albastru semi-transparent)
+                DrawRectangle(
+                    static_cast<int>(mousePos.x - damageZoneSize / 2),
+                    static_cast<int>(mousePos.y - damageZoneSize / 2),
+                    static_cast<int>(damageZoneSize),
+                    static_cast<int>(damageZoneSize),
+                    Color{0, 100, 255, 80});
+
+                // Colțuri decorative în formă de L
+                float cornerLength = 20.0f;  // Lungimea fiecărei linii din L
+                float cornerThickness = 3.0f;
+                Color cornerColor = Color{0, 200, 255, 255};  // Cyan strălucitor
+
+                float left = mousePos.x - damageZoneSize / 2;
+                float right = mousePos.x + damageZoneSize / 2;
+                float top = mousePos.y - damageZoneSize / 2;
+                float bottom = mousePos.y + damageZoneSize / 2;
+
+                // Colț stânga-sus
+                DrawLineEx(Vector2{left, top}, Vector2{left + cornerLength, top}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{left, top}, Vector2{left, top + cornerLength}, cornerThickness, cornerColor);
+
+                // Colț dreapta-sus
+                DrawLineEx(Vector2{right, top}, Vector2{right - cornerLength, top}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{right, top}, Vector2{right, top + cornerLength}, cornerThickness, cornerColor);
+
+                // Colț stânga-jos
+                DrawLineEx(Vector2{left, bottom}, Vector2{left + cornerLength, bottom}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{left, bottom}, Vector2{left, bottom - cornerLength}, cornerThickness, cornerColor);
+
+                // Colț dreapta-jos
+                DrawLineEx(Vector2{right, bottom}, Vector2{right - cornerLength, bottom}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{right, bottom}, Vector2{right, bottom - cornerLength}, cornerThickness, cornerColor);
+
+                // Pătrat alb în centru (cursor indicator)
+                float centerSquareSize = 8.0f;
+                DrawRectangle(
+                    static_cast<int>(mousePos.x - centerSquareSize / 2),
+                    static_cast<int>(mousePos.y - centerSquareSize / 2),
+                    static_cast<int>(centerSquareSize),
+                    static_cast<int>(centerSquareSize),
+                    WHITE);
+
                 // Draw UI
                 UI::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
                 UI::DrawDebugInfo(10, 40);
@@ -230,19 +268,6 @@ int main() {
 
             case GameState::Paused: {
                 Vector2 mousePos = InputHandler::GetMousePosition();
-
-                DrawRectangle(
-                    static_cast<int>(mousePos.x - damageZoneSize / 2),
-                    static_cast<int>(mousePos.y - damageZoneSize / 2),
-                    static_cast<int>(damageZoneSize),
-                    static_cast<int>(damageZoneSize),
-                    Color{255, 0, 0, 50});
-                DrawRectangleLines(
-                    static_cast<int>(mousePos.x - damageZoneSize / 2),
-                    static_cast<int>(mousePos.y - damageZoneSize / 2),
-                    static_cast<int>(damageZoneSize),
-                    static_cast<int>(damageZoneSize),
-                    RED);
 
                 const auto& nodes = game->GetNodes();
                 for (const INode* node : nodes) {
@@ -270,6 +295,49 @@ int main() {
                     }
                 }
 
+                // Draw damage zone DUPĂ noduri pentru blending (pătrat albastru semi-transparent)
+                DrawRectangle(
+                    static_cast<int>(mousePos.x - damageZoneSize / 2),
+                    static_cast<int>(mousePos.y - damageZoneSize / 2),
+                    static_cast<int>(damageZoneSize),
+                    static_cast<int>(damageZoneSize),
+                    Color{0, 100, 255, 80});
+
+                // Colțuri decorative în formă de L
+                float cornerLength = 20.0f;  // Lungimea fiecărei linii din L
+                float cornerThickness = 3.0f;
+                Color cornerColor = Color{0, 200, 255, 255};  // Cyan strălucitor
+
+                float left = mousePos.x - damageZoneSize / 2;
+                float right = mousePos.x + damageZoneSize / 2;
+                float top = mousePos.y - damageZoneSize / 2;
+                float bottom = mousePos.y + damageZoneSize / 2;
+
+                // Colț stânga-sus
+                DrawLineEx(Vector2{left, top}, Vector2{left + cornerLength, top}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{left, top}, Vector2{left, top + cornerLength}, cornerThickness, cornerColor);
+
+                // Colț dreapta-sus
+                DrawLineEx(Vector2{right, top}, Vector2{right - cornerLength, top}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{right, top}, Vector2{right, top + cornerLength}, cornerThickness, cornerColor);
+
+                // Colț stânga-jos
+                DrawLineEx(Vector2{left, bottom}, Vector2{left + cornerLength, bottom}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{left, bottom}, Vector2{left, bottom - cornerLength}, cornerThickness, cornerColor);
+
+                // Colț dreapta-jos
+                DrawLineEx(Vector2{right, bottom}, Vector2{right - cornerLength, bottom}, cornerThickness, cornerColor);
+                DrawLineEx(Vector2{right, bottom}, Vector2{right, bottom - cornerLength}, cornerThickness, cornerColor);
+
+                // Pătrat alb în centru (cursor indicator)
+                float centerSquareSize = 8.0f;
+                DrawRectangle(
+                    static_cast<int>(mousePos.x - centerSquareSize / 2),
+                    static_cast<int>(mousePos.y - centerSquareSize / 2),
+                    static_cast<int>(centerSquareSize),
+                    static_cast<int>(centerSquareSize),
+                    WHITE);
+
                 DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 150});
 
                 pauseMenu->Draw();
@@ -289,6 +357,7 @@ int main() {
         EndDrawing();
     }
 
+    ShowCursor();  // Asigură-te că cursorul e vizibil la închidere
     CloseWindow();
 
     return 0;
