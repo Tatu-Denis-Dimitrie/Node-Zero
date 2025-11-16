@@ -13,6 +13,7 @@ class Node : public INode {
     float m_MaxHP;
     float m_VelocityX;  // Direcție de mișcare pe X
     float m_VelocityY;  // Direcție de mișcare pe Y
+    float m_Rotation;   // Unghi de rotație în grade
 
    public:
     Node(NodeShape shape, float size, float speed);
@@ -25,6 +26,7 @@ class Node : public INode {
 
     float GetSize() const override;
     float GetSpeed() const override;
+    float GetRotation() const override;
 
     float GetHP() const override;
     float GetMaxHP() const override;

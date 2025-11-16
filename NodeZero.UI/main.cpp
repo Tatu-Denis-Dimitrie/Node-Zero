@@ -203,13 +203,14 @@ int main() {
                         float y = node->GetPosition().y;
                         float size = node->GetSize();
                         float hpPercentage = node->GetHP() / node->GetMaxHP();
+                        float rotation = node->GetRotation();
 
                         switch (node->GetShape()) {
                             case NodeShape::Circle:
                                 Renderer::DrawCircleNode(x, y, size, hpPercentage, BLUE);
                                 break;
                             case NodeShape::Square:
-                                Renderer::DrawSquareNode(x, y, size, hpPercentage, GREEN);
+                                Renderer::DrawSquareNode(x, y, size, hpPercentage, RED, rotation);
                                 break;
                             case NodeShape::Triangle:
                                 Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);
@@ -250,13 +251,14 @@ int main() {
                         float y = node->GetPosition().y;
                         float size = node->GetSize();
                         float hpPercentage = node->GetHP() / node->GetMaxHP();
+                        float rotation = node->GetRotation();
 
                         switch (node->GetShape()) {
                             case NodeShape::Circle:
                                 Renderer::DrawCircleNode(x, y, size, hpPercentage, BLUE);
                                 break;
                             case NodeShape::Square:
-                                Renderer::DrawSquareNode(x, y, size, hpPercentage, GREEN);
+                                Renderer::DrawSquareNode(x, y, size, hpPercentage, RED, rotation);
                                 break;
                             case NodeShape::Triangle:
                                 Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);

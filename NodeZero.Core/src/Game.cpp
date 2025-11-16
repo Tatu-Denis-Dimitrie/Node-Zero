@@ -63,7 +63,7 @@ const std::vector<INode*>& Game::GetNodes() const {
 }
 
 void Game::SpawnNode(float x, float y) {
-    INode* node = CreateNode(NodeShape::Circle, 30.0f, 100.0f);
+    INode* node = CreateNode(NodeShape::Square, 30.0f, 100.0f);
     node->Spawn(x, y);
     m_Nodes.push_back(node);
 

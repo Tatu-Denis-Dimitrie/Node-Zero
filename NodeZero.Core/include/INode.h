@@ -17,6 +17,8 @@ class INode {
 
     virtual float GetSpeed() const = 0;
 
+    virtual float GetRotation() const = 0;
+
     virtual float GetHP() const = 0;
 
     virtual float GetMaxHP() const = 0;
