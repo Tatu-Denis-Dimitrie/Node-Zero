@@ -22,17 +22,15 @@ int main() {
     const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
 
     InitWindow(screenWidth, screenHeight, "NodeZero - Nodebuster Clone");
+    SetExitKey(KEY_NULL);
 
-    // Game State Management
     GameState currentState = GameState::MainMenu;
 
-    // Create Main Menu
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
 
     std::unique_ptr<IGame> game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
-    // Setup Event System (Observer Pattern)
     auto eventLogger = std::make_shared<GameEventLogger>();
     game->GetEventManager().Subscribe("NodeSpawned", eventLogger);
     game->GetEventManager().Subscribe("NodeDestroyed", eventLogger);
@@ -41,11 +39,9 @@ int main() {
     std::unique_ptr<ICollisionSystem> collisionSystem = GameFactory::CreateCollisionSystem();
     std::unique_ptr<IScoreSystem> scoreSystem = GameFactory::CreateScoreSystem();
 
-    // Damage zone configuration
     const float damageZoneSize = 100.0f;
     const float damagePerSecond = 50.0f;
 
-    // Node spawner configuration
     float spawnTimer = 0.0f;
     const float spawnInterval = 2.0f;
 
