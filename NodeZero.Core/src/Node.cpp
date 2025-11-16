@@ -1,7 +1,7 @@
 #include "Node.h"
 
 Node::Node(NodeShape shape, float size, float speed)
-    : m_Position(0.0f, 0.0f), m_Shape(shape), m_State(NodeState::Inactive), m_Size(size), m_Speed(speed), m_VelocityX(0.0f), m_VelocityY(0.0f) {
+    : m_Position(0.0f, 0.0f), m_Shape(shape), m_State(NodeState::Inactive), m_Size(size), m_Speed(speed), m_VelocityX(0.0f), m_VelocityY(0.0f), m_Rotation(0.0f) {
     m_MaxHP = size * 2.0f;
     m_HP = m_MaxHP;
 }
@@ -28,6 +28,10 @@ float Node::GetSize() const {
 
 float Node::GetSpeed() const {
     return m_Speed;
+}
+
+float Node::GetRotation() const {
+    return m_Rotation;
 }
 
 float Node::GetHP() const {
@@ -72,4 +76,10 @@ void Node::Update(float deltaTime) {
     // Mișcare în direcția setată cu viteza specificată
     m_Position.x += m_VelocityX * m_Speed * deltaTime;
     m_Position.y += m_VelocityY * m_Speed * deltaTime;
+
+    // Rotație lentă (30 grade pe secundă)
+    m_Rotation += 30.0f * deltaTime;
+    if (m_Rotation >= 360.0f) {
+        m_Rotation -= 360.0f;
+    }
 }
