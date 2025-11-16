@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/build/bin/Debug/NodeZero.UI.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/bin/Debug",
             "environment": [],
             "console": "integratedTerminal",
             "preLaunchTask": "CMake: Build (Debug)"
@@ -20,7 +20,7 @@
             "program": "${workspaceFolder}/build/bin/Release/NodeZero.UI.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/bin/Release",
             "environment": [],
             "console": "integratedTerminal",
             "preLaunchTask": "CMake: Build (Release)"

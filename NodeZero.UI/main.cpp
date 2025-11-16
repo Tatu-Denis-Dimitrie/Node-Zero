@@ -47,10 +47,51 @@ int main() {
     std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
     const float spawnInterval = 2.0f;
 
+    // CRT Shader setup
+    RenderTexture2D renderTarget = LoadRenderTexture(screenWidth, screenHeight);
+
+    // Fix texture wrapping pentru a preveni mirroring la margini
+    SetTextureWrap(renderTarget.texture, TEXTURE_WRAP_CLAMP);
+
+    // Debug: Log working directory
+    TraceLog(LOG_INFO, "Working Directory: %s", GetWorkingDirectory());
+
+    Shader crtShader = LoadShader(0, "assets/shaders/crt.fs");
+
+    // Debug: Check if shader loaded successfully
+    if (crtShader.id == 0) {
+        TraceLog(LOG_ERROR, "====================================");
+        TraceLog(LOG_ERROR, "SHADER FAILED TO LOAD!");
+        TraceLog(LOG_ERROR, "Working dir: %s", GetWorkingDirectory());
+        TraceLog(LOG_ERROR, "Looking for: assets/shaders/crt.fs");
+        TraceLog(LOG_ERROR, "====================================");
+    } else {
+        TraceLog(LOG_INFO, "====================================");
+        TraceLog(LOG_INFO, "CRT shader loaded successfully!");
+        TraceLog(LOG_INFO, "Shader ID: %d", crtShader.id);
+        TraceLog(LOG_INFO, "====================================");
+    }
+
+    // Get shader uniform locations
+    int resolutionLoc = GetShaderLocation(crtShader, "resolution");
+    int timeLoc = GetShaderLocation(crtShader, "time");
+
+    TraceLog(LOG_INFO, "Shader uniform locations - resolution: %d, time: %d", resolutionLoc, timeLoc);
+
+    // Set resolution uniform (static)
+    float resolution[2] = {static_cast<float>(screenWidth), static_cast<float>(screenHeight)};
+    SetShaderValue(crtShader, resolutionLoc, resolution, SHADER_UNIFORM_VEC2);
+
+    float elapsedTime = 0.0f;
+
     SetTargetFPS(240);
 
     while (!WindowShouldClose() && currentState != GameState::Quit) {
         float deltaTime = GetFrameTime();
+        elapsedTime += deltaTime;
+
+        // Update shader time uniform
+        SetShaderValue(crtShader, timeLoc, &elapsedTime, SHADER_UNIFORM_FLOAT);
 
         // Control cursor în funcție de stare
         if (currentState == GameState::Playing && previousState != GameState::Playing) {
@@ -177,8 +218,8 @@ int main() {
                 break;
         }
 
-        // Rendering
-        BeginDrawing();
+        // Rendering pe RenderTexture (pentru shader CRT)
+        BeginTextureMode(renderTarget);
         ClearBackground(Color{40, 40, 40, 255});
 
         // Draw based on game state
@@ -354,8 +395,27 @@ int main() {
                 break;
         }
 
+        EndTextureMode();
+
+        // Desenare pe ecran cu shader CRT
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        BeginShaderMode(crtShader);
+        // Desenare texture (flip vertical pentru Raylib)
+        DrawTextureRec(
+            renderTarget.texture,
+            Rectangle{0, 0, static_cast<float>(renderTarget.texture.width), static_cast<float>(-renderTarget.texture.height)},
+            Vector2{0, 0},
+            WHITE);
+        EndShaderMode();
+
         EndDrawing();
     }
+
+    // Cleanup
+    UnloadShader(crtShader);
+    UnloadRenderTexture(renderTarget);
 
     ShowCursor();  // Asigură-te că cursorul e vizibil la închidere
     CloseWindow();

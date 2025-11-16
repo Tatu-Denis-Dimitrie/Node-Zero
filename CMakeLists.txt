@@ -97,6 +97,14 @@ target_link_libraries(NodeZero.UI PRIVATE
     raylib
 )
 
+# Copy assets to build directory after build
+add_custom_command(TARGET NodeZero.UI POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/NodeZero.UI/assets
+    $<TARGET_FILE_DIR:NodeZero.UI>/assets
+    COMMENT "Copying assets to build directory..."
+)
+
 # =============================================================================
 # Platform-specific settings
 # =============================================================================
