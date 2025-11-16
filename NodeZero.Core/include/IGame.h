@@ -23,4 +23,6 @@ class IGame {
     virtual void SpawnNode(float x, float y) = 0;
 
     virtual EventManager& GetEventManager() = 0;
+
+    virtual void Reset() = 0;
 };
