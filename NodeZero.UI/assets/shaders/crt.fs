@@ -37,13 +37,13 @@ vec3 chromaticAberration(sampler2D tex, vec2 uv, float amount) {
 
 // Scanlines orizontale
 float scanlineHorizontal(vec2 uv, float intensity) {
-    float line = sin(uv.y * resolution.y * 1.0) * 0.5 + 0.5;
+    float line = sin(uv.x * resolution.x * 2.0) * 0.5 + 0.5;
     return 1.0 - (line * intensity);
 }
 
 // Scanlines verticale
 float scanlineVertical(vec2 uv, float intensity) {
-    float line = sin(uv.x * resolution.x * 1.0) * 0.5 + 0.5;
+    float line = sin(uv.x * resolution.x * 2.0) * 0.5 + 0.5;
     return 1.0 - (line * intensity);
 }
 
