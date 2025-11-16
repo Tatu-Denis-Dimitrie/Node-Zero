@@ -80,6 +80,17 @@ EventManager& Game::GetEventManager() {
     return m_EventManager;
 }
 
+void Game::Reset() {
+    // Delete all nodes
+    for (INode* node : m_Nodes) {
+        delete node;
+    }
+    m_Nodes.clear();
+
+    // Reset elapsed time
+    m_ElapsedTime = 0.0f;
+}
+
 INode* Game::CreateNode(NodeShape shape, float size, float speed) {
     return new Node(shape, size, speed);
 }

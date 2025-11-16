@@ -26,9 +26,6 @@ int main() {
 
     GameState currentState = GameState::MainMenu;
 
-    std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
-    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState);
-
     std::unique_ptr<IGame> game = GameFactory::CreateGame();
     game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
@@ -44,6 +41,9 @@ int main() {
     const float damagePerSecond = 50.0f;
 
     float spawnTimer = 0.0f;
+
+    std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
+    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
     const float spawnInterval = 2.0f;
 
     SetTargetFPS(240);
@@ -51,7 +51,6 @@ int main() {
     while (!WindowShouldClose() && currentState != GameState::Quit) {
         float deltaTime = GetFrameTime();
 
-        // Update based on game state
         switch (currentState) {
             case GameState::MainMenu:
                 mainMenu->Update();

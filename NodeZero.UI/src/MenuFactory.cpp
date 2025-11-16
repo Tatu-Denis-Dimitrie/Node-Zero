@@ -2,6 +2,7 @@
 #include "../include/Widgets/Button.h"
 #include "../include/Widgets/Label.h"
 #include "Config/GameConfig.h"
+#include "IGame.h"
 #include "raylib.h"
 
 std::unique_ptr<Menu> MenuFactory::CreateMainMenu(GameState& currentState) {
@@ -85,7 +86,7 @@ std::unique_ptr<Menu> MenuFactory::CreateMainMenu(GameState& currentState) {
     return menu;
 }
 
-std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState) {
+std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState, IGame& game, float& spawnTimer) {
     auto menu = std::make_unique<Menu>();
 
     const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
@@ -114,9 +115,9 @@ std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState) {
         "Resume"
     );
     resumeButton->SetColors(
-        Color{50, 150, 50, 255},   
-        Color{80, 180, 80, 255},   
-        Color{30, 120, 30, 255},   
+        Color{50, 150, 50, 255},
+        Color{80, 180, 80, 255},
+        Color{30, 120, 30, 255},
         WHITE
     );
     resumeButton->SetOnClick([&currentState]() {
@@ -132,12 +133,14 @@ std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState) {
         "Main Menu"
     );
     mainMenuButton->SetColors(
-        Color{70, 130, 180, 255},  
-        Color{100, 160, 210, 255}, 
-        Color{40, 100, 150, 255},  
+        Color{70, 130, 180, 255},
+        Color{100, 160, 210, 255},
+        Color{40, 100, 150, 255},
         WHITE
     );
-    mainMenuButton->SetOnClick([&currentState]() {
+    mainMenuButton->SetOnClick([&currentState, &game, &spawnTimer]() {
+        game.Reset();
+        spawnTimer = 0.0f;
         currentState = GameState::MainMenu;
     });
     menu->AddWidget(std::move(mainMenuButton));

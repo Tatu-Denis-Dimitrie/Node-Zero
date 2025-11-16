@@ -30,6 +30,8 @@ class Game : public IGame {
 
     EventManager& GetEventManager() override;
 
+    void Reset() override;
+
    private:
     INode* CreateNode(NodeShape shape, float size, float speed);
 };
