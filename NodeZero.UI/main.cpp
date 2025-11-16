@@ -64,19 +64,59 @@ int main() {
                 if (spawnTimer >= spawnInterval) {
                     spawnTimer = 0.0f;
 
-                    float spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
-                    float spawnX = static_cast<float>(screenWidth + 50);
+                    // Calculare centru ecran
+                    float centerX = screenWidth / 2.0f;
+                    float centerY = screenHeight / 2.0f;
 
-                    NodeShape randomShape = static_cast<NodeShape>(GetRandomValue(0, 2));  // Circle, Square, Triangle
-                    float randomSize = static_cast<float>(GetRandomValue(20, 50));
-                    float randomSpeed = static_cast<float>(GetRandomValue(50, 150));
+                    // Aleagere random a marginii (0=sus, 1=dreapta, 2=jos, 3=stânga)
+                    int edge = GetRandomValue(0, 3);
+                    float spawnX, spawnY;
+
+                    switch (edge) {
+                        case 0:  // Sus
+                            spawnX = static_cast<float>(GetRandomValue(50, screenWidth - 50));
+                            spawnY = -50.0f;
+                            break;
+                        case 1:  // Dreapta
+                            spawnX = static_cast<float>(screenWidth + 50);
+                            spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
+                            break;
+                        case 2:  // Jos
+                            spawnX = static_cast<float>(GetRandomValue(50, screenWidth - 50));
+                            spawnY = static_cast<float>(screenHeight + 50);
+                            break;
+                        case 3:  // Stânga
+                            spawnX = -50.0f;
+                            spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
+                            break;
+                    }
 
                     game->SpawnNode(spawnX, spawnY);
 
-                    // Configurare nod spawn-uit
+                    // Configurare direcție spre centru pentru nodul spawn-uit
                     const auto& nodes = game->GetNodes();
                     if (!nodes.empty()) {
                         INode* lastNode = nodes.back();
+
+                        // Punct țintă random în zona centrală (nu exact în centru)
+                        // Offset random pentru a simula "gravity force" spre centru, nu convergență exactă
+                        float offsetRange = 150.0f;  // Raza zonei centrale
+                        float targetX = centerX + static_cast<float>(GetRandomValue(-static_cast<int>(offsetRange), static_cast<int>(offsetRange)));
+                        float targetY = centerY + static_cast<float>(GetRandomValue(-static_cast<int>(offsetRange), static_cast<int>(offsetRange)));
+
+                        // Calculare vector direcție spre punctul țintă random
+                        float dirX = targetX - spawnX;
+                        float dirY = targetY - spawnY;
+
+                        // Normalizare (convertire la vector unitar)
+                        float length = sqrtf(dirX * dirX + dirY * dirY);
+                        if (length > 0.0f) {
+                            dirX /= length;
+                            dirY /= length;
+                        }
+
+                        // Setare direcție normalizată
+                        lastNode->SetDirection(dirX, dirY);
                     }
                 }
 

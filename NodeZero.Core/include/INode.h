@@ -25,6 +25,8 @@ class INode {
 
     virtual void Spawn(float x, float y) = 0;
 
+    virtual void SetDirection(float dirX, float dirY) = 0;
+
     virtual void Kill() = 0;
 
     virtual void Update(float deltaTime) = 0;

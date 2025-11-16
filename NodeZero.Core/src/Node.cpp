@@ -1,7 +1,7 @@
 #include "Node.h"
 
 Node::Node(NodeShape shape, float size, float speed)
-    : m_Position(0.0f, 0.0f), m_Shape(shape), m_State(NodeState::Inactive), m_Size(size), m_Speed(speed) {
+    : m_Position(0.0f, 0.0f), m_Shape(shape), m_State(NodeState::Inactive), m_Size(size), m_Speed(speed), m_VelocityX(0.0f), m_VelocityY(0.0f) {
     m_MaxHP = size * 2.0f;
     m_HP = m_MaxHP;
 }
@@ -56,6 +56,11 @@ void Node::Spawn(float x, float y) {
     m_HP = m_MaxHP;
 }
 
+void Node::SetDirection(float dirX, float dirY) {
+    m_VelocityX = dirX;
+    m_VelocityY = dirY;
+}
+
 void Node::Kill() {
     m_State = NodeState::Dead;
 }
@@ -64,5 +69,7 @@ void Node::Update(float deltaTime) {
     if (m_State != NodeState::Active)
         return;
 
-    m_Position.x -= m_Speed * deltaTime;
+    // Mișcare în direcția setată cu viteza specificată
+    m_Position.x += m_VelocityX * m_Speed * deltaTime;
+    m_Position.y += m_VelocityY * m_Speed * deltaTime;
 }

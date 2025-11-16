@@ -11,6 +11,8 @@ class Node : public INode {
     float m_Speed;
     float m_HP;
     float m_MaxHP;
+    float m_VelocityX;  // Direcție de mișcare pe X
+    float m_VelocityY;  // Direcție de mișcare pe Y
 
    public:
     Node(NodeShape shape, float size, float speed);
@@ -28,6 +30,7 @@ class Node : public INode {
     float GetMaxHP() const override;
 
     void Spawn(float x, float y) override;
+    void SetDirection(float dirX, float dirY) override;
     void Update(float deltaTime) override;
     void Kill() override;
     void TakeDamage(float damage) override;
