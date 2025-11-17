@@ -273,7 +273,7 @@ int main()
                         Renderer::DrawSquareNode(x, y, size, hpPercentage, RED, rotation);
                         break;
                     case NodeShape::Hexagon:
-                        Renderer::DrawHexagonNode(x, y, size, hpPercentage, DARKGREEN);
+                        Renderer::DrawHexagonNode(x, y, size, hpPercentage, DARKGREEN, rotation);
                         break;
                     case NodeShape::Triangle:
                         Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);
@@ -358,7 +358,7 @@ int main()
                         Renderer::DrawSquareNode(x, y, size, hpPercentage, RED, rotation);
                         break;
                     case NodeShape::Hexagon:
-                        Renderer::DrawHexagonNode(x, y, size, hpPercentage, DARKGREEN);
+                        Renderer::DrawHexagonNode(x, y, size, hpPercentage, DARKGREEN, rotation);
                         break;
                     case NodeShape::Triangle:
                         Renderer::DrawTriangleNode(x, y, size, hpPercentage, ORANGE);
