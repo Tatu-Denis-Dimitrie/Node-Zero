@@ -34,4 +34,5 @@ class Game : public IGame {
 
    private:
     INode* CreateNode(NodeShape shape, float size, float speed);
+    NodeShape GetRandomShape();
 };

@@ -1,40 +1,52 @@
 #include "Game.h"
 
 #include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 #include "../include/Events/GameEvents.h"
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f)
+{
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
-Game::~Game() {
-    for (INode* node : m_Nodes) {
+Game::~Game()
+{
+    for (INode *node : m_Nodes)
+    {
         delete node;
     }
     m_Nodes.clear();
 }
 
-void Game::Initialize(float screenWidth, float screenHeight) {
+void Game::Initialize(float screenWidth, float screenHeight)
+{
     m_ScreenWidth = screenWidth;
     m_ScreenHeight = screenHeight;
 }
 
-void Game::Update(float deltaTime) {
+void Game::Update(float deltaTime)
+{
     m_ElapsedTime += deltaTime;
 
-    for (INode* node : m_Nodes) {
+    for (INode *node : m_Nodes)
+    {
         node->Update(deltaTime);
     }
 
     m_Nodes.erase(
         std::remove_if(m_Nodes.begin(), m_Nodes.end(),
-                       [this](INode* node) {
+                       [this](INode *node)
+                       {
                            bool shouldRemove = node->GetState() == NodeState::Dead ||
                                                node->GetPosition().x < -100.0f;
-                           if (shouldRemove) {
-                               if (node->GetState() == NodeState::Dead) {
+                           if (shouldRemove)
+                           {
+                               if (node->GetState() == NodeState::Dead)
+                               {
                                    auto event = std::make_shared<NodeDestroyedEvent>(
                                        m_ElapsedTime,
                                        node->GetShape(),
@@ -50,20 +62,25 @@ void Game::Update(float deltaTime) {
         m_Nodes.end());
 }
 
-float Game::GetScreenWidth() const {
+float Game::GetScreenWidth() const
+{
     return m_ScreenWidth;
 }
 
-float Game::GetScreenHeight() const {
+float Game::GetScreenHeight() const
+{
     return m_ScreenHeight;
 }
 
-const std::vector<INode*>& Game::GetNodes() const {
+const std::vector<INode *> &Game::GetNodes() const
+{
     return m_Nodes;
 }
 
-void Game::SpawnNode(float x, float y) {
-    INode* node = CreateNode(NodeShape::Square, 30.0f, 100.0f);
+void Game::SpawnNode(float x, float y)
+{
+    NodeShape shape = GetRandomShape();
+    INode *node = CreateNode(shape, 30.0f, 100.0f);
     node->Spawn(x, y);
     m_Nodes.push_back(node);
 
@@ -76,13 +93,16 @@ void Game::SpawnNode(float x, float y) {
     m_EventManager.Publish(event);
 }
 
-EventManager& Game::GetEventManager() {
+EventManager &Game::GetEventManager()
+{
     return m_EventManager;
 }
 
-void Game::Reset() {
+void Game::Reset()
+{
     // Delete all nodes
-    for (INode* node : m_Nodes) {
+    for (INode *node : m_Nodes)
+    {
         delete node;
     }
     m_Nodes.clear();
@@ -91,6 +111,12 @@ void Game::Reset() {
     m_ElapsedTime = 0.0f;
 }
 
-INode* Game::CreateNode(NodeShape shape, float size, float speed) {
+INode *Game::CreateNode(NodeShape shape, float size, float speed)
+{
     return new Node(shape, size, speed);
+}
+
+NodeShape Game::GetRandomShape()
+{
+    return (std::rand() % 2 == 0) ? NodeShape::Square : NodeShape::Circle;
 }
