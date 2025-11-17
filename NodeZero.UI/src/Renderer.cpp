@@ -99,3 +99,19 @@ void Renderer::DrawTriangleNode(float x, float y, float size, float hpPercentage
 
     DrawTriangleLines(point1, point2, point3, BLACK);
 }
+
+void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
+    const int sides = 6;
+    Vector2 vertices[sides];
+    for (int i = 0; i < sides; ++i) {
+        float angle = DEG2RAD * (rotation + i * 60.0f);
+        vertices[i] = {x + size * cosf(angle), y + size * sinf(angle)};
+    }
+
+    if (hpPercentage > 0.0f) {
+        float innerRadius = size * hpPercentage;
+        DrawPoly(Vector2{x, y}, sides, innerRadius, rotation, color);
+    }
+
+    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, DARKGREEN);
+}

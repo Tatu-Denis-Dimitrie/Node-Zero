@@ -118,5 +118,13 @@ INode *Game::CreateNode(NodeShape shape, float size, float speed)
 
 NodeShape Game::GetRandomShape()
 {
-    return (std::rand() % 2 == 0) ? NodeShape::Square : NodeShape::Circle;
+    switch (std::rand() % 3)
+    {
+    case 0:
+        return NodeShape::Square;
+    case 1:
+        return NodeShape::Circle;
+    default:
+        return NodeShape::Hexagon;
+    }
 }
