@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "Types/PointPickup.h"
+
 class INode;
 class ILevel;
 class EventManager;
@@ -19,10 +21,14 @@ class IGame {
     virtual float GetScreenHeight() const = 0;
 
     virtual const std::vector<INode*>& GetNodes() const = 0;
+    virtual const std::vector<PointPickup>& GetPickups() const = 0;
 
     virtual void SpawnNode(float x, float y) = 0;
+    virtual bool CollectPickup(int pickupId) = 0;
 
     virtual EventManager& GetEventManager() = 0;
 
     virtual void Reset() = 0;
+
+    virtual int GetPickupScore() const = 0;
 };
