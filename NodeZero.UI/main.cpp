@@ -16,6 +16,19 @@
 #include "include/Renderer.h"
 #include "include/UI.h"
 #include "raylib.h"
+#include "raymath.h"
+
+struct PickupCollectEffect
+{
+    Vector2 startPosition;
+    float elapsed;
+    float duration;
+    float size;
+};
+
+constexpr float PICKUP_COLLECT_DELAY = 1.0f;
+constexpr float PICKUP_COLLECT_EFFECT_DURATION = 1.0f;
+constexpr float PICKUP_SPAWN_ANIM_DURATION = 0.45f;
 
 int main()
 {
@@ -43,6 +56,7 @@ int main()
     const float damagePerSecond = 50.0f;
 
     float spawnTimer = 0.0f;
+    std::vector<PickupCollectEffect> pickupEffects;
 
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
     std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
@@ -118,6 +132,8 @@ int main()
         case GameState::Playing:
         {
             Vector2 mousePos = InputHandler::GetMousePosition();
+            float damageRectX = mousePos.x - damageZoneSize / 2.0f;
+            float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
             // Spawn noduri automat
             spawnTimer += deltaTime;
@@ -197,7 +213,7 @@ int main()
 
                 // Verifică dacă nodul se intersectează cu zona de damage (pătrată)
                 bool inDamageZone = collisionSystem->CheckRectCollision(
-                    mousePos.x - damageZoneSize / 2, mousePos.y - damageZoneSize / 2, damageZoneSize, damageZoneSize,
+                    damageRectX, damageRectY, damageZoneSize, damageZoneSize,
                     nodeX - nodeSize, nodeY - nodeSize, nodeSize * 2, nodeSize * 2);
 
                 if (inDamageZone)
@@ -205,6 +221,57 @@ int main()
                     node->TakeDamage(damagePerSecond * deltaTime);
                 }
             }
+
+            const auto &pickups = game->GetPickups();
+            struct PendingPickupCollect
+            {
+                int id;
+                Position position;
+                float size;
+            };
+            std::vector<PendingPickupCollect> pickupsToCollect;
+            pickupsToCollect.reserve(pickups.size());
+
+            for (const PointPickup &pickup : pickups)
+            {
+                if (pickup.GetAge() < PICKUP_COLLECT_DELAY)
+                {
+                    continue;
+                }
+
+                bool intersects = collisionSystem->CheckRectCollision(
+                    damageRectX, damageRectY, damageZoneSize, damageZoneSize,
+                    pickup.position.x - pickup.size, pickup.position.y - pickup.size,
+                    pickup.size * 2.0f, pickup.size * 2.0f);
+                if (intersects)
+                {
+                    pickupsToCollect.push_back({pickup.id, pickup.position, pickup.size});
+                }
+            }
+
+            for (const PendingPickupCollect &pending : pickupsToCollect)
+            {
+                if (game->CollectPickup(pending.id))
+                {
+                    PickupCollectEffect effect{};
+                    effect.startPosition = Vector2{pending.position.x, pending.position.y};
+                    effect.elapsed = 0.0f;
+                    effect.duration = PICKUP_COLLECT_EFFECT_DURATION;
+                    effect.size = pending.size;
+                    pickupEffects.push_back(effect);
+                }
+            }
+
+            for (auto &effect : pickupEffects)
+            {
+                effect.elapsed += deltaTime;
+            }
+
+            pickupEffects.erase(
+                std::remove_if(pickupEffects.begin(), pickupEffects.end(),
+                               [](const PickupCollectEffect &effect)
+                               { return effect.elapsed >= effect.duration; }),
+                pickupEffects.end());
 
             game->Update(deltaTime);
 
@@ -251,6 +318,8 @@ int main()
         case GameState::Playing:
         {
             Vector2 mousePos = InputHandler::GetMousePosition();
+            float damageRectX = mousePos.x - damageZoneSize / 2.0f;
+            float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
             // Draw nodes with HP represented by fill
             const auto &nodes = game->GetNodes();
@@ -285,10 +354,41 @@ int main()
                 }
             }
 
+            const auto &pickups = game->GetPickups();
+            for (const PointPickup &pickup : pickups)
+            {
+                float lifeRatio = std::clamp(pickup.GetLifeRatio(), 0.0f, 1.0f);
+                unsigned char alpha = static_cast<unsigned char>(lifeRatio * 255.0f);
+                Color pickupColor = Color{0, 255, 150, alpha};
+                Vector2 pickupPos{pickup.position.x, pickup.position.y};
+                float pickupSize = pickup.size;
+                float spawnAge = pickup.GetAge();
+                if (spawnAge < PICKUP_SPAWN_ANIM_DURATION)
+                {
+                    float t = std::clamp(spawnAge / PICKUP_SPAWN_ANIM_DURATION, 0.0f, 1.0f);
+                    Vector2 origin{pickup.spawnOrigin.x, pickup.spawnOrigin.y};
+                    Vector2 target{pickup.position.x, pickup.position.y};
+                    pickupPos = Vector2Lerp(origin, target, t);
+                    pickupSize = pickup.size * t;
+                    alpha = static_cast<unsigned char>(std::min(255.0f, alpha + (1.0f - t) * 100.0f));
+                    pickupColor = Color{0, 255, 200, alpha};
+                }
+                Renderer::DrawPickup(pickupPos.x, pickupPos.y, pickupSize, pickupColor);
+            }
+
+            for (const PickupCollectEffect &effect : pickupEffects)
+            {
+                float t = std::clamp(effect.elapsed / effect.duration, 0.0f, 1.0f);
+                Vector2 targetPos{mousePos.x, mousePos.y};
+                Vector2 currentPos = Vector2Lerp(effect.startPosition, targetPos, t);
+                unsigned char alpha = static_cast<unsigned char>((1.0f - t) * 255.0f);
+                Renderer::DrawPickup(currentPos.x, currentPos.y, effect.size, Color{0, 255, 150, alpha});
+            }
+
             // Draw damage zone DUPĂ noduri pentru blending (pătrat albastru semi-transparent)
             DrawRectangle(
-                static_cast<int>(mousePos.x - damageZoneSize / 2),
-                static_cast<int>(mousePos.y - damageZoneSize / 2),
+                static_cast<int>(damageRectX),
+                static_cast<int>(damageRectY),
                 static_cast<int>(damageZoneSize),
                 static_cast<int>(damageZoneSize),
                 Color{0, 100, 255, 80});
@@ -298,9 +398,9 @@ int main()
             float cornerThickness = 3.0f;
             Color cornerColor = Color{0, 200, 255, 255}; // Cyan strălucitor
 
-            float left = mousePos.x - damageZoneSize / 2;
+            float left = damageRectX;
             float right = mousePos.x + damageZoneSize / 2;
-            float top = mousePos.y - damageZoneSize / 2;
+            float top = damageRectY;
             float bottom = mousePos.y + damageZoneSize / 2;
 
             // Colț stânga-sus
@@ -331,12 +431,15 @@ int main()
             // Draw UI
             UI::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
             UI::DrawDebugInfo(10, 40);
+            UI::DrawScore(game->GetPickupScore(), 10, 70, 20, WHITE);
             break;
         }
 
         case GameState::Paused:
         {
             Vector2 mousePos = InputHandler::GetMousePosition();
+            float damageRectX = mousePos.x - damageZoneSize / 2.0f;
+            float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
             const auto &nodes = game->GetNodes();
             for (const INode *node : nodes)
@@ -370,10 +473,41 @@ int main()
                 }
             }
 
+            const auto &pickups = game->GetPickups();
+            for (const PointPickup &pickup : pickups)
+            {
+                float lifeRatio = std::clamp(pickup.GetLifeRatio(), 0.0f, 1.0f);
+                unsigned char alpha = static_cast<unsigned char>(lifeRatio * 255.0f);
+                Color pickupColor = Color{0, 255, 150, alpha};
+                Vector2 pickupPos{pickup.position.x, pickup.position.y};
+                float pickupSize = pickup.size;
+                float spawnAge = pickup.GetAge();
+                if (spawnAge < PICKUP_SPAWN_ANIM_DURATION)
+                {
+                    float t = std::clamp(spawnAge / PICKUP_SPAWN_ANIM_DURATION, 0.0f, 1.0f);
+                    Vector2 origin{pickup.spawnOrigin.x, pickup.spawnOrigin.y};
+                    Vector2 target{pickup.position.x, pickup.position.y};
+                    pickupPos = Vector2Lerp(origin, target, t);
+                    pickupSize = pickup.size * t;
+                    alpha = static_cast<unsigned char>(std::min(255.0f, alpha + (1.0f - t) * 100.0f));
+                    pickupColor = Color{0, 255, 200, alpha};
+                }
+                Renderer::DrawPickup(pickupPos.x, pickupPos.y, pickupSize, pickupColor);
+            }
+
+            for (const PickupCollectEffect &effect : pickupEffects)
+            {
+                float t = std::clamp(effect.elapsed / effect.duration, 0.0f, 1.0f);
+                Vector2 targetPos{mousePos.x, mousePos.y};
+                Vector2 currentPos = Vector2Lerp(effect.startPosition, targetPos, t);
+                unsigned char alpha = static_cast<unsigned char>((1.0f - t) * 255.0f);
+                Renderer::DrawPickup(currentPos.x, currentPos.y, effect.size, Color{0, 255, 150, alpha});
+            }
+
             // Draw damage zone DUPĂ noduri pentru blending (pătrat albastru semi-transparent)
             DrawRectangle(
-                static_cast<int>(mousePos.x - damageZoneSize / 2),
-                static_cast<int>(mousePos.y - damageZoneSize / 2),
+                static_cast<int>(damageRectX),
+                static_cast<int>(damageRectY),
                 static_cast<int>(damageZoneSize),
                 static_cast<int>(damageZoneSize),
                 Color{0, 100, 255, 80});
@@ -383,9 +517,9 @@ int main()
             float cornerThickness = 3.0f;
             Color cornerColor = Color{0, 200, 255, 255}; // Cyan strălucitor
 
-            float left = mousePos.x - damageZoneSize / 2;
+            float left = damageRectX;
             float right = mousePos.x + damageZoneSize / 2;
-            float top = mousePos.y - damageZoneSize / 2;
+            float top = damageRectY;
             float bottom = mousePos.y + damageZoneSize / 2;
 
             // Colț stânga-sus
@@ -416,6 +550,7 @@ int main()
             DrawRectangle(0, 0, screenWidth, screenHeight, Color{0, 0, 0, 150});
 
             pauseMenu->Draw();
+            UI::DrawScore(game->GetPickupScore(), 10, 70, 20, WHITE);
             break;
         }
 
