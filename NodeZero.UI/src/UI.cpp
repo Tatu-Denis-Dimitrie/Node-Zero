@@ -49,7 +49,8 @@ void UI::DrawHealthBar(float health, float maxHealth, int posX, int posY, int wi
 
     DrawRectangleLines(posX, posY, width, height, WHITE);
 
-    std::string healthText = std::to_string(static_cast<int>(health * 10) / 10.0f);
-    healthText += " / " + std::to_string(static_cast<int>(maxHealth));
-    DrawText(healthText.c_str(), posX + 5, posY + 2, 16, WHITE);
+    // Format health to show one decimal place
+    char healthBuffer[32];
+    snprintf(healthBuffer, sizeof(healthBuffer), "%.1f / %.0f", health, maxHealth);
+    DrawText(healthBuffer, posX + 5, posY + 2, 16, WHITE);
 }

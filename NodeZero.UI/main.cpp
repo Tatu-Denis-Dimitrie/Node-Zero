@@ -62,11 +62,11 @@ int main() {
     const float maxHealth = 15.0f;
     float currentHealth = maxHealth;
     const float healthDepletionRate = 0.1f;
-    const float healthDepletionInterval = 0.3f; // 300 ms
+    const float healthDepletionInterval = 0.3f;
     float healthTimer = 0.0f;
 
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
-    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
+    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer, currentHealth, maxHealth, healthTimer);
     const float spawnInterval = 2.0f;
 
     // CRT Shader setup
@@ -139,9 +139,13 @@ int main() {
                     currentHealth -= healthDepletionRate;
                     healthTimer = 0.0f;
 
-                    // Prevent health from going below 0
-                    if (currentHealth < 0.0f) {
+                    if (currentHealth <= 0.0f) {
                         currentHealth = 0.0f;
+                        game->Reset();
+                        spawnTimer = 0.0f;
+                        currentHealth = maxHealth;
+                        healthTimer = 0.0f;
+                        currentState = GameState::MainMenu;
                     }
                 }
 
