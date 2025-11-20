@@ -37,7 +37,7 @@ vec3 chromaticAberration(sampler2D tex, vec2 uv, float amount) {
 
 // Scanlines orizontale
 float scanlineHorizontal(vec2 uv, float intensity) {
-    float line = sin(uv.x * resolution.x * 2.0) * 0.5 + 0.5;
+    float line = sin(uv.y * resolution.y * 2.0) * 0.5 + 0.5;
     return 1.0 - (line * intensity);
 }
 
@@ -77,8 +77,8 @@ void main() {
     color *= scanH;
 
     // Aplicare scanlines verticale (foarte subtile)
-    float scanV = scanlineVertical(distortedUV, 0.08);
-    color *= scanV;
+    // float scanV = scanlineVertical(distortedUV, 0.08);
+    // color *= scanV;
 
     // Noise flicker foarte fin
     float noiseVal = noise(distortedUV * time * 0.01) * 0.02;

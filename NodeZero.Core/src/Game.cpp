@@ -9,45 +9,36 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0)
-{
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
-Game::~Game()
-{
-    for (INode *node : m_Nodes)
-    {
+Game::~Game() {
+    for (INode* node : m_Nodes) {
         delete node;
     }
     m_Nodes.clear();
 }
 
-void Game::Initialize(float screenWidth, float screenHeight)
-{
+void Game::Initialize(float screenWidth, float screenHeight) {
     m_ScreenWidth = screenWidth;
     m_ScreenHeight = screenHeight;
 }
 
-void Game::Update(float deltaTime)
-{
+void Game::Update(float deltaTime) {
     m_ElapsedTime += deltaTime;
 
-    for (INode *node : m_Nodes)
-    {
+    for (INode* node : m_Nodes) {
         node->Update(deltaTime);
     }
 
     m_Nodes.erase(
         std::remove_if(m_Nodes.begin(), m_Nodes.end(),
-                       [this](INode *node)
-                       {
+                       [this](INode* node) {
                            bool shouldRemove = node->GetState() == NodeState::Dead ||
                                                node->GetPosition().x < -100.0f;
-                           if (shouldRemove)
-                           {
-                               if (node->GetState() == NodeState::Dead)
-                               {
+                           if (shouldRemove) {
+                               if (node->GetState() == NodeState::Dead) {
                                    Position position{node->GetPosition().x, node->GetPosition().y};
                                    auto event = std::make_shared<NodeDestroyedEvent>(
                                        m_ElapsedTime,
@@ -67,30 +58,25 @@ void Game::Update(float deltaTime)
     UpdatePickups(deltaTime);
 }
 
-float Game::GetScreenWidth() const
-{
+float Game::GetScreenWidth() const {
     return m_ScreenWidth;
 }
 
-float Game::GetScreenHeight() const
-{
+float Game::GetScreenHeight() const {
     return m_ScreenHeight;
 }
 
-const std::vector<INode *> &Game::GetNodes() const
-{
+const std::vector<INode*>& Game::GetNodes() const {
     return m_Nodes;
 }
 
-const std::vector<PointPickup> &Game::GetPickups() const
-{
+const std::vector<PointPickup>& Game::GetPickups() const {
     return m_Pickups;
 }
 
-void Game::SpawnNode(float x, float y)
-{
+void Game::SpawnNode(float x, float y) {
     NodeShape shape = GetRandomShape();
-    INode *node = CreateNode(shape, 30.0f, 100.0f);
+    INode* node = CreateNode(shape, 30.0f, 100.0f);
     node->Spawn(x, y);
     m_Nodes.push_back(node);
 
@@ -103,22 +89,18 @@ void Game::SpawnNode(float x, float y)
     m_EventManager.Publish(event);
 }
 
-bool Game::CollectPickup(int pickupId)
-{
+bool Game::CollectPickup(int pickupId) {
     auto it = std::find_if(m_Pickups.begin(), m_Pickups.end(),
-                           [pickupId](const PointPickup &pickup)
-                           {
+                           [pickupId](const PointPickup& pickup) {
                                return pickup.id == pickupId;
                            });
 
-    if (it == m_Pickups.end())
-    {
+    if (it == m_Pickups.end()) {
         return false;
     }
 
     float age = it->GetAge();
-    if (age < PICKUP_COLLECT_DELAY)
-    {
+    if (age < PICKUP_COLLECT_DELAY) {
         return false;
     }
 
@@ -127,16 +109,13 @@ bool Game::CollectPickup(int pickupId)
     return true;
 }
 
-EventManager &Game::GetEventManager()
-{
+EventManager& Game::GetEventManager() {
     return m_EventManager;
 }
 
-void Game::Reset()
-{
+void Game::Reset() {
     // Delete all nodes
-    for (INode *node : m_Nodes)
-    {
+    for (INode* node : m_Nodes) {
         delete node;
     }
     m_Nodes.clear();
@@ -150,31 +129,30 @@ void Game::Reset()
     m_PickupScore = 0;
 }
 
-INode *Game::CreateNode(NodeShape shape, float size, float speed)
-{
+INode* Game::CreateNode(NodeShape shape, float size, float speed) {
     return new Node(shape, size, speed);
 }
 
-NodeShape Game::GetRandomShape()
-{
-    switch (std::rand() % 3)
+NodeShape Game::GetRandomShape() {
+    int chance = std::rand() % 100;
+
+    if (chance < 60)  // 60% chance for Square
     {
-    case 0:
         return NodeShape::Square;
-    case 1:
+    } else if (chance < 90)  // 30% chance for Circle
+    {
         return NodeShape::Circle;
-    default:
+    } else  // 10% chance for Hexagon
+    {
         return NodeShape::Hexagon;
     }
 }
 
-void Game::SpawnPointPickups(const Position &origin)
-{
-    int pickupCount = 5 + (std::rand() % 6); // 5 to 10
+void Game::SpawnPointPickups(const Position& origin) {
+    int pickupCount = 5 + (std::rand() % 6);  // 5 to 10
 
-    for (int i = 0; i < pickupCount; ++i)
-    {
-        float angle = RandomRange(0.0f, 6.28318530718f); // 2 * PI
+    for (int i = 0; i < pickupCount; ++i) {
+        float angle = RandomRange(0.0f, 6.28318530718f);  // 2 * PI
         float radius = RandomRange(10.0f, 40.0f);
 
         PointPickup pickup{};
@@ -191,28 +169,23 @@ void Game::SpawnPointPickups(const Position &origin)
     }
 }
 
-void Game::UpdatePickups(float deltaTime)
-{
-    for (auto &pickup : m_Pickups)
-    {
+void Game::UpdatePickups(float deltaTime) {
+    for (auto& pickup : m_Pickups) {
         pickup.remainingTime -= deltaTime;
     }
 
     m_Pickups.erase(std::remove_if(m_Pickups.begin(), m_Pickups.end(),
-                                   [](const PointPickup &pickup)
-                                   {
+                                   [](const PointPickup& pickup) {
                                        return pickup.remainingTime <= 0.0f;
                                    }),
                     m_Pickups.end());
 }
 
-float Game::RandomRange(float minValue, float maxValue) const
-{
+float Game::RandomRange(float minValue, float maxValue) const {
     float t = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     return minValue + (maxValue - minValue) * t;
 }
 
-int Game::GetPickupScore() const
-{
+int Game::GetPickupScore() const {
     return m_PickupScore;
 }
