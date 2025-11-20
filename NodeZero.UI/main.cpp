@@ -234,7 +234,20 @@ int main() {
 
                     if (inDamageZone && shouldDealDamage) {
                         node->TakeDamage(damagePerTick);
+                        currentHealth -= 0.5f;
+                        if (currentHealth < 0.0f) {
+                            currentHealth = 0.0f;
+                        }
                     }
+                }
+
+                if (currentHealth <= 0.0f) {
+                    game->Reset();
+                    spawnTimer = 0.0f;
+                    currentHealth = maxHealth;
+                    healthTimer = 0.0f;
+                    currentState = GameState::MainMenu;
+                    break;
                 }
 
                 const auto& pickups = game->GetPickups();
