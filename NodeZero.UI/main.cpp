@@ -10,6 +10,8 @@
 #include "INode.h"
 #include "Systems/ICollisionSystem.h"
 #include "Systems/IScoreSystem.h"
+#include "Systems/SaveSystem.h"
+#include "Types/SaveData.h"
 #include "include/GameEventLogger.h"
 #include "include/InputHandler.h"
 #include "include/MenuFactory.h"
@@ -131,6 +133,7 @@ int main() {
 
                 // Check for game over
                 if (game->IsGameOver()) {
+                    game->SaveProgress();  // Save progress before reset
                     game->Reset();
                     spawnTimer = 0.0f;
                     currentState = GameState::MainMenu;
@@ -228,6 +231,7 @@ int main() {
 
                 // Check for game over after damage
                 if (game->IsGameOver()) {
+                    game->SaveProgress();  // Save progress before reset
                     game->Reset();
                     spawnTimer = 0.0f;
                     currentState = GameState::MainMenu;
@@ -450,11 +454,30 @@ int main() {
                 UI::DrawScore(game->GetPickupScore(), 10, 70, 20, WHITE);
                 break;
 
-            case GameState::Settings:
-                DrawText("UPGRADES", screenWidth / 2 - 100, screenHeight / 2 - 150, 40, WHITE);
-                DrawText("Coming Soon...", screenWidth / 2 - 100, screenHeight / 2 - 50, 30, GRAY);
-                DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight / 2 + 50, 20, LIGHTGRAY);
+            case GameState::Settings: {
+                DrawText("UPGRADES", screenWidth / 2 - 100, screenHeight / 2 - 250, 40, WHITE);
+                DrawText("Coming Soon...", screenWidth / 2 - 100, screenHeight / 2 - 180, 30, GRAY);
+
+                // Load and display save statistics
+                SaveData saveData = SaveSystem::LoadProgress();
+
+                DrawText("STATISTICS", screenWidth / 2 - 100, screenHeight / 2 - 100, 30, YELLOW);
+
+                char highScoreText[64];
+                snprintf(highScoreText, sizeof(highScoreText), "High Score: %d", saveData.highScore);
+                DrawText(highScoreText, screenWidth / 2 - 100, screenHeight / 2 - 50, 24, WHITE);
+
+                char gamesPlayedText[64];
+                snprintf(gamesPlayedText, sizeof(gamesPlayedText), "Games Played: %d", saveData.gamesPlayed);
+                DrawText(gamesPlayedText, screenWidth / 2 - 100, screenHeight / 2 - 20, 24, WHITE);
+
+                char totalNodesText[64];
+                snprintf(totalNodesText, sizeof(totalNodesText), "Total Nodes Destroyed: %d", saveData.totalNodesDestroyed);
+                DrawText(totalNodesText, screenWidth / 2 - 100, screenHeight / 2 + 10, 24, WHITE);
+
+                DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight / 2 + 80, 20, LIGHTGRAY);
                 break;
+            }
 
             default:
                 break;

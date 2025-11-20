@@ -38,4 +38,9 @@ class IGame {
     virtual void ReduceHealth(float amount) = 0;
     virtual void UpdateHealth(float deltaTime) = 0;
     virtual bool IsGameOver() const = 0;
+
+    // Save/Load system
+    virtual int GetNodesDestroyed() const = 0;
+    virtual void SaveProgress() = 0;
+    virtual int GetHighScore() const = 0;
 };

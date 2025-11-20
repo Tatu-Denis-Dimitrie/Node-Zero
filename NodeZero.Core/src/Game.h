@@ -26,6 +26,10 @@ private:
     float m_HealthDepletionInterval;
     float m_HealthTimer;
 
+    // Save system
+    int m_NodesDestroyed;
+    int m_HighScore;
+
 public:
     Game();
     ~Game();
@@ -54,6 +58,11 @@ public:
     void ReduceHealth(float amount) override;
     void UpdateHealth(float deltaTime) override;
     bool IsGameOver() const override;
+
+    // Save/Load system
+    int GetNodesDestroyed() const override;
+    void SaveProgress() override;
+    int GetHighScore() const override;
 
 private:
     INode *CreateNode(NodeShape shape, float size, float speed);

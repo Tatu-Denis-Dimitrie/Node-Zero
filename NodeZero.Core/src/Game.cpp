@@ -6,13 +6,18 @@
 #include <ctime>
 
 #include "../include/Events/GameEvents.h"
+#include "../include/Systems/SaveSystem.h"
 #include "Node.h"
 
 Game::Game()
     : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0),
       m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f),
-      m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f) {
+      m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    // Load save data
+    SaveData saveData = SaveSystem::LoadProgress();
+    m_HighScore = saveData.highScore;
 }
 
 Game::~Game() {
@@ -49,6 +54,7 @@ void Game::Update(float deltaTime) {
                                        100);
                                    m_EventManager.Publish(event);
                                    SpawnPointPickups(position);
+                                   m_NodesDestroyed++;  // Increment nodes destroyed counter
                                }
 
                                delete node;
@@ -133,6 +139,9 @@ void Game::Reset() {
     // Reset health
     m_CurrentHealth = m_MaxHealth;
     m_HealthTimer = 0.0f;
+
+    // Reset nodes destroyed counter
+    m_NodesDestroyed = 0;
 }
 
 INode* Game::CreateNode(NodeShape shape, float size, float speed) {
@@ -225,4 +234,32 @@ void Game::UpdateHealth(float deltaTime) {
 
 bool Game::IsGameOver() const {
     return m_CurrentHealth <= 0.0f;
+}
+
+int Game::GetNodesDestroyed() const {
+    return m_NodesDestroyed;
+}
+
+void Game::SaveProgress() {
+    // Load existing data
+    SaveData saveData = SaveSystem::LoadProgress();
+
+    // Update games played
+    saveData.gamesPlayed++;
+
+    // Update total nodes destroyed
+    saveData.totalNodesDestroyed += m_NodesDestroyed;
+
+    // Update high score if current score is higher
+    if (m_PickupScore > saveData.highScore) {
+        saveData.highScore = m_PickupScore;
+        m_HighScore = m_PickupScore;
+    }
+
+    // Save to file
+    SaveSystem::SaveProgress(saveData);
+}
+
+int Game::GetHighScore() const {
+    return m_HighScore;
 }
