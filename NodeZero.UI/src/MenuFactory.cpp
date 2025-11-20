@@ -86,7 +86,7 @@ std::unique_ptr<Menu> MenuFactory::CreateMainMenu(GameState& currentState) {
     return menu;
 }
 
-std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState, IGame& game, float& spawnTimer, float& currentHealth, float maxHealth, float& healthTimer) {
+std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState, IGame& game, float& spawnTimer) {
     auto menu = std::make_unique<Menu>();
 
     const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
@@ -138,11 +138,9 @@ std::unique_ptr<Menu> MenuFactory::CreatePauseMenu(GameState& currentState, IGam
         Color{40, 100, 150, 255},
         WHITE
     );
-    mainMenuButton->SetOnClick([&currentState, &game, &spawnTimer, &currentHealth, maxHealth, &healthTimer]() {
+    mainMenuButton->SetOnClick([&currentState, &game, &spawnTimer]() {
         game.Reset();
         spawnTimer = 0.0f;
-        currentHealth = maxHealth;
-        healthTimer = 0.0f;
         currentState = GameState::MainMenu;
     });
     menu->AddWidget(std::move(mainMenuButton));

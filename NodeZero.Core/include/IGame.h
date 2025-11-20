@@ -31,4 +31,11 @@ class IGame {
     virtual void Reset() = 0;
 
     virtual int GetPickupScore() const = 0;
+
+    // Health system
+    virtual float GetCurrentHealth() const = 0;
+    virtual float GetMaxHealth() const = 0;
+    virtual void ReduceHealth(float amount) = 0;
+    virtual void UpdateHealth(float deltaTime) = 0;
+    virtual bool IsGameOver() const = 0;
 };

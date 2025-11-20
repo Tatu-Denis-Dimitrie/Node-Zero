@@ -58,15 +58,8 @@ int main() {
     float spawnTimer = 0.0f;
     std::vector<PickupCollectEffect> pickupEffects;
 
-    // Health system
-    const float maxHealth = 15.0f;
-    float currentHealth = maxHealth;
-    const float healthDepletionRate = 0.1f;
-    const float healthDepletionInterval = 0.3f;
-    float healthTimer = 0.0f;
-
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
-    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer, currentHealth, maxHealth, healthTimer);
+    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
     const float spawnInterval = 2.0f;
 
     // CRT Shader setup
@@ -133,20 +126,15 @@ int main() {
                 float damageRectX = mousePos.x - damageZoneSize / 2.0f;
                 float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
-                // Health depletion
-                healthTimer += deltaTime;
-                if (healthTimer >= healthDepletionInterval) {
-                    currentHealth -= healthDepletionRate;
-                    healthTimer = 0.0f;
+                // Update health system
+                game->UpdateHealth(deltaTime);
 
-                    if (currentHealth <= 0.0f) {
-                        currentHealth = 0.0f;
-                        game->Reset();
-                        spawnTimer = 0.0f;
-                        currentHealth = maxHealth;
-                        healthTimer = 0.0f;
-                        currentState = GameState::MainMenu;
-                    }
+                // Check for game over
+                if (game->IsGameOver()) {
+                    game->Reset();
+                    spawnTimer = 0.0f;
+                    currentState = GameState::MainMenu;
+                    break;
                 }
 
                 // Spawn noduri automat
@@ -234,18 +222,14 @@ int main() {
 
                     if (inDamageZone && shouldDealDamage) {
                         node->TakeDamage(damagePerTick);
-                        currentHealth -= 0.5f;
-                        if (currentHealth < 0.0f) {
-                            currentHealth = 0.0f;
-                        }
+                        game->ReduceHealth(0.5f);
                     }
                 }
 
-                if (currentHealth <= 0.0f) {
+                // Check for game over after damage
+                if (game->IsGameOver()) {
                     game->Reset();
                     spawnTimer = 0.0f;
-                    currentHealth = maxHealth;
-                    healthTimer = 0.0f;
                     currentState = GameState::MainMenu;
                     break;
                 }
@@ -457,7 +441,7 @@ int main() {
                 UI::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
                 UI::DrawDebugInfo(10, 40);
                 UI::DrawScore(game->GetPickupScore(), 10, 70, 20, WHITE);
-                UI::DrawHealthBar(currentHealth, maxHealth, 10, 100, 200, 24);
+                UI::DrawHealthBar(game->GetCurrentHealth(), game->GetMaxHealth(), 10, 100, 200, 24);
                 break;
 
             case GameState::Paused:

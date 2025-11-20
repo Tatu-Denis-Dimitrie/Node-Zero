@@ -19,6 +19,13 @@ private:
     int m_NextPickupId;
     int m_PickupScore;
 
+    // Health system
+    float m_MaxHealth;
+    float m_CurrentHealth;
+    float m_HealthDepletionRate;
+    float m_HealthDepletionInterval;
+    float m_HealthTimer;
+
 public:
     Game();
     ~Game();
@@ -40,6 +47,13 @@ public:
     void Reset() override;
 
     int GetPickupScore() const override;
+
+    // Health system
+    float GetCurrentHealth() const override;
+    float GetMaxHealth() const override;
+    void ReduceHealth(float amount) override;
+    void UpdateHealth(float deltaTime) override;
+    bool IsGameOver() const override;
 
 private:
     INode *CreateNode(NodeShape shape, float size, float speed);

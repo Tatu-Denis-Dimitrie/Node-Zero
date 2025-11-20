@@ -9,7 +9,9 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0),
+      m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f),
+      m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 }
 
@@ -127,6 +129,10 @@ void Game::Reset() {
     m_Pickups.clear();
     m_NextPickupId = 0;
     m_PickupScore = 0;
+
+    // Reset health
+    m_CurrentHealth = m_MaxHealth;
+    m_HealthTimer = 0.0f;
 }
 
 INode* Game::CreateNode(NodeShape shape, float size, float speed) {
@@ -188,4 +194,35 @@ float Game::RandomRange(float minValue, float maxValue) const {
 
 int Game::GetPickupScore() const {
     return m_PickupScore;
+}
+
+float Game::GetCurrentHealth() const {
+    return m_CurrentHealth;
+}
+
+float Game::GetMaxHealth() const {
+    return m_MaxHealth;
+}
+
+void Game::ReduceHealth(float amount) {
+    m_CurrentHealth -= amount;
+    if (m_CurrentHealth < 0.0f) {
+        m_CurrentHealth = 0.0f;
+    }
+}
+
+void Game::UpdateHealth(float deltaTime) {
+    m_HealthTimer += deltaTime;
+    if (m_HealthTimer >= m_HealthDepletionInterval) {
+        m_CurrentHealth -= m_HealthDepletionRate;
+        m_HealthTimer = 0.0f;
+
+        if (m_CurrentHealth < 0.0f) {
+            m_CurrentHealth = 0.0f;
+        }
+    }
+}
+
+bool Game::IsGameOver() const {
+    return m_CurrentHealth <= 0.0f;
 }
