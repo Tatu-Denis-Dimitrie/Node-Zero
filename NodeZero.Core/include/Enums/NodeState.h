@@ -6,10 +6,6 @@ enum class NodeShape
 
     Square,
 
-    Triangle,
-
-    Pentagon,
-
     Hexagon
 };
 

@@ -68,36 +68,6 @@ void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, 
     DrawLineEx(bottomLeft, topLeft, borderThickness, RED);
 }
 
-void Renderer::DrawTriangleNode(float x, float y, float size, float hpPercentage, Color color) {
-    Vector2 point1 = {x, y - size};
-    Vector2 point2 = {x - size * 0.866f, y + size * 0.5f};
-    Vector2 point3 = {x + size * 0.866f, y + size * 0.5f};
-
-    if (hpPercentage > 0.0f) {
-        float triangleHeight = size * 1.5f;
-        float fillHeight = triangleHeight * hpPercentage;
-
-        for (int i = 0; i < static_cast<int>(fillHeight); i++) {
-            float currentY = y + size * 0.5f - i;
-            float distFromBottom = i;
-            float distFromTop = triangleHeight - distFromBottom;
-
-            float widthAtHeight = (size * 0.866f * 2.0f) * (distFromTop / triangleHeight);
-
-            if (widthAtHeight > 0) {
-                DrawLine(
-                    static_cast<int>(x - widthAtHeight / 2.0f),
-                    static_cast<int>(currentY),
-                    static_cast<int>(x + widthAtHeight / 2.0f),
-                    static_cast<int>(currentY),
-                    color);
-            }
-        }
-    }
-
-    DrawTriangleLines(point1, point2, point3, RED);
-}
-
 void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
     const int sides = 6;
     Vector2 vertices[sides];

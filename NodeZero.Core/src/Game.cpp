@@ -10,10 +10,7 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0),
-      m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f),
-      m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0),
-      m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     // Load save data
@@ -424,9 +421,9 @@ void Game::ProcessPickupCollection(float centerX, float centerY, float zoneSize)
 
         // Check if pickup intersects with collection zone
         bool intersects = !(pickup.position.x + pickup.size < collectRectX ||
-                           pickup.position.x - pickup.size > collectRectX + zoneSize ||
-                           pickup.position.y + pickup.size < collectRectY ||
-                           pickup.position.y - pickup.size > collectRectY + zoneSize);
+                            pickup.position.x - pickup.size > collectRectX + zoneSize ||
+                            pickup.position.y + pickup.size < collectRectY ||
+                            pickup.position.y - pickup.size > collectRectY + zoneSize);
 
         if (intersects) {
             CollectPickup(pickup.id);
