@@ -87,6 +87,22 @@
             "dependsOn": ["CMake: Build Tests (Debug)"]
         },
         {
+            "label": "CMake: Build Tests (Release)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "--config",
+                "Release",
+                "--target",
+                "NodeZero.Tests"
+            ],
+            "group": "test",
+            "problemMatcher": "$msCompile",
+            "dependsOn": ["CMake: Configure"]
+        },
+        {
             "label": "CMake: Run CTest",
             "type": "shell",
             "command": "ctest",
