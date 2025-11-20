@@ -54,15 +54,12 @@ int main() {
 
     const float damageZoneSize = 150.0f;
     const float damagePerTick = 40.0f;
-    const float damageInterval = 1.5f;
-    float damageTimer = 0.0f;
 
-    float spawnTimer = 0.0f;
     std::vector<PickupCollectEffect> pickupEffects;
 
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
-    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
-    const float spawnInterval = 2.0f;
+    float unusedSpawnTimer = 0.0f;  // Kept for MenuFactory compatibility
+    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, unusedSpawnTimer);
 
     // CRT Shader setup
     RenderTexture2D renderTarget = LoadRenderTexture(screenWidth, screenHeight);
@@ -125,149 +122,58 @@ int main() {
 
             case GameState::Playing: {
                 Vector2 mousePos = InputHandler::GetMousePosition();
-                float damageRectX = mousePos.x - damageZoneSize / 2.0f;
-                float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
-                // Update health system
+                // Update systems
                 game->UpdateHealth(deltaTime);
+                game->UpdateAutoSpawn(deltaTime);
+                game->UpdateDamageTimer(deltaTime);
 
                 // Check for game over
-                if (game->IsGameOver()) {
-                    game->SaveProgress();  // Save progress before reset
+                if (game->ShouldGameOver()) {
+                    game->SaveProgress();
                     game->Reset();
-                    spawnTimer = 0.0f;
                     currentState = GameState::MainMenu;
                     break;
                 }
 
-                // Spawn noduri automat
-                spawnTimer += deltaTime;
-                if (spawnTimer >= spawnInterval) {
-                    spawnTimer = 0.0f;
-
-                    // Calculare centru ecran
-                    float centerX = screenWidth / 2.0f;
-                    float centerY = screenHeight / 2.0f;
-
-                    // Aleagere random a marginii (0=sus, 1=dreapta, 2=jos, 3=stânga)
-                    int edge = GetRandomValue(0, 3);
-                    float spawnX, spawnY;
-
-                    switch (edge) {
-                        case 0:  // Sus
-                            spawnX = static_cast<float>(GetRandomValue(50, screenWidth - 50));
-                            spawnY = -50.0f;
-                            break;
-                        case 1:  // Dreapta
-                            spawnX = static_cast<float>(screenWidth + 50);
-                            spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
-                            break;
-                        case 2:  // Jos
-                            spawnX = static_cast<float>(GetRandomValue(50, screenWidth - 50));
-                            spawnY = static_cast<float>(screenHeight + 50);
-                            break;
-                        case 3:  // Stânga
-                            spawnX = -50.0f;
-                            spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
-                            break;
-                    }
-
-                    game->SpawnNode(spawnX, spawnY);
-
-                    // Configurare direcție spre centru pentru nodul spawn-uit
-                    const auto& nodes = game->GetNodes();
-                    if (!nodes.empty()) {
-                        INode* lastNode = nodes.back();
-
-                        // Punct țintă random în zona centrală (nu exact în centru)
-                        // Offset random pentru a simula "gravity force" spre centru, nu convergență exactă
-                        float offsetRange = 150.0f;  // Raza zonei centrale
-                        float targetX = centerX + static_cast<float>(GetRandomValue(-static_cast<int>(offsetRange), static_cast<int>(offsetRange)));
-                        float targetY = centerY + static_cast<float>(GetRandomValue(-static_cast<int>(offsetRange), static_cast<int>(offsetRange)));
-
-                        // Calculare vector direcție spre punctul țintă random
-                        float dirX = targetX - spawnX;
-                        float dirY = targetY - spawnY;
-
-                        // Normalizare (convertire la vector unitar)
-                        float length = sqrtf(dirX * dirX + dirY * dirY);
-                        if (length > 0.0f) {
-                            dirX /= length;
-                            dirY /= length;
-                        }
-
-                        // Setare direcție normalizată
-                        lastNode->SetDirection(dirX, dirY);
-                    }
+                // Process damage zone
+                bool shouldDealDamage = game->ShouldDealDamage();
+                if (shouldDealDamage) {
+                    game->ResetDamageTimer();
                 }
-
-                // Damage zone damage
-                damageTimer += deltaTime;
-                bool shouldDealDamage = false;
-                if (damageTimer >= damageInterval) {
-                    shouldDealDamage = true;
-                    damageTimer = 0.0f;
-                }
-
-                const auto& nodes = game->GetNodes();
-                for (INode* node : nodes) {
-                    if (node->GetState() != NodeState::Active)
-                        continue;
-
-                    float nodeX = node->GetPosition().x;
-                    float nodeY = node->GetPosition().y;
-                    float nodeSize = node->GetSize();
-
-                    // Verifică dacă nodul se intersectează cu zona de damage (pătrată)
-                    bool inDamageZone = collisionSystem->CheckRectCollision(
-                        damageRectX, damageRectY, damageZoneSize, damageZoneSize,
-                        nodeX - nodeSize, nodeY - nodeSize, nodeSize * 2, nodeSize * 2);
-
-                    if (inDamageZone && shouldDealDamage) {
-                        node->TakeDamage(damagePerTick);
-                        game->ReduceHealth(0.5f);
-                    }
-                }
+                game->ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, damagePerTick, shouldDealDamage);
 
                 // Check for game over after damage
-                if (game->IsGameOver()) {
-                    game->SaveProgress();  // Save progress before reset
+                if (game->ShouldGameOver()) {
+                    game->SaveProgress();
                     game->Reset();
-                    spawnTimer = 0.0f;
                     currentState = GameState::MainMenu;
                     break;
                 }
 
+                // Process pickup collection with visual effects
                 const auto& pickups = game->GetPickups();
-                struct PendingPickupCollect {
-                    int id;
-                    Position position;
-                    float size;
-                };
-                std::vector<PendingPickupCollect> pickupsToCollect;
-                pickupsToCollect.reserve(pickups.size());
-
                 for (const PointPickup& pickup : pickups) {
                     if (pickup.GetAge() < PICKUP_COLLECT_DELAY) {
                         continue;
                     }
 
-                    bool intersects = collisionSystem->CheckRectCollision(
-                        damageRectX, damageRectY, damageZoneSize, damageZoneSize,
-                        pickup.position.x - pickup.size, pickup.position.y - pickup.size,
-                        pickup.size * 2.0f, pickup.size * 2.0f);
-                    if (intersects) {
-                        pickupsToCollect.push_back({pickup.id, pickup.position, pickup.size});
-                    }
-                }
+                    // Check if pickup is in collection zone
+                    float collectRectX = mousePos.x - damageZoneSize / 2.0f;
+                    float collectRectY = mousePos.y - damageZoneSize / 2.0f;
 
-                for (const PendingPickupCollect& pending : pickupsToCollect) {
-                    if (game->CollectPickup(pending.id)) {
+                    bool intersects = !(pickup.position.x + pickup.size < collectRectX ||
+                                       pickup.position.x - pickup.size > collectRectX + damageZoneSize ||
+                                       pickup.position.y + pickup.size < collectRectY ||
+                                       pickup.position.y - pickup.size > collectRectY + damageZoneSize);
+
+                    if (intersects && game->CollectPickup(pickup.id)) {
+                        // Create visual effect
                         PickupCollectEffect effect{};
-                        effect.startPosition = Vector2{pending.position.x, pending.position.y};
+                        effect.startPosition = Vector2{pickup.position.x, pickup.position.y};
                         effect.elapsed = 0.0f;
                         effect.duration = PICKUP_COLLECT_EFFECT_DURATION;
-                        effect.size = pending.size;
+                        effect.size = pickup.size;
                         pickupEffects.push_back(effect);
                     }
                 }

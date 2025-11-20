@@ -30,6 +30,14 @@ private:
     int m_NodesDestroyed;
     int m_HighScore;
 
+    // Auto-spawn system
+    float m_SpawnTimer;
+    float m_SpawnInterval;
+
+    // Damage zone system
+    float m_DamageTimer;
+    float m_DamageInterval;
+
 public:
     Game();
     ~Game();
@@ -44,11 +52,18 @@ public:
     const std::vector<PointPickup> &GetPickups() const override;
 
     void SpawnNode(float x, float y) override;
+    void UpdateAutoSpawn(float deltaTime) override;
     bool CollectPickup(int pickupId) override;
+    void ProcessDamageZone(float centerX, float centerY, float zoneSize, float damage, bool shouldDealDamage) override;
+    void ProcessPickupCollection(float centerX, float centerY, float zoneSize) override;
+    void UpdateDamageTimer(float deltaTime) override;
+    bool ShouldDealDamage() const override;
+    void ResetDamageTimer() override;
 
     EventManager &GetEventManager() override;
 
     void Reset() override;
+    bool ShouldGameOver() const override;
 
     int GetPickupScore() const override;
 

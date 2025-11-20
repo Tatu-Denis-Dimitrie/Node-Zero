@@ -24,11 +24,18 @@ class IGame {
     virtual const std::vector<PointPickup>& GetPickups() const = 0;
 
     virtual void SpawnNode(float x, float y) = 0;
+    virtual void UpdateAutoSpawn(float deltaTime) = 0;
     virtual bool CollectPickup(int pickupId) = 0;
+    virtual void ProcessDamageZone(float centerX, float centerY, float zoneSize, float damage, bool shouldDealDamage) = 0;
+    virtual void ProcessPickupCollection(float centerX, float centerY, float zoneSize) = 0;
+    virtual void UpdateDamageTimer(float deltaTime) = 0;
+    virtual bool ShouldDealDamage() const = 0;
+    virtual void ResetDamageTimer() = 0;
 
     virtual EventManager& GetEventManager() = 0;
 
     virtual void Reset() = 0;
+    virtual bool ShouldGameOver() const = 0;
 
     virtual int GetPickupScore() const = 0;
 
