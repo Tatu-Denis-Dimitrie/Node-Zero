@@ -64,6 +64,10 @@ public:
     void SaveProgress() override;
     int GetHighScore() const override;
 
+    // Upgrade system
+    bool BuyHealthUpgrade() override;
+    int GetHealthUpgradeCost() const override;
+
 private:
     INode *CreateNode(NodeShape shape, float size, float speed);
     NodeShape GetRandomShape();
@@ -75,4 +79,5 @@ private:
     static constexpr float PICKUP_LIFETIME = 10.0f;
     static constexpr float PICKUP_SIZE = 6.0f;
     static constexpr float PICKUP_COLLECT_DELAY = 1.0f;
+    static constexpr int HEALTH_UPGRADE_COST = 50;
 };

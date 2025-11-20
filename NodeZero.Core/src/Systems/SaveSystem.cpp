@@ -59,7 +59,8 @@ bool SaveSystem::SaveProgress(const SaveData& data) {
     file << "{\n";
     file << "  \"highScore\": " << data.highScore << ",\n";
     file << "  \"gamesPlayed\": " << data.gamesPlayed << ",\n";
-    file << "  \"totalNodesDestroyed\": " << data.totalNodesDestroyed << "\n";
+    file << "  \"totalNodesDestroyed\": " << data.totalNodesDestroyed << ",\n";
+    file << "  \"maxHealth\": " << data.maxHealth << "\n";
     file << "}\n";
 
     file.close();
@@ -96,6 +97,8 @@ SaveData SaveSystem::LoadProgress() {
             data.gamesPlayed = std::stoi(value);
         } else if (key == "totalNodesDestroyed") {
             data.totalNodesDestroyed = std::stoi(value);
+        } else if (key == "maxHealth") {
+            data.maxHealth = std::stof(value);
         }
     }
 

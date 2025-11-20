@@ -18,6 +18,8 @@ Game::Game()
     // Load save data
     SaveData saveData = SaveSystem::LoadProgress();
     m_HighScore = saveData.highScore;
+    m_MaxHealth = saveData.maxHealth;
+    m_CurrentHealth = m_MaxHealth;
 }
 
 Game::~Game() {
@@ -256,10 +258,45 @@ void Game::SaveProgress() {
         m_HighScore = m_PickupScore;
     }
 
+    // Save current max health (in case it was upgraded)
+    saveData.maxHealth = m_MaxHealth;
+
     // Save to file
     SaveSystem::SaveProgress(saveData);
 }
 
 int Game::GetHighScore() const {
     return m_HighScore;
+}
+
+bool Game::BuyHealthUpgrade() {
+    // Load current save data to get the total score
+    SaveData saveData = SaveSystem::LoadProgress();
+
+    // Check if player has enough points
+    if (saveData.highScore < HEALTH_UPGRADE_COST) {
+        return false;
+    }
+
+    // Deduct the cost from high score
+    saveData.highScore -= HEALTH_UPGRADE_COST;
+    m_HighScore = saveData.highScore;
+
+    // Increase max health
+    m_MaxHealth += 1.0f;
+    saveData.maxHealth = m_MaxHealth;
+
+    // If player is alive, also increase current health
+    if (m_CurrentHealth > 0.0f) {
+        m_CurrentHealth = m_MaxHealth;
+    }
+
+    // Save the updated data
+    SaveSystem::SaveProgress(saveData);
+
+    return true;
+}
+
+int Game::GetHealthUpgradeCost() const {
+    return HEALTH_UPGRADE_COST;
 }

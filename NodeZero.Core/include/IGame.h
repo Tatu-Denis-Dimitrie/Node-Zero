@@ -43,4 +43,8 @@ class IGame {
     virtual int GetNodesDestroyed() const = 0;
     virtual void SaveProgress() = 0;
     virtual int GetHighScore() const = 0;
+
+    // Upgrade system
+    virtual bool BuyHealthUpgrade() = 0;
+    virtual int GetHealthUpgradeCost() const = 0;
 };

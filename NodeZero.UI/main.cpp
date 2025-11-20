@@ -455,27 +455,73 @@ int main() {
                 break;
 
             case GameState::Settings: {
-                DrawText("UPGRADES", screenWidth / 2 - 100, screenHeight / 2 - 250, 40, WHITE);
-                DrawText("Coming Soon...", screenWidth / 2 - 100, screenHeight / 2 - 180, 30, GRAY);
+                DrawText("UPGRADES", screenWidth / 2 - 100, 50, 40, WHITE);
 
                 // Load and display save statistics
                 SaveData saveData = SaveSystem::LoadProgress();
 
-                DrawText("STATISTICS", screenWidth / 2 - 100, screenHeight / 2 - 100, 30, YELLOW);
+                // Statistics section - LEFT SIDE
+                int statsX = 50;
+                int statsY = 150;
+
+                DrawText("STATISTICS", statsX, statsY, 28, YELLOW);
 
                 char highScoreText[64];
                 snprintf(highScoreText, sizeof(highScoreText), "High Score: %d", saveData.highScore);
-                DrawText(highScoreText, screenWidth / 2 - 100, screenHeight / 2 - 50, 24, WHITE);
+                DrawText(highScoreText, statsX, statsY + 50, 22, WHITE);
 
                 char gamesPlayedText[64];
                 snprintf(gamesPlayedText, sizeof(gamesPlayedText), "Games Played: %d", saveData.gamesPlayed);
-                DrawText(gamesPlayedText, screenWidth / 2 - 100, screenHeight / 2 - 20, 24, WHITE);
+                DrawText(gamesPlayedText, statsX, statsY + 85, 22, WHITE);
 
                 char totalNodesText[64];
-                snprintf(totalNodesText, sizeof(totalNodesText), "Total Nodes Destroyed: %d", saveData.totalNodesDestroyed);
-                DrawText(totalNodesText, screenWidth / 2 - 100, screenHeight / 2 + 10, 24, WHITE);
+                snprintf(totalNodesText, sizeof(totalNodesText), "Total Nodes: %d", saveData.totalNodesDestroyed);
+                DrawText(totalNodesText, statsX, statsY + 120, 22, WHITE);
 
-                DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight / 2 + 80, 20, LIGHTGRAY);
+                char maxHealthText[64];
+                snprintf(maxHealthText, sizeof(maxHealthText), "Max Health: %.0f", game->GetMaxHealth());
+                DrawText(maxHealthText, statsX, statsY + 155, 22, WHITE);
+
+                // Health upgrade section - CENTER
+                int upgradeY = screenHeight / 2 - 50;
+                DrawText("HEALTH UPGRADE", screenWidth / 2 - 120, upgradeY - 40, 30, Color{100, 200, 255, 255});
+
+                // Upgrade button
+                int buttonX = screenWidth / 2 - 140;
+                int buttonY = upgradeY + 10;
+                int buttonWidth = 280;
+                int buttonHeight = 50;
+
+                Rectangle upgradeButton = {static_cast<float>(buttonX), static_cast<float>(buttonY),
+                                          static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
+                Vector2 mousePos = GetMousePosition();
+                bool isHovered = CheckCollisionPointRec(mousePos, upgradeButton);
+
+                // Draw button
+                bool canAfford = saveData.highScore >= game->GetHealthUpgradeCost();
+                Color buttonColor = canAfford ? (isHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
+                                              : Color{100, 100, 100, 255};
+
+                DrawRectangleRec(upgradeButton, buttonColor);
+                DrawRectangleLinesEx(upgradeButton, 2, WHITE);
+
+                char buttonText[64];
+                snprintf(buttonText, sizeof(buttonText), "Upgrade +1.0 HP", game->GetHealthUpgradeCost());
+                DrawText(buttonText, buttonX + 65, buttonY + 8, 22, WHITE);
+
+                char costText[32];
+                snprintf(costText, sizeof(costText), "Cost: %d points", game->GetHealthUpgradeCost());
+                DrawText(costText, buttonX + 70, buttonY + 28, 18, LIGHTGRAY);
+
+                // Handle click
+                if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    if (game->BuyHealthUpgrade()) {
+                        // Upgrade successful - reload save data to update display
+                        saveData = SaveSystem::LoadProgress();
+                    }
+                }
+
+                DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight - 50, 20, LIGHTGRAY);
                 break;
             }
 
