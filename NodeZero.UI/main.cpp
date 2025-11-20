@@ -58,6 +58,13 @@ int main() {
     float spawnTimer = 0.0f;
     std::vector<PickupCollectEffect> pickupEffects;
 
+    // Health system
+    const float maxHealth = 15.0f;
+    float currentHealth = maxHealth;
+    const float healthDepletionRate = 0.1f;
+    const float healthDepletionInterval = 0.3f; // 300 ms
+    float healthTimer = 0.0f;
+
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
     std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
     const float spawnInterval = 2.0f;
@@ -125,6 +132,18 @@ int main() {
                 Vector2 mousePos = InputHandler::GetMousePosition();
                 float damageRectX = mousePos.x - damageZoneSize / 2.0f;
                 float damageRectY = mousePos.y - damageZoneSize / 2.0f;
+
+                // Health depletion
+                healthTimer += deltaTime;
+                if (healthTimer >= healthDepletionInterval) {
+                    currentHealth -= healthDepletionRate;
+                    healthTimer = 0.0f;
+
+                    // Prevent health from going below 0
+                    if (currentHealth < 0.0f) {
+                        currentHealth = 0.0f;
+                    }
+                }
 
                 // Spawn noduri automat
                 spawnTimer += deltaTime;
@@ -421,6 +440,7 @@ int main() {
                 UI::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
                 UI::DrawDebugInfo(10, 40);
                 UI::DrawScore(game->GetPickupScore(), 10, 70, 20, WHITE);
+                UI::DrawHealthBar(currentHealth, maxHealth, 10, 100, 200, 24);
                 break;
 
             case GameState::Paused:
