@@ -10,6 +10,8 @@
 #include "INode.h"
 #include "Systems/ICollisionSystem.h"
 #include "Systems/IScoreSystem.h"
+#include "Systems/SaveSystem.h"
+#include "Types/SaveData.h"
 #include "include/GameEventLogger.h"
 #include "include/InputHandler.h"
 #include "include/MenuFactory.h"
@@ -52,15 +54,12 @@ int main() {
 
     const float damageZoneSize = 150.0f;
     const float damagePerTick = 40.0f;
-    const float damageInterval = 1.5f;
-    float damageTimer = 0.0f;
 
-    float spawnTimer = 0.0f;
     std::vector<PickupCollectEffect> pickupEffects;
 
     std::unique_ptr<Menu> mainMenu = MenuFactory::CreateMainMenu(currentState);
-    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, spawnTimer);
-    const float spawnInterval = 2.0f;
+    float unusedSpawnTimer = 0.0f;  // Kept for MenuFactory compatibility
+    std::unique_ptr<Menu> pauseMenu = MenuFactory::CreatePauseMenu(currentState, *game, unusedSpawnTimer);
 
     // CRT Shader setup
     RenderTexture2D renderTarget = LoadRenderTexture(screenWidth, screenHeight);
@@ -123,127 +122,58 @@ int main() {
 
             case GameState::Playing: {
                 Vector2 mousePos = InputHandler::GetMousePosition();
-                float damageRectX = mousePos.x - damageZoneSize / 2.0f;
-                float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
-                // Spawn noduri automat
-                spawnTimer += deltaTime;
-                if (spawnTimer >= spawnInterval) {
-                    spawnTimer = 0.0f;
+                // Update systems
+                game->UpdateHealth(deltaTime);
+                game->UpdateAutoSpawn(deltaTime);
+                game->UpdateDamageTimer(deltaTime);
 
-                    // Calculare centru ecran
-                    float centerX = screenWidth / 2.0f;
-                    float centerY = screenHeight / 2.0f;
-
-                    // Aleagere random a marginii (0=sus, 1=dreapta, 2=jos, 3=stânga)
-                    int edge = GetRandomValue(0, 3);
-                    float spawnX, spawnY;
-
-                    switch (edge) {
-                        case 0:  // Sus
-                            spawnX = static_cast<float>(GetRandomValue(50, screenWidth - 50));
-                            spawnY = -50.0f;
-                            break;
-                        case 1:  // Dreapta
-                            spawnX = static_cast<float>(screenWidth + 50);
-                            spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
-                            break;
-                        case 2:  // Jos
-                            spawnX = static_cast<float>(GetRandomValue(50, screenWidth - 50));
-                            spawnY = static_cast<float>(screenHeight + 50);
-                            break;
-                        case 3:  // Stânga
-                            spawnX = -50.0f;
-                            spawnY = static_cast<float>(GetRandomValue(50, screenHeight - 50));
-                            break;
-                    }
-
-                    game->SpawnNode(spawnX, spawnY);
-
-                    // Configurare direcție spre centru pentru nodul spawn-uit
-                    const auto& nodes = game->GetNodes();
-                    if (!nodes.empty()) {
-                        INode* lastNode = nodes.back();
-
-                        // Punct țintă random în zona centrală (nu exact în centru)
-                        // Offset random pentru a simula "gravity force" spre centru, nu convergență exactă
-                        float offsetRange = 150.0f;  // Raza zonei centrale
-                        float targetX = centerX + static_cast<float>(GetRandomValue(-static_cast<int>(offsetRange), static_cast<int>(offsetRange)));
-                        float targetY = centerY + static_cast<float>(GetRandomValue(-static_cast<int>(offsetRange), static_cast<int>(offsetRange)));
-
-                        // Calculare vector direcție spre punctul țintă random
-                        float dirX = targetX - spawnX;
-                        float dirY = targetY - spawnY;
-
-                        // Normalizare (convertire la vector unitar)
-                        float length = sqrtf(dirX * dirX + dirY * dirY);
-                        if (length > 0.0f) {
-                            dirX /= length;
-                            dirY /= length;
-                        }
-
-                        // Setare direcție normalizată
-                        lastNode->SetDirection(dirX, dirY);
-                    }
+                // Check for game over
+                if (game->ShouldGameOver()) {
+                    game->SaveProgress();
+                    game->Reset();
+                    currentState = GameState::MainMenu;
+                    break;
                 }
 
-                // Damage zone damage
-                damageTimer += deltaTime;
-                bool shouldDealDamage = false;
-                if (damageTimer >= damageInterval) {
-                    shouldDealDamage = true;
-                    damageTimer = 0.0f;
+                // Process damage zone
+                bool shouldDealDamage = game->ShouldDealDamage();
+                if (shouldDealDamage) {
+                    game->ResetDamageTimer();
+                }
+                game->ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, damagePerTick, shouldDealDamage);
+
+                // Check for game over after damage
+                if (game->ShouldGameOver()) {
+                    game->SaveProgress();
+                    game->Reset();
+                    currentState = GameState::MainMenu;
+                    break;
                 }
 
-                const auto& nodes = game->GetNodes();
-                for (INode* node : nodes) {
-                    if (node->GetState() != NodeState::Active)
-                        continue;
-
-                    float nodeX = node->GetPosition().x;
-                    float nodeY = node->GetPosition().y;
-                    float nodeSize = node->GetSize();
-
-                    // Verifică dacă nodul se intersectează cu zona de damage (pătrată)
-                    bool inDamageZone = collisionSystem->CheckRectCollision(
-                        damageRectX, damageRectY, damageZoneSize, damageZoneSize,
-                        nodeX - nodeSize, nodeY - nodeSize, nodeSize * 2, nodeSize * 2);
-
-                    if (inDamageZone && shouldDealDamage) {
-                        node->TakeDamage(damagePerTick);
-                    }
-                }
-
+                // Process pickup collection with visual effects
                 const auto& pickups = game->GetPickups();
-                struct PendingPickupCollect {
-                    int id;
-                    Position position;
-                    float size;
-                };
-                std::vector<PendingPickupCollect> pickupsToCollect;
-                pickupsToCollect.reserve(pickups.size());
-
                 for (const PointPickup& pickup : pickups) {
                     if (pickup.GetAge() < PICKUP_COLLECT_DELAY) {
                         continue;
                     }
 
-                    bool intersects = collisionSystem->CheckRectCollision(
-                        damageRectX, damageRectY, damageZoneSize, damageZoneSize,
-                        pickup.position.x - pickup.size, pickup.position.y - pickup.size,
-                        pickup.size * 2.0f, pickup.size * 2.0f);
-                    if (intersects) {
-                        pickupsToCollect.push_back({pickup.id, pickup.position, pickup.size});
-                    }
-                }
+                    // Check if pickup is in collection zone
+                    float collectRectX = mousePos.x - damageZoneSize / 2.0f;
+                    float collectRectY = mousePos.y - damageZoneSize / 2.0f;
 
-                for (const PendingPickupCollect& pending : pickupsToCollect) {
-                    if (game->CollectPickup(pending.id)) {
+                    bool intersects = !(pickup.position.x + pickup.size < collectRectX ||
+                                       pickup.position.x - pickup.size > collectRectX + damageZoneSize ||
+                                       pickup.position.y + pickup.size < collectRectY ||
+                                       pickup.position.y - pickup.size > collectRectY + damageZoneSize);
+
+                    if (intersects && game->CollectPickup(pickup.id)) {
+                        // Create visual effect
                         PickupCollectEffect effect{};
-                        effect.startPosition = Vector2{pending.position.x, pending.position.y};
+                        effect.startPosition = Vector2{pickup.position.x, pickup.position.y};
                         effect.elapsed = 0.0f;
                         effect.duration = PICKUP_COLLECT_EFFECT_DURATION;
-                        effect.size = pending.size;
+                        effect.size = pickup.size;
                         pickupEffects.push_back(effect);
                     }
                 }
@@ -421,6 +351,7 @@ int main() {
                 UI::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
                 UI::DrawDebugInfo(10, 40);
                 UI::DrawScore(game->GetPickupScore(), 10, 70, 20, WHITE);
+                UI::DrawHealthBar(game->GetCurrentHealth(), game->GetMaxHealth(), 10, 100, 200, 24);
                 break;
 
             case GameState::Paused:
@@ -429,11 +360,76 @@ int main() {
                 UI::DrawScore(game->GetPickupScore(), 10, 70, 20, WHITE);
                 break;
 
-            case GameState::Settings:
-                DrawText("UPGRADES", screenWidth / 2 - 100, screenHeight / 2 - 150, 40, WHITE);
-                DrawText("Coming Soon...", screenWidth / 2 - 100, screenHeight / 2 - 50, 30, GRAY);
-                DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight / 2 + 50, 20, LIGHTGRAY);
+            case GameState::Settings: {
+                DrawText("UPGRADES", screenWidth / 2 - 100, 50, 40, WHITE);
+
+                // Load and display save statistics
+                SaveData saveData = SaveSystem::LoadProgress();
+
+                // Statistics section - LEFT SIDE
+                int statsX = 50;
+                int statsY = 150;
+
+                DrawText("STATISTICS", statsX, statsY, 28, YELLOW);
+
+                char highScoreText[64];
+                snprintf(highScoreText, sizeof(highScoreText), "High Score: %d", saveData.highScore);
+                DrawText(highScoreText, statsX, statsY + 50, 22, WHITE);
+
+                char gamesPlayedText[64];
+                snprintf(gamesPlayedText, sizeof(gamesPlayedText), "Games Played: %d", saveData.gamesPlayed);
+                DrawText(gamesPlayedText, statsX, statsY + 85, 22, WHITE);
+
+                char totalNodesText[64];
+                snprintf(totalNodesText, sizeof(totalNodesText), "Total Nodes: %d", saveData.totalNodesDestroyed);
+                DrawText(totalNodesText, statsX, statsY + 120, 22, WHITE);
+
+                char maxHealthText[64];
+                snprintf(maxHealthText, sizeof(maxHealthText), "Max Health: %.0f", game->GetMaxHealth());
+                DrawText(maxHealthText, statsX, statsY + 155, 22, WHITE);
+
+                // Health upgrade section - CENTER
+                int upgradeY = screenHeight / 2 - 50;
+                DrawText("HEALTH UPGRADE", screenWidth / 2 - 120, upgradeY - 40, 30, Color{100, 200, 255, 255});
+
+                // Upgrade button
+                int buttonX = screenWidth / 2 - 140;
+                int buttonY = upgradeY + 10;
+                int buttonWidth = 280;
+                int buttonHeight = 50;
+
+                Rectangle upgradeButton = {static_cast<float>(buttonX), static_cast<float>(buttonY),
+                                          static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
+                Vector2 mousePos = GetMousePosition();
+                bool isHovered = CheckCollisionPointRec(mousePos, upgradeButton);
+
+                // Draw button
+                bool canAfford = saveData.highScore >= game->GetHealthUpgradeCost();
+                Color buttonColor = canAfford ? (isHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
+                                              : Color{100, 100, 100, 255};
+
+                DrawRectangleRec(upgradeButton, buttonColor);
+                DrawRectangleLinesEx(upgradeButton, 2, WHITE);
+
+                char buttonText[64];
+                snprintf(buttonText, sizeof(buttonText), "Upgrade +1.0 HP", game->GetHealthUpgradeCost());
+                DrawText(buttonText, buttonX + 65, buttonY + 8, 22, WHITE);
+
+                char costText[32];
+                snprintf(costText, sizeof(costText), "Cost: %d points", game->GetHealthUpgradeCost());
+                DrawText(costText, buttonX + 70, buttonY + 28, 18, LIGHTGRAY);
+
+                // Handle click
+                if (isHovered && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    if (game->BuyHealthUpgrade()) {
+                        // Upgrade successful - reload save data to update display
+                        saveData = SaveSystem::LoadProgress();
+                    }
+                }
+
+                DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight - 50, 20, LIGHTGRAY);
                 break;
+            }
 
             default:
                 break;

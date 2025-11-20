@@ -24,6 +24,30 @@
             "environment": [],
             "console": "integratedTerminal",
             "preLaunchTask": "CMake: Build (Release)"
+        },
+        {
+            "name": "Run Tests (Debug)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/Debug/NodeZero.Tests.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "CMake: Build Tests (Debug)"
+        },
+        {
+            "name": "Run Tests (Release)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bin/Release/NodeZero.Tests.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "CMake: Build Tests (Release)"
         }
     ]
 }

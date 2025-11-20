@@ -12,4 +12,6 @@ public:
     static void DrawScore(int score, int posX, int posY, int fontSize, Color color);
 
     static void DrawMultiplier(int multiplier, int posX, int posY, int fontSize, Color color);
+
+    static void DrawHealthBar(float health, float maxHealth, int posX, int posY, int width, int height);
 };
