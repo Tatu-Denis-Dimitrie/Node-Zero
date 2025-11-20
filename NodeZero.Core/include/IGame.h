@@ -6,7 +6,7 @@
 
 class INode;
 class ILevel;
-class EventManager;
+class Subject;
 
 class IGame {
    public:
@@ -32,7 +32,7 @@ class IGame {
     virtual bool ShouldDealDamage() const = 0;
     virtual void ResetDamageTimer() = 0;
 
-    virtual EventManager& GetEventManager() = 0;
+    virtual Subject& GetSubject() = 0;
 
     virtual void Reset() = 0;
     virtual bool ShouldGameOver() const = 0;

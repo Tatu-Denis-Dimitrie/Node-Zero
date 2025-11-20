@@ -52,7 +52,7 @@ void Game::Update(float deltaTime) {
                                        node->GetShape(),
                                        position,
                                        100);
-                                   m_EventManager.Publish(event);
+                                   m_Subject.Notify(event);
                                    SpawnPointPickups(position);
                                    m_NodesDestroyed++;  // Increment nodes destroyed counter
                                }
@@ -94,7 +94,7 @@ void Game::SpawnNode(float x, float y) {
         Position{x, y},
         node->GetSize(),
         static_cast<int>(node->GetHP()));
-    m_EventManager.Publish(event);
+    m_Subject.Notify(event);
 }
 
 bool Game::CollectPickup(int pickupId) {
@@ -117,8 +117,8 @@ bool Game::CollectPickup(int pickupId) {
     return true;
 }
 
-EventManager& Game::GetEventManager() {
-    return m_EventManager;
+Subject& Game::GetSubject() {
+    return m_Subject;
 }
 
 void Game::Reset() {

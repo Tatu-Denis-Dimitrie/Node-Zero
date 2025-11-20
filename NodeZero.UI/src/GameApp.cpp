@@ -41,11 +41,11 @@ void GameApp::Initialize() {
     m_Game = std::make_unique<Game>();
     m_Game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
-    // Event Logger
+    // Observer Logger
     auto eventLogger = std::make_shared<GameEventLogger>();
-    m_Game->GetEventManager().Subscribe("NodeSpawned", eventLogger);
-    m_Game->GetEventManager().Subscribe("NodeDestroyed", eventLogger);
-    m_Game->GetEventManager().Subscribe("NodeDamaged", eventLogger);
+    m_Game->GetSubject().Attach("NodeSpawned", eventLogger);
+    m_Game->GetSubject().Attach("NodeDestroyed", eventLogger);
+    m_Game->GetSubject().Attach("NodeDamaged", eventLogger);
 
     // Initialize States
     auto stateChangeCallback = [this](GameState newState) { ChangeState(newState); };

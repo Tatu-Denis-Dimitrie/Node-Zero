@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../NodeZero.Core/include/GameFactory.h"
+#include "../NodeZero.Core/include/Game.h"
 #include "../NodeZero.Core/include/IGame.h"
 
 TEST(GameTest, PlaceholderTest)
@@ -11,7 +11,7 @@ TEST(GameTest, PlaceholderTest)
 class HealthSystemTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        game = GameFactory::CreateGame();
+        game = std::make_unique<Game>();
         game->Initialize(800.0f, 600.0f);
     }
 

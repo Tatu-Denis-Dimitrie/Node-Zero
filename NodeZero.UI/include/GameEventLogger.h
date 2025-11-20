@@ -3,9 +3,9 @@
 #include <memory>
 
 #include "Events/GameEvents.h"
-#include "Events/IEventListener.h"
+#include "Events/IObserver.h"
 
-class GameEventLogger : public IEventListener {
+class GameEventLogger : public IObserver {
    public:
     GameEventLogger() = default;
     virtual ~GameEventLogger() = default;

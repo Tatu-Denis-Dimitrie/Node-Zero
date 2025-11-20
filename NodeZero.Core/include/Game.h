@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Events/EventManager.h"
+#include "Events/Subject.h"
 #include "IGame.h"
 #include "INode.h"
 #include "Types/PointPickup.h"
@@ -13,7 +13,7 @@ class Game : public IGame {
     std::vector<PointPickup> m_Pickups;
     float m_ScreenWidth;
     float m_ScreenHeight;
-    EventManager m_EventManager;
+    Subject m_Subject;
     float m_ElapsedTime;
     int m_NextPickupId;
     int m_PickupScore;
@@ -59,7 +59,7 @@ class Game : public IGame {
     bool ShouldDealDamage() const override;
     void ResetDamageTimer() override;
 
-    EventManager& GetEventManager() override;
+    Subject& GetSubject() override;
 
     void Reset() override;
     bool ShouldGameOver() const override;
