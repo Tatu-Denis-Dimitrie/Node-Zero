@@ -2,15 +2,14 @@
 
 #include "../include/ILevel.h"
 
-class Level : public ILevel
-{
-private:
+class Level : public ILevel {
+   private:
     int m_Difficulty;
     bool m_IsLoaded;
     bool m_IsCompleted;
     float m_ElapsedTime;
 
-public:
+   public:
     Level(int difficulty = 1);
 
     void Load() override;

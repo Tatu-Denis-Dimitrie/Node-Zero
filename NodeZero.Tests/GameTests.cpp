@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
+
 #include "../NodeZero.Core/include/Game.h"
 #include "../NodeZero.Core/include/IGame.h"
 
-TEST(GameTest, PlaceholderTest)
-{
+TEST(GameTest, PlaceholderTest) {
     EXPECT_TRUE(true);
 }
 
 class HealthSystemTest : public ::testing::Test {
-protected:
+   protected:
     void SetUp() override {
         game = std::make_unique<Game>();
         game->Initialize(800.0f, 600.0f);
@@ -51,11 +51,11 @@ TEST_F(HealthSystemTest, HealthCannotGoBelowZero) {
 }
 
 TEST_F(HealthSystemTest, CombinedHealthReduction) {
-    game->UpdateHealth(0.3f);  
+    game->UpdateHealth(0.3f);
 
-    game->ReduceHealth(0.5f); 
+    game->ReduceHealth(0.5f);
 
-    game->UpdateHealth(0.3f);  
+    game->UpdateHealth(0.3f);
 
     EXPECT_FLOAT_EQ(game->GetCurrentHealth(), 14.3f);
 }
@@ -72,12 +72,12 @@ TEST_F(HealthSystemTest, HealthResetAfterGameOver) {
 
 TEST_F(HealthSystemTest, RealisticGameplayScenario) {
     for (int i = 0; i < 16; ++i) {
-        game->UpdateHealth(0.3f); 
+        game->UpdateHealth(0.3f);
     }
 
     game->ReduceHealth(0.5f);
     game->ReduceHealth(0.5f);
-    game->ReduceHealth(0.5f);  
+    game->ReduceHealth(0.5f);
 
     EXPECT_NEAR(game->GetCurrentHealth(), 11.9f, 0.001f);
     EXPECT_FALSE(game->IsGameOver());

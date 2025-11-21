@@ -148,14 +148,11 @@ INode* Game::CreateNode(NodeShape shape, float size, float speed) {
 NodeShape Game::GetRandomShape() {
     int chance = std::rand() % 100;
 
-    if (chance < 60)
-    {
+    if (chance < 60) {
         return NodeShape::Square;
-    } else if (chance < 90)
-    {
+    } else if (chance < 90) {
         return NodeShape::Circle;
-    } else
-    {
+    } else {
         return NodeShape::Hexagon;
     }
 }

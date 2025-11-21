@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-TEST(PlayerTest, PlaceholderTest)
-{
+TEST(PlayerTest, PlaceholderTest) {
     EXPECT_TRUE(true);
 }

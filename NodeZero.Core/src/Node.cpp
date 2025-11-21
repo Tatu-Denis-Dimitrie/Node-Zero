@@ -56,7 +56,7 @@ void Node::TakeDamage(float damage) {
 void Node::Spawn(float x, float y) {
     m_Position.x = x;
     m_Position.y = y;
-    m_state = NodeState::Active;
+    m_State = NodeState::Active;
     m_HP = m_MaxHP;
 }
 
@@ -66,20 +66,18 @@ void Node::SetDirection(float dirX, float dirY) {
 }
 
 void Node::Kill() {
-    m_state = NodeState::Dead;
+    m_State = NodeState::Dead;
 }
 
 void Node::Update(float deltaTime) {
-    if (m_state != NodeState::Active)
+    if (m_State != NodeState::Active)
         return;
 
-    // Mișcare în direcția setată cu viteza specificată
-    m_position.x += m_velocity.x * m_speed * deltaTime;
-    m_position.y += m_velocity.y * m_speed * deltaTime;
+    m_Position.x += m_VelocityX * m_Speed * deltaTime;
+    m_Position.y += m_VelocityY * m_Speed * deltaTime;
 
-    // Rotație lentă (30 grade pe secundă)
-    m_rotation += 30.0f * deltaTime;
-    if (m_rotation >= 360.0f) {
-        m_rotation -= 360.0f;
+    m_Rotation += 30.0f * deltaTime;
+    if (m_Rotation >= 360.0f) {
+        m_Rotation -= 360.0f;
     }
 }

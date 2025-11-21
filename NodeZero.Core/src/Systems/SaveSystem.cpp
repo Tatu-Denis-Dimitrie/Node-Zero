@@ -1,14 +1,15 @@
 #include "../../include/Systems/SaveSystem.h"
+
 #include <fstream>
 #include <sstream>
 
 #ifdef _WIN32
-#include <windows.h>
 #include <shlobj.h>
+#include <windows.h>
 #else
-#include <unistd.h>
-#include <sys/types.h>
 #include <pwd.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
 std::string SaveSystem::GetSavePath() {
@@ -72,7 +73,7 @@ SaveData SaveSystem::LoadProgress() {
     std::ifstream file(filePath);
 
     if (!file.is_open()) {
-        return data; // Return default values
+        return data;  // Return default values
     }
 
     std::string line;
