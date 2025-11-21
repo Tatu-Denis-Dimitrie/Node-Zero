@@ -39,7 +39,6 @@ void GameplayState::Update(float deltaTime) {
         return;
     }
 
-    // Process pickups
     const auto& pickups = m_Game.GetPickups();
     for (const PointPickup& pickup : pickups) {
         if (pickup.GetAge() < PICKUP_COLLECT_DELAY) continue;

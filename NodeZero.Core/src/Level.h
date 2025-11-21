@@ -2,9 +2,6 @@
 
 #include "../include/ILevel.h"
 
-/// <summary>
-/// Implementare pentru nivel de joc
-/// </summary>
 class Level : public ILevel
 {
 private:

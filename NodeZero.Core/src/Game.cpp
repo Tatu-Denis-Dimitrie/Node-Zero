@@ -13,7 +13,6 @@ Game::Game()
     : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    // Load save data
     SaveData saveData = SaveSystem::LoadProgress();
     m_HighScore = saveData.highScore;
     m_MaxHealth = saveData.maxHealth;
@@ -54,7 +53,7 @@ void Game::Update(float deltaTime) {
                                        100);
                                    m_Subject.Notify(event);
                                    SpawnPointPickups(position);
-                                   m_NodesDestroyed++;  // Increment nodes destroyed counter
+                                   m_NodesDestroyed++;
                                }
 
                                delete node;
@@ -122,28 +121,22 @@ Subject& Game::GetSubject() {
 }
 
 void Game::Reset() {
-    // Delete all nodes
     for (INode* node : m_Nodes) {
         delete node;
     }
     m_Nodes.clear();
 
-    // Reset elapsed time
     m_ElapsedTime = 0.0f;
 
-    // Reset pickups and score
     m_Pickups.clear();
     m_NextPickupId = 0;
     m_PickupScore = 0;
 
-    // Reset health
     m_CurrentHealth = m_MaxHealth;
     m_HealthTimer = 0.0f;
 
-    // Reset nodes destroyed counter
     m_NodesDestroyed = 0;
 
-    // Reset spawn and damage timers
     m_SpawnTimer = 0.0f;
     m_DamageTimer = 0.0f;
 }
@@ -155,23 +148,23 @@ INode* Game::CreateNode(NodeShape shape, float size, float speed) {
 NodeShape Game::GetRandomShape() {
     int chance = std::rand() % 100;
 
-    if (chance < 60)  // 60% chance for Square
+    if (chance < 60)
     {
         return NodeShape::Square;
-    } else if (chance < 90)  // 30% chance for Circle
+    } else if (chance < 90)
     {
         return NodeShape::Circle;
-    } else  // 10% chance for Hexagon
+    } else
     {
         return NodeShape::Hexagon;
     }
 }
 
 void Game::SpawnPointPickups(const Position& origin) {
-    int pickupCount = 5 + (std::rand() % 6);  // 5 to 10
+    int pickupCount = 5 + (std::rand() % 6);
 
     for (int i = 0; i < pickupCount; ++i) {
-        float angle = RandomRange(0.0f, 6.28318530718f);  // 2 * PI
+        float angle = RandomRange(0.0f, 6.28318530718f);
         float radius = RandomRange(10.0f, 40.0f);
 
         PointPickup pickup{};
@@ -245,25 +238,19 @@ int Game::GetNodesDestroyed() const {
 }
 
 void Game::SaveProgress() {
-    // Load existing data
     SaveData saveData = SaveSystem::LoadProgress();
 
-    // Update games played
     saveData.gamesPlayed++;
 
-    // Update total nodes destroyed
     saveData.totalNodesDestroyed += m_NodesDestroyed;
 
-    // Update high score if current score is higher
     if (m_PickupScore > saveData.highScore) {
         saveData.highScore = m_PickupScore;
         m_HighScore = m_PickupScore;
     }
 
-    // Save current max health (in case it was upgraded)
     saveData.maxHealth = m_MaxHealth;
 
-    // Save to file
     SaveSystem::SaveProgress(saveData);
 }
 
@@ -272,28 +259,22 @@ int Game::GetHighScore() const {
 }
 
 bool Game::BuyHealthUpgrade() {
-    // Load current save data to get the total score
     SaveData saveData = SaveSystem::LoadProgress();
 
-    // Check if player has enough points
     if (saveData.highScore < HEALTH_UPGRADE_COST) {
         return false;
     }
 
-    // Deduct the cost from high score
     saveData.highScore -= HEALTH_UPGRADE_COST;
     m_HighScore = saveData.highScore;
 
-    // Increase max health
     m_MaxHealth += 1.0f;
     saveData.maxHealth = m_MaxHealth;
 
-    // If player is alive, also increase current health
     if (m_CurrentHealth > 0.0f) {
         m_CurrentHealth = m_MaxHealth;
     }
 
-    // Save the updated data
     SaveSystem::SaveProgress(saveData);
 
     return true;
@@ -308,28 +289,26 @@ void Game::UpdateAutoSpawn(float deltaTime) {
     if (m_SpawnTimer >= m_SpawnInterval) {
         m_SpawnTimer = 0.0f;
 
-        // Calculate center of screen
         float centerX = m_ScreenWidth / 2.0f;
         float centerY = m_ScreenHeight / 2.0f;
 
-        // Random edge selection (0=top, 1=right, 2=bottom, 3=left)
         int edge = std::rand() % 4;
         float spawnX, spawnY;
 
         switch (edge) {
-            case 0:  // Top
+            case 0:
                 spawnX = RandomRange(50.0f, m_ScreenWidth - 50.0f);
                 spawnY = -50.0f;
                 break;
-            case 1:  // Right
+            case 1:
                 spawnX = m_ScreenWidth + 50.0f;
                 spawnY = RandomRange(50.0f, m_ScreenHeight - 50.0f);
                 break;
-            case 2:  // Bottom
+            case 2:
                 spawnX = RandomRange(50.0f, m_ScreenWidth - 50.0f);
                 spawnY = m_ScreenHeight + 50.0f;
                 break;
-            case 3:  // Left
+            case 3:
                 spawnX = -50.0f;
                 spawnY = RandomRange(50.0f, m_ScreenHeight - 50.0f);
                 break;
@@ -341,27 +320,22 @@ void Game::UpdateAutoSpawn(float deltaTime) {
 
         SpawnNode(spawnX, spawnY);
 
-        // Set direction towards center with random offset
         if (!m_Nodes.empty()) {
             INode* lastNode = m_Nodes.back();
 
-            // Random target in central zone (not exact center)
             float offsetRange = 150.0f;
             float targetX = centerX + RandomRange(-offsetRange, offsetRange);
             float targetY = centerY + RandomRange(-offsetRange, offsetRange);
 
-            // Calculate direction vector to target
             float dirX = targetX - spawnX;
             float dirY = targetY - spawnY;
 
-            // Normalize (convert to unit vector)
             float length = std::sqrt(dirX * dirX + dirY * dirY);
             if (length > 0.0f) {
                 dirX /= length;
                 dirY /= length;
             }
 
-            // Set normalized direction
             lastNode->SetDirection(dirX, dirY);
         }
     }
@@ -383,7 +357,6 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
         float nodeY = node->GetPosition().y;
         float nodeSize = node->GetSize();
 
-        // Check if node intersects with damage zone (square)
         bool inDamageZone = !(nodeX + nodeSize < damageRectX ||
                               nodeX - nodeSize > damageRectX + zoneSize ||
                               nodeY + nodeSize < damageRectY ||
@@ -419,7 +392,6 @@ void Game::ProcessPickupCollection(float centerX, float centerY, float zoneSize)
             continue;
         }
 
-        // Check if pickup intersects with collection zone
         bool intersects = !(pickup.position.x + pickup.size < collectRectX ||
                             pickup.position.x - pickup.size > collectRectX + zoneSize ||
                             pickup.position.y + pickup.size < collectRectY ||

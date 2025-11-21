@@ -49,7 +49,6 @@ void UI::DrawHealthBar(float health, float maxHealth, int posX, int posY, int wi
 
     DrawRectangleLines(posX, posY, width, height, WHITE);
 
-    // Format health to show one decimal place
     char healthBuffer[32];
     snprintf(healthBuffer, sizeof(healthBuffer), "%.1f / %.0f", health, maxHealth);
     DrawText(healthBuffer, posX + 5, posY + 2, 16, WHITE);

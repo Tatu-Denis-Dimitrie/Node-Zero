@@ -55,7 +55,6 @@ bool SaveSystem::SaveProgress(const SaveData& data) {
         return false;
     }
 
-    // Simple JSON-like format
     file << "{\n";
     file << "  \"highScore\": " << data.highScore << ",\n";
     file << "  \"gamesPlayed\": " << data.gamesPlayed << ",\n";

@@ -11,9 +11,9 @@ class Node : public INode {
     float m_Speed;
     float m_HP;
     float m_MaxHP;
-    float m_VelocityX;  // Direcție de mișcare pe X
-    float m_VelocityY;  // Direcție de mișcare pe Y
-    float m_Rotation;   // Unghi de rotație în grade
+    float m_VelocityX;
+    float m_VelocityY;
+    float m_Rotation;
 
    public:
     Node(NodeShape shape, float size, float speed);

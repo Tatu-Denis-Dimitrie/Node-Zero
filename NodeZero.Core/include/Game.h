@@ -18,22 +18,18 @@ class Game : public IGame {
     int m_NextPickupId;
     int m_PickupScore;
 
-    // Health system
     float m_MaxHealth;
     float m_CurrentHealth;
     float m_HealthDepletionRate;
     float m_HealthDepletionInterval;
     float m_HealthTimer;
 
-    // Save system
     int m_NodesDestroyed;
     int m_HighScore;
 
-    // Auto-spawn system
     float m_SpawnTimer;
     float m_SpawnInterval;
 
-    // Damage zone system
     float m_DamageTimer;
     float m_DamageInterval;
 
@@ -66,19 +62,16 @@ class Game : public IGame {
 
     int GetPickupScore() const override;
 
-    // Health system
     float GetCurrentHealth() const override;
     float GetMaxHealth() const override;
     void ReduceHealth(float amount) override;
     void UpdateHealth(float deltaTime) override;
     bool IsGameOver() const override;
 
-    // Save/Load system
     int GetNodesDestroyed() const override;
     void SaveProgress() override;
     int GetHighScore() const override;
 
-    // Upgrade system
     bool BuyHealthUpgrade() override;
     int GetHealthUpgradeCost() const override;
 

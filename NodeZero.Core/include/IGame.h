@@ -39,19 +39,16 @@ class IGame {
 
     virtual int GetPickupScore() const = 0;
 
-    // Health system
     virtual float GetCurrentHealth() const = 0;
     virtual float GetMaxHealth() const = 0;
     virtual void ReduceHealth(float amount) = 0;
     virtual void UpdateHealth(float deltaTime) = 0;
     virtual bool IsGameOver() const = 0;
 
-    // Save/Load system
     virtual int GetNodesDestroyed() const = 0;
     virtual void SaveProgress() = 0;
     virtual int GetHighScore() const = 0;
 
-    // Upgrade system
     virtual bool BuyHealthUpgrade() = 0;
     virtual int GetHealthUpgradeCost() const = 0;
 };

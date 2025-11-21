@@ -7,7 +7,6 @@ TEST(GameTest, PlaceholderTest)
     EXPECT_TRUE(true);
 }
 
-//Teste pentru HP
 class HealthSystemTest : public ::testing::Test {
 protected:
     void SetUp() override {

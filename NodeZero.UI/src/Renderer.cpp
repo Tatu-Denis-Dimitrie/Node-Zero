@@ -30,24 +30,18 @@ void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, 
 }
 
 void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
-    // Calcul rotație
     float rad = rotation * DEG2RAD;
     float cosA = cosf(rad);
     float sinA = sinf(rad);
 
-    // Calculare colțuri pătratului rotat în jurul centrului (x, y)
     Vector2 topLeft = {x + (-size * cosA - (-size) * sinA), y + (-size * sinA + (-size) * cosA)};
     Vector2 topRight = {x + (size * cosA - (-size) * sinA), y + (size * sinA + (-size) * cosA)};
     Vector2 bottomLeft = {x + (-size * cosA - size * sinA), y + (-size * sinA + size * cosA)};
     Vector2 bottomRight = {x + (size * cosA - size * sinA), y + (size * sinA + size * cosA)};
 
-    // Desenare fill HP (de jos în sus)
     if (hpPercentage > 0.0f) {
-        // Calculăm punctele pentru fill-ul HP
-        // Fill se face de la partea de jos (bottomLeft-bottomRight) până la un procent din înălțime
         float fillRatio = hpPercentage;
 
-        // Puncte intermediare pentru partea de sus a fill-ului (interpolare de la bottom spre top)
         Vector2 fillTopLeft = {
             bottomLeft.x + (topLeft.x - bottomLeft.x) * fillRatio,
             bottomLeft.y + (topLeft.y - bottomLeft.y) * fillRatio};
@@ -55,12 +49,10 @@ void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, 
             bottomRight.x + (topRight.x - bottomRight.x) * fillRatio,
             bottomRight.y + (topRight.y - bottomRight.y) * fillRatio};
 
-        // Desenare fill ca un quad (2 triunghiuri)
         DrawTriangle(bottomLeft, fillTopRight, fillTopLeft, color);
         DrawTriangle(bottomLeft, bottomRight, fillTopRight, color);
     }
 
-    // Desenare contur rotat (gros și roșu)
     float borderThickness = 3.0f;
     DrawLineEx(topLeft, topRight, borderThickness, RED);
     DrawLineEx(topRight, bottomRight, borderThickness, RED);
@@ -76,18 +68,14 @@ void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage,
         vertices[i] = {x + size * cosf(angle), y + size * sinf(angle)};
     }
 
-    // Desenare fill HP (de jos în sus)
     if (hpPercentage > 0.0f) {
-        // Calculăm bounding box-ul hexagonului
         float minY = y - size;
         float maxY = y + size;
         float height = maxY - minY;
 
-        // Calculăm înălțimea de umplere
         float fillHeight = height * hpPercentage;
         float currentFillY = maxY - fillHeight;
 
-        // Desenăm hexagonul plin, dar folosim scissor mode pentru a tăia partea de sus
         BeginScissorMode(
             static_cast<int>(x - size),
             static_cast<int>(currentFillY),
