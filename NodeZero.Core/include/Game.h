@@ -54,11 +54,6 @@ class Game : public IGame, public Subject {
     bool ShouldDealDamage() const override;
     void ResetDamageTimer() override;
 
-    // ISubject implementation
-    void Attach(std::shared_ptr<IObserver> observer) override { Subject::Attach(observer); }
-    void Detach(std::shared_ptr<IObserver> observer) override { Subject::Detach(observer); }
-    void Notify(const std::shared_ptr<IEvent>& event) override { Subject::Notify(event); }
-
     void Reset() override;
     bool ShouldGameOver() const override;
 
