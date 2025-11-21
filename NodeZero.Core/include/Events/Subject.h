@@ -1,29 +1,25 @@
 #pragma once
 #include <algorithm>
+#include <list>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "IEvent.h"
 #include "IObserver.h"
+#include "ISubject.h"
 
-class Subject {
+class Subject : public ISubject {
    public:
     Subject() = default;
-    ~Subject() = default;
+    virtual ~Subject() = default;
 
-    Subject(const Subject&) = delete;
-    Subject& operator=(const Subject&) = delete;
+    void Attach(std::shared_ptr<IObserver> observer) override;
 
-    void Attach(const std::string& eventType, std::shared_ptr<IObserver> observer);
+    void Detach(std::shared_ptr<IObserver> observer) override;
 
-    void Detach(const std::string& eventType, std::shared_ptr<IObserver> observer);
-
-    void Notify(const std::shared_ptr<IEvent>& event);
-
-    void Clear();
+    void Notify(const std::shared_ptr<IEvent>& event) override;
 
    private:
-    std::unordered_map<std::string, std::vector<std::shared_ptr<IObserver>>> m_observers;
+    std::list<std::shared_ptr<IObserver>> m_observers;
 };

@@ -43,9 +43,7 @@ void GameApp::Initialize() {
 
     // Observer Logger
     auto eventLogger = std::make_shared<GameEventLogger>();
-    m_Game->GetSubject().Attach("NodeSpawned", eventLogger);
-    m_Game->GetSubject().Attach("NodeDestroyed", eventLogger);
-    m_Game->GetSubject().Attach("NodeDamaged", eventLogger);
+    m_Game->Attach(eventLogger);
 
     // Initialize States
     auto stateChangeCallback = [this](GameState newState) { ChangeState(newState); };

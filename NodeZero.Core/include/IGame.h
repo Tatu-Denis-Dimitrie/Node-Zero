@@ -2,13 +2,13 @@
 
 #include <vector>
 
+#include "Events/ISubject.h"
 #include "Types/PointPickup.h"
 
 class INode;
 class ILevel;
-class Subject;
 
-class IGame {
+class IGame : public ISubject {
    public:
     virtual ~IGame() = default;
 
@@ -31,8 +31,6 @@ class IGame {
     virtual void UpdateDamageTimer(float deltaTime) = 0;
     virtual bool ShouldDealDamage() const = 0;
     virtual void ResetDamageTimer() = 0;
-
-    virtual Subject& GetSubject() = 0;
 
     virtual void Reset() = 0;
     virtual bool ShouldGameOver() const = 0;

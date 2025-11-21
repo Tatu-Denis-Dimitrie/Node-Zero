@@ -7,13 +7,12 @@
 #include "INode.h"
 #include "Types/PointPickup.h"
 
-class Game : public IGame {
+class Game : public IGame, public Subject {
    private:
     std::vector<INode*> m_Nodes;
     std::vector<PointPickup> m_Pickups;
     float m_ScreenWidth;
     float m_ScreenHeight;
-    Subject m_Subject;
     float m_ElapsedTime;
     int m_NextPickupId;
     int m_PickupScore;
@@ -55,7 +54,10 @@ class Game : public IGame {
     bool ShouldDealDamage() const override;
     void ResetDamageTimer() override;
 
-    Subject& GetSubject() override;
+    // ISubject implementation
+    void Attach(std::shared_ptr<IObserver> observer) override { Subject::Attach(observer); }
+    void Detach(std::shared_ptr<IObserver> observer) override { Subject::Detach(observer); }
+    void Notify(const std::shared_ptr<IEvent>& event) override { Subject::Notify(event); }
 
     void Reset() override;
     bool ShouldGameOver() const override;

@@ -10,7 +10,7 @@ class GameEventLogger : public IObserver {
     GameEventLogger() = default;
     virtual ~GameEventLogger() = default;
 
-    void OnEvent(const std::shared_ptr<IEvent>& event) override {
+    void Update(const std::shared_ptr<IEvent>& event) override {
         if (!event) return;
 
         const std::string& eventType = event->GetType();
