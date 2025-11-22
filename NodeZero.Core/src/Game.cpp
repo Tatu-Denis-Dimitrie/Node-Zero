@@ -238,6 +238,8 @@ void Game::SaveProgress() {
 
     saveData.totalNodesDestroyed += m_NodesDestroyed;
 
+    saveData.coins += m_PickupScore;
+
     if (m_PickupScore > saveData.highScore) {
         saveData.highScore = m_PickupScore;
         m_HighScore = m_PickupScore;
@@ -255,12 +257,11 @@ int Game::GetHighScore() const {
 bool Game::BuyHealthUpgrade() {
     SaveData saveData = SaveSystem::LoadProgress();
 
-    if (saveData.highScore < HEALTH_UPGRADE_COST) {
+    if (saveData.coins < HEALTH_UPGRADE_COST) {
         return false;
     }
 
-    saveData.highScore -= HEALTH_UPGRADE_COST;
-    m_HighScore = saveData.highScore;
+    saveData.coins -= HEALTH_UPGRADE_COST;
 
     m_MaxHealth += 1.0f;
     saveData.maxHealth = m_MaxHealth;

@@ -17,4 +17,6 @@ class SettingsState : public IAppState {
    private:
     IGame& m_Game;
     std::function<void(GameState)> m_StateChangeCallback;
+    bool m_WasMousePressed;
+    bool m_IsFirstFrame;
 };
