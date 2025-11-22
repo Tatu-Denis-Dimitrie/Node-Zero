@@ -1,16 +1,19 @@
 #pragma once
 
+#include <list>
+#include <memory>
 #include <vector>
 
-#include "Events/Subject.h"
+#include "Events/IObserver.h"
 #include "IGame.h"
 #include "INode.h"
 #include "Types/PointPickup.h"
 
-class Game : public IGame, public Subject {
+class Game : public IGame {
    private:
     std::vector<INode*> m_Nodes;
     std::vector<PointPickup> m_Pickups;
+    std::list<std::shared_ptr<IObserver>> m_observers;
     float m_ScreenWidth;
     float m_ScreenHeight;
     float m_ElapsedTime;
@@ -71,6 +74,11 @@ class Game : public IGame, public Subject {
 
     bool BuyHealthUpgrade() override;
     int GetHealthUpgradeCost() const override;
+
+    // ISubject methods
+    void Attach(std::shared_ptr<IObserver> observer) override;
+    void Detach(std::shared_ptr<IObserver> observer) override;
+    void Notify(const std::shared_ptr<IEvent>& event) override;
 
    private:
     INode* CreateNode(NodeShape shape, float size, float speed);

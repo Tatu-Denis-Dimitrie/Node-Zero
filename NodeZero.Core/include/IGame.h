@@ -2,10 +2,13 @@
 
 #include <vector>
 
+#include "Events/ISubject.h"
+#include "Types/PointPickup.h"
+
 class INode;
 class ILevel;
 
-class IGame {
+class IGame : public ISubject {
    public:
     virtual ~IGame() = default;
 

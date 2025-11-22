@@ -400,3 +400,17 @@ void Game::ProcessPickupCollection(float centerX, float centerY, float zoneSize)
 bool Game::ShouldGameOver() const {
     return IsGameOver();
 }
+
+void Game::Attach(std::shared_ptr<IObserver> observer) {
+    m_observers.push_back(observer);
+}
+
+void Game::Detach(std::shared_ptr<IObserver> observer) {
+    m_observers.remove(observer);
+}
+
+void Game::Notify(const std::shared_ptr<IEvent>& event) {
+    for (const auto& observer : m_observers) {
+        observer->Update(event);
+    }
+}
