@@ -49,8 +49,12 @@ void SettingsState::Draw() {
     snprintf(maxHealthText, sizeof(maxHealthText), "Max Health: %.0f", m_Game.GetMaxHealth());
     DrawText(maxHealthText, statsX, statsY + 190, 22, WHITE);
 
+    char damageZoneSizeText[64];
+    snprintf(damageZoneSizeText, sizeof(damageZoneSizeText), "Damage Zone: %.0f", m_Game.GetDamageZoneSize());
+    DrawText(damageZoneSizeText, statsX, statsY + 225, 22, WHITE);
+
     int upgradeY = screenHeight / 2 - 50;
-    DrawText("HEALTH UPGRADE", screenWidth / 2 - 120, upgradeY - 40, 30, Color{100, 200, 255, 255});
+    DrawText("UPGRADES", screenWidth / 2 - 80, upgradeY - 40, 30, Color{100, 200, 255, 255});
 
     int buttonX = screenWidth / 2 - 140;
     int buttonY = upgradeY + 10;
@@ -81,6 +85,33 @@ void SettingsState::Draw() {
 
     if (!m_IsFirstFrame && isHovered && canAfford && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyHealthUpgrade()) {
+            saveData = SaveSystem::LoadProgress();
+        }
+    }
+
+    // Damage Zone Upgrade Button
+    int damageZoneButtonY = upgradeY + 80;
+    Rectangle damageZoneButton = {static_cast<float>(buttonX), static_cast<float>(damageZoneButtonY),
+                                   static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
+    bool isDamageZoneHovered = CheckCollisionPointRec(mousePos, damageZoneButton);
+
+    bool canAffordDamageZone = saveData.coins >= m_Game.GetDamageZoneUpgradeCost();
+    Color damageZoneButtonColor = canAffordDamageZone ? (isDamageZoneHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
+                                                       : Color{100, 100, 100, 255};
+
+    DrawRectangleRec(damageZoneButton, damageZoneButtonColor);
+    DrawRectangleLinesEx(damageZoneButton, 2, WHITE);
+
+    char damageZoneButtonText[64];
+    snprintf(damageZoneButtonText, sizeof(damageZoneButtonText), "Upgrade +10 Zone");
+    DrawText(damageZoneButtonText, buttonX + 55, damageZoneButtonY + 8, 22, WHITE);
+
+    char damageZoneCostText[32];
+    snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d coins", m_Game.GetDamageZoneUpgradeCost());
+    DrawText(damageZoneCostText, buttonX + 75, damageZoneButtonY + 28, 18, LIGHTGRAY);
+
+    if (!m_IsFirstFrame && isDamageZoneHovered && canAffordDamageZone && isMousePressed && !m_WasMousePressed) {
+        if (m_Game.BuyDamageZoneUpgrade()) {
             saveData = SaveSystem::LoadProgress();
         }
     }

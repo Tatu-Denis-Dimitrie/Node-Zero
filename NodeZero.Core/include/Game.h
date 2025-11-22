@@ -35,6 +35,8 @@ class Game : public IGame {
     float m_DamageTimer;
     float m_DamageInterval;
 
+    float m_DamageZoneSize;
+
    public:
     Game();
     ~Game();
@@ -75,6 +77,10 @@ class Game : public IGame {
     bool BuyHealthUpgrade() override;
     int GetHealthUpgradeCost() const override;
 
+    float GetDamageZoneSize() const override;
+    bool BuyDamageZoneUpgrade() override;
+    int GetDamageZoneUpgradeCost() const override;
+
     // ISubject methods
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;
@@ -92,4 +98,6 @@ class Game : public IGame {
     static constexpr float PICKUP_SIZE = 6.0f;
     static constexpr float PICKUP_COLLECT_DELAY = 1.0f;
     static constexpr int HEALTH_UPGRADE_COST = 50;
+    static constexpr int DAMAGE_ZONE_UPGRADE_COST = 75;
+    static constexpr float DAMAGE_ZONE_UPGRADE_AMOUNT = 10.0f;
 };

@@ -30,7 +30,8 @@ void GameplayState::Update(float deltaTime) {
     if (shouldDealDamage) {
         m_Game.ResetDamageTimer();
     }
-    m_Game.ProcessDamageZone(mousePos.x, mousePos.y, DAMAGE_ZONE_SIZE, DAMAGE_PER_TICK, shouldDealDamage);
+    float damageZoneSize = m_Game.GetDamageZoneSize();
+    m_Game.ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, DAMAGE_PER_TICK, shouldDealDamage);
 
     if (m_Game.ShouldGameOver()) {
         m_Game.SaveProgress();
@@ -43,13 +44,13 @@ void GameplayState::Update(float deltaTime) {
     for (const PointPickup& pickup : pickups) {
         if (pickup.GetAge() < PICKUP_COLLECT_DELAY) continue;
 
-        float collectRectX = mousePos.x - DAMAGE_ZONE_SIZE / 2.0f;
-        float collectRectY = mousePos.y - DAMAGE_ZONE_SIZE / 2.0f;
+        float collectRectX = mousePos.x - damageZoneSize / 2.0f;
+        float collectRectY = mousePos.y - damageZoneSize / 2.0f;
 
         bool intersects = !(pickup.position.x + pickup.size < collectRectX ||
-                            pickup.position.x - pickup.size > collectRectX + DAMAGE_ZONE_SIZE ||
+                            pickup.position.x - pickup.size > collectRectX + damageZoneSize ||
                             pickup.position.y + pickup.size < collectRectY ||
-                            pickup.position.y - pickup.size > collectRectY + DAMAGE_ZONE_SIZE);
+                            pickup.position.y - pickup.size > collectRectY + damageZoneSize);
 
         if (intersects && m_Game.CollectPickup(pickup.id)) {
             PickupCollectEffect effect{};
@@ -79,8 +80,9 @@ void GameplayState::Update(float deltaTime) {
 
 void GameplayState::Draw() {
     Vector2 mousePos = InputHandler::GetMousePosition();
-    float damageRectX = mousePos.x - DAMAGE_ZONE_SIZE / 2.0f;
-    float damageRectY = mousePos.y - DAMAGE_ZONE_SIZE / 2.0f;
+    float damageZoneSize = m_Game.GetDamageZoneSize();
+    float damageRectX = mousePos.x - damageZoneSize / 2.0f;
+    float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
     const auto& nodes = m_Game.GetNodes();
     for (const INode* node : nodes) {
@@ -139,8 +141,8 @@ void GameplayState::Draw() {
     DrawRectangle(
         static_cast<int>(damageRectX),
         static_cast<int>(damageRectY),
-        static_cast<int>(DAMAGE_ZONE_SIZE),
-        static_cast<int>(DAMAGE_ZONE_SIZE),
+        static_cast<int>(damageZoneSize),
+        static_cast<int>(damageZoneSize),
         Color{0, 100, 255, 80});
 
     float cornerLength = 20.0f;
@@ -148,9 +150,9 @@ void GameplayState::Draw() {
     Color cornerColor = Color{0, 200, 255, 255};
 
     float left = damageRectX;
-    float right = mousePos.x + DAMAGE_ZONE_SIZE / 2;
+    float right = mousePos.x + damageZoneSize / 2;
     float top = damageRectY;
-    float bottom = mousePos.y + DAMAGE_ZONE_SIZE / 2;
+    float bottom = mousePos.y + damageZoneSize / 2;
 
     DrawLineEx(Vector2{left, top}, Vector2{left + cornerLength, top}, cornerThickness, cornerColor);
     DrawLineEx(Vector2{left, top}, Vector2{left, top + cornerLength}, cornerThickness, cornerColor);
