@@ -53,4 +53,8 @@ class IGame : public ISubject {
     virtual float GetDamageZoneSize() const = 0;
     virtual bool BuyDamageZoneUpgrade() = 0;
     virtual int GetDamageZoneUpgradeCost() const = 0;
+
+    virtual float GetDamagePerTick() const = 0;
+    virtual bool BuyDamageUpgrade() = 0;
+    virtual int GetDamageUpgradeCost() const = 0;
 };

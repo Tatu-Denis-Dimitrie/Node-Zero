@@ -31,7 +31,8 @@ void GameplayState::Update(float deltaTime) {
         m_Game.ResetDamageTimer();
     }
     float damageZoneSize = m_Game.GetDamageZoneSize();
-    m_Game.ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, DAMAGE_PER_TICK, shouldDealDamage);
+    float damagePerTick = m_Game.GetDamagePerTick();
+    m_Game.ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, damagePerTick, shouldDealDamage);
 
     if (m_Game.ShouldGameOver()) {
         m_Game.SaveProgress();

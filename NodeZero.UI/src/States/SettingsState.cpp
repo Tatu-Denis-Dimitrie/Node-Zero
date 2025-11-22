@@ -53,7 +53,11 @@ void SettingsState::Draw() {
     snprintf(damageZoneSizeText, sizeof(damageZoneSizeText), "Damage Zone: %.0f", m_Game.GetDamageZoneSize());
     DrawText(damageZoneSizeText, statsX, statsY + 225, 22, WHITE);
 
-    int upgradeY = screenHeight / 2 - 50;
+    char damagePerTickText[64];
+    snprintf(damagePerTickText, sizeof(damagePerTickText), "Damage/Tick: %.0f", m_Game.GetDamagePerTick());
+    DrawText(damagePerTickText, statsX, statsY + 260, 22, WHITE);
+
+    int upgradeY = screenHeight / 2 - 80;
     DrawText("UPGRADES", screenWidth / 2 - 80, upgradeY - 40, 30, Color{100, 200, 255, 255});
 
     int buttonX = screenWidth / 2 - 140;
@@ -112,6 +116,33 @@ void SettingsState::Draw() {
 
     if (!m_IsFirstFrame && isDamageZoneHovered && canAffordDamageZone && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyDamageZoneUpgrade()) {
+            saveData = SaveSystem::LoadProgress();
+        }
+    }
+
+    // Damage Upgrade Button
+    int damageButtonY = upgradeY + 150;
+    Rectangle damageButton = {static_cast<float>(buttonX), static_cast<float>(damageButtonY),
+                              static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
+    bool isDamageHovered = CheckCollisionPointRec(mousePos, damageButton);
+
+    bool canAffordDamage = saveData.coins >= m_Game.GetDamageUpgradeCost();
+    Color damageButtonColor = canAffordDamage ? (isDamageHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
+                                               : Color{100, 100, 100, 255};
+
+    DrawRectangleRec(damageButton, damageButtonColor);
+    DrawRectangleLinesEx(damageButton, 2, WHITE);
+
+    char damageButtonText[64];
+    snprintf(damageButtonText, sizeof(damageButtonText), "Upgrade +5 Damage");
+    DrawText(damageButtonText, buttonX + 50, damageButtonY + 8, 22, WHITE);
+
+    char damageCostText[32];
+    snprintf(damageCostText, sizeof(damageCostText), "Cost: %d coins", m_Game.GetDamageUpgradeCost());
+    DrawText(damageCostText, buttonX + 75, damageButtonY + 28, 18, LIGHTGRAY);
+
+    if (!m_IsFirstFrame && isDamageHovered && canAffordDamage && isMousePressed && !m_WasMousePressed) {
+        if (m_Game.BuyDamageUpgrade()) {
             saveData = SaveSystem::LoadProgress();
         }
     }

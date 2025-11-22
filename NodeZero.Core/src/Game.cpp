@@ -10,7 +10,7 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     SaveData saveData = SaveSystem::LoadProgress();
@@ -18,6 +18,7 @@ Game::Game()
     m_MaxHealth = saveData.maxHealth;
     m_CurrentHealth = m_MaxHealth;
     m_DamageZoneSize = saveData.damageZoneSize;
+    m_DamagePerTick = saveData.damagePerTick;
 }
 
 Game::~Game() {
@@ -248,6 +249,7 @@ void Game::SaveProgress() {
 
     saveData.maxHealth = m_MaxHealth;
     saveData.damageZoneSize = m_DamageZoneSize;
+    saveData.damagePerTick = m_DamagePerTick;
 
     SaveSystem::SaveProgress(saveData);
 }
@@ -304,6 +306,31 @@ bool Game::BuyDamageZoneUpgrade() {
 
 int Game::GetDamageZoneUpgradeCost() const {
     return DAMAGE_ZONE_UPGRADE_COST;
+}
+
+float Game::GetDamagePerTick() const {
+    return m_DamagePerTick;
+}
+
+bool Game::BuyDamageUpgrade() {
+    SaveData saveData = SaveSystem::LoadProgress();
+
+    if (saveData.coins < DAMAGE_UPGRADE_COST) {
+        return false;
+    }
+
+    saveData.coins -= DAMAGE_UPGRADE_COST;
+
+    m_DamagePerTick += DAMAGE_UPGRADE_AMOUNT;
+    saveData.damagePerTick = m_DamagePerTick;
+
+    SaveSystem::SaveProgress(saveData);
+
+    return true;
+}
+
+int Game::GetDamageUpgradeCost() const {
+    return DAMAGE_UPGRADE_COST;
 }
 
 void Game::UpdateAutoSpawn(float deltaTime) {

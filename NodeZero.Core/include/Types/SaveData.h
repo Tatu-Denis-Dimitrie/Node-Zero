@@ -7,4 +7,5 @@ struct SaveData {
     int totalNodesDestroyed = 0;
     float maxHealth = 15.0f;
     float damageZoneSize = 50.0f;
+    float damagePerTick = 40.0f;
 };

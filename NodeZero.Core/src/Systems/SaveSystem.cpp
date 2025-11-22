@@ -62,7 +62,8 @@ bool SaveSystem::SaveProgress(const SaveData& data) {
     file << "  \"gamesPlayed\": " << data.gamesPlayed << ",\n";
     file << "  \"totalNodesDestroyed\": " << data.totalNodesDestroyed << ",\n";
     file << "  \"maxHealth\": " << data.maxHealth << ",\n";
-    file << "  \"damageZoneSize\": " << data.damageZoneSize << "\n";
+    file << "  \"damageZoneSize\": " << data.damageZoneSize << ",\n";
+    file << "  \"damagePerTick\": " << data.damagePerTick << "\n";
     file << "}\n";
 
     file.close();
@@ -105,6 +106,8 @@ SaveData SaveSystem::LoadProgress() {
             data.maxHealth = std::stof(value);
         } else if (key == "damageZoneSize") {
             data.damageZoneSize = std::stof(value);
+        } else if (key == "damagePerTick") {
+            data.damagePerTick = std::stof(value);
         }
     }
 
