@@ -9,7 +9,7 @@
 #include "raymath.h"
 
 GameplayState::GameplayState(IGame& game, std::function<void(GameState)> stateChangeCallback)
-    : m_Game(game), m_StateChangeCallback(stateChangeCallback) {
+    : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_ProgressBarPercentage(0.0f) {
 }
 
 void GameplayState::Update(float deltaTime) {
@@ -171,4 +171,27 @@ void GameplayState::Draw() {
         static_cast<int>(centerSquareSize),
         static_cast<int>(centerSquareSize),
         WHITE);
+
+    // Draw Progress Bar
+    int screenWidth = GetScreenWidth();
+    int progressBarWidth = 400;
+    int progressBarHeight = 30;
+    int progressBarX = (screenWidth - progressBarWidth) / 2;
+    int progressBarY = 20;
+
+    // Background
+    DrawRectangle(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{40, 40, 40, 200});
+
+    // Fill
+    int fillWidth = static_cast<int>(progressBarWidth * (m_ProgressBarPercentage / 100.0f));
+    DrawRectangle(progressBarX, progressBarY, fillWidth, progressBarHeight, Color{0, 200, 100, 255});
+
+    // Border
+    DrawRectangleLines(progressBarX, progressBarY, progressBarWidth, progressBarHeight, WHITE);
+
+    // Percentage Text
+    char progressText[32];
+    snprintf(progressText, sizeof(progressText), "%.0f%%", m_ProgressBarPercentage);
+    int textWidth = MeasureText(progressText, 20);
+    DrawText(progressText, progressBarX + (progressBarWidth - textWidth) / 2, progressBarY + 5, 20, WHITE);
 }
