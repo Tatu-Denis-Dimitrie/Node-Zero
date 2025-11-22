@@ -57,4 +57,6 @@ class IGame : public ISubject {
     virtual float GetDamagePerTick() const = 0;
     virtual bool BuyDamageUpgrade() = 0;
     virtual int GetDamageUpgradeCost() const = 0;
+
+    virtual float GetProgressBarPercentage() const = 0;
 };

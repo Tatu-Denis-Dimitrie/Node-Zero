@@ -38,6 +38,8 @@ class Game : public IGame {
     float m_DamageZoneSize;
     float m_DamagePerTick;
 
+    float m_ProgressBarPercentage;
+
    public:
     Game();
     ~Game();
@@ -85,6 +87,8 @@ class Game : public IGame {
     float GetDamagePerTick() const override;
     bool BuyDamageUpgrade() override;
     int GetDamageUpgradeCost() const override;
+
+    float GetProgressBarPercentage() const override;
 
     // ISubject methods
     void Attach(std::shared_ptr<IObserver> observer) override;

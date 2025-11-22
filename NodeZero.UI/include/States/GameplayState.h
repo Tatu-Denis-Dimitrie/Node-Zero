@@ -26,7 +26,6 @@ class GameplayState : public IAppState {
     IGame& m_Game;
     std::function<void(GameState)> m_StateChangeCallback;
     std::vector<PickupCollectEffect> m_PickupEffects;
-    float m_ProgressBarPercentage;
 
     static constexpr float DAMAGE_ZONE_SIZE = 150.0f;
     static constexpr float DAMAGE_PER_TICK = 40.0f;
