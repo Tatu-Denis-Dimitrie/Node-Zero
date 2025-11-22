@@ -115,7 +115,7 @@ void GameplayState::Draw() {
     for (const PointPickup& pickup : pickups) {
         float lifeRatio = std::clamp(pickup.GetLifeRatio(), 0.0f, 1.0f);
         unsigned char alpha = static_cast<unsigned char>(lifeRatio * 255.0f);
-        Color pickupColor = Color{0, 255, 150, alpha};
+        Color pickupColor = Color{255, 50, 50, alpha};
         Vector2 pickupPos{pickup.position.x, pickup.position.y};
         float pickupSize = pickup.size;
         float spawnAge = pickup.GetAge();
@@ -126,7 +126,7 @@ void GameplayState::Draw() {
             pickupPos = Vector2Lerp(origin, target, t);
             pickupSize = pickup.size * t;
             alpha = static_cast<unsigned char>(std::min(255.0f, alpha + (1.0f - t) * 100.0f));
-            pickupColor = Color{0, 255, 200, alpha};
+            pickupColor = Color{255, 80, 80, alpha};
         }
         Renderer::DrawPickup(pickupPos.x, pickupPos.y, pickupSize, pickupColor);
     }
@@ -136,7 +136,7 @@ void GameplayState::Draw() {
         Vector2 targetPos{mousePos.x, mousePos.y};
         Vector2 currentPos = Vector2Lerp(effect.startPosition, targetPos, t);
         unsigned char alpha = static_cast<unsigned char>((1.0f - t) * 255.0f);
-        Renderer::DrawPickup(currentPos.x, currentPos.y, effect.size, Color{0, 255, 150, alpha});
+        Renderer::DrawPickup(currentPos.x, currentPos.y, effect.size, Color{255, 50, 50, alpha});
     }
 
     DrawRectangle(
