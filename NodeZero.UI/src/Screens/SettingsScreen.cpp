@@ -61,7 +61,7 @@ void SettingsScreen::Draw() {
     snprintf(damagePerTickText, sizeof(damagePerTickText), "Damage/Tick: %.0f", m_Game.GetDamagePerTick());
     DrawTextEx(m_Font, damagePerTickText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 295)}, 22, 1, WHITE);
 
-    int upgradeY = screenHeight / 2 - 100;  // Moved up slightly to fit more buttons
+    int upgradeY = screenHeight / 2 - 100;
     DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - 80), static_cast<float>(upgradeY - 40)}, 30, 1, Color{100, 200, 255, 255});
 
     int buttonX = screenWidth / 2 - 140;
@@ -97,7 +97,6 @@ void SettingsScreen::Draw() {
         }
     }
 
-    // Regen Upgrade Button
     int regenButtonY = upgradeY + 80;
     Rectangle regenButton = {static_cast<float>(buttonX), static_cast<float>(regenButtonY),
                              static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
@@ -124,7 +123,6 @@ void SettingsScreen::Draw() {
         }
     }
 
-    // Damage Zone Upgrade Button
     int damageZoneButtonY = upgradeY + 150;
     Rectangle damageZoneButton = {static_cast<float>(buttonX), static_cast<float>(damageZoneButtonY),
                                   static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
@@ -151,7 +149,6 @@ void SettingsScreen::Draw() {
         }
     }
 
-    // Damage Upgrade Button
     int damageButtonY = upgradeY + 220;
     Rectangle damageButton = {static_cast<float>(buttonX), static_cast<float>(damageButtonY),
                               static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};

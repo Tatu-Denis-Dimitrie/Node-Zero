@@ -41,11 +41,9 @@ void LevelCompletedScreen::Update(float deltaTime) {
 }
 
 void LevelCompletedScreen::Draw() {
-    // Draw a semi-transparent background over the game
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0, 0, 0, 200});
     m_Menu->Draw();
 
-    // Draw Score
     std::string scoreText = "Score collected: " + std::to_string(m_Game.GetPickupScore());
     Vector2 textSize = MeasureTextEx(m_Font, scoreText.c_str(), 30, 1);
     DrawTextEx(m_Font, scoreText.c_str(),

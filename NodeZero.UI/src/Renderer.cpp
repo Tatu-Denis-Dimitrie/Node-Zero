@@ -9,7 +9,6 @@
 void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
     const int sides = 32;
 
-    // Generate vertices for the circle (polygon)
     std::vector<Vector2> vertices;
     vertices.reserve(sides);
     for (int i = 0; i < sides; ++i) {
@@ -21,32 +20,14 @@ void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, 
         if (hpPercentage >= 1.0f) {
             DrawPoly(Vector2{x, y}, sides, size, rotation, color);
         } else {
-            // Calculate fill direction (Up vector rotated)
-            // When rotation is 0, Up is (0, -1) (Visual Up)
-            // But we want to fill from Bottom to Top.
-            // Bottom is +Y (in screen), Top is -Y.
-            // So we fill from +Y towards -Y.
-            // Let's define the "Up" vector as the direction of growth.
-            // Growth is from Bottom to Top.
-            // Local Up is (0, -1).
-            // Rotated Up:
             float rad = rotation * DEG2RAD;
             Vector2 fillDir = {sinf(rad), -cosf(rad)};
-
-            // We want to keep vertices that are "below" the fill level.
-            // "Below" means "towards the bottom", i.e. in the opposite direction of fillDir?
-            // No, we want to keep the filled part.
-            // The filled part starts at Bottom and goes up to Level.
-            // Bottom is at projection -size (relative to center along fillDir).
-            // Top is at projection +size.
-            // We keep points with projection <= limit.
 
             float limit = -size + hpPercentage * 2.0f * size;
 
             std::vector<Vector2> clippedVertices;
             Vector2 center = {x, y};
 
-            // Sutherland-Hodgman clipping against the line defined by fillDir and limit
             Vector2 p1 = vertices.back();
             float dist1 = Vector2DotProduct(Vector2Subtract(p1, center), fillDir);
             bool p1Inside = (dist1 <= limit);
@@ -180,8 +161,6 @@ void Renderer::DrawPickup(float x, float y, float size, Color color) {
     DrawLineEx(Vector2{x, y - size}, Vector2{x, y + size}, thickness, color);
 }
 
-// UI rendering methods (merged from UI.cpp)
-
 void Renderer::DrawDebugInfo(int posX, int posY, Font font) {
     std::string fpsText = "FPS: " + std::to_string(GetFPS());
     DrawTextEx(font, fpsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, 20, 1, WHITE);
@@ -208,7 +187,6 @@ void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, 
 
     int barWidth = static_cast<int>(width * healthPercentage);
 
-    // Always red
     Color barColor = Color{255, 50, 50, 255};
 
     DrawRectangle(posX, posY, barWidth, height, barColor);
@@ -230,17 +208,13 @@ void Renderer::DrawProgressBar(float percentage, int currentLevel, Font font) {
     int progressBarX = progressBarSideMargin;
     int progressBarWidth = screenWidth - (progressBarSideMargin * 2);
 
-    // Background
     DrawRectangle(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{20, 20, 30, 220});
 
-    // Fill
     int fillWidth = static_cast<int>(progressBarWidth * (percentage / 100.0f));
     DrawRectangle(progressBarX, progressBarY, fillWidth, progressBarHeight, Color{255, 255, 255, 255});
 
-    // Border
     DrawRectangleLines(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{255, 255, 255, 255});
 
-    // "progress" label above the bar
     char progressLabel[64];
     snprintf(progressLabel, sizeof(progressLabel), "Level %d - progress", currentLevel);
     Vector2 labelSize = MeasureTextEx(font, progressLabel, 20, 1);

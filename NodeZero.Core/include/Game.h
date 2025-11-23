@@ -109,7 +109,6 @@ class Game : public IGame {
     bool IsLevelCompleted() const override;
     void StartNextLevel() override;
 
-    // ISubject methods
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;
     void Notify(const std::shared_ptr<IEvent>& event) override;
@@ -122,5 +121,4 @@ class Game : public IGame {
     float RandomRange(float minValue, float maxValue) const;
     void SpawnBoss();
     void CheckBossDefeat();
-    // void AdvanceToNextLevel(); // Removed or moved to public
 };

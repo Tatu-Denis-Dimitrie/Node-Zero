@@ -26,19 +26,14 @@ void GameplayScreen::Update(float deltaTime) {
     float damagePerTick = m_Game.GetDamagePerTick();
     m_Game.ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, damagePerTick, shouldDealDamage);
 
-    // Verificare game over o singură dată (după toate update-urile)
     if (m_Game.ShouldGameOver()) {
-        // Save progress (coins, stats) before game over
         m_Game.SaveProgress();
-        // Do NOT reset here, so we can show the state in GameOver screen
         m_StateChangeCallback(GameScreen::GameOver);
         return;
     }
 
-    // Colectare pickups - Core returnează pickup-urile colectate (fără logică de coliziune în UI)
     std::vector<PointPickup> collectedPickups = m_Game.ProcessPickupCollection(mousePos.x, mousePos.y, damageZoneSize);
 
-    // Creăm efecte vizuale pentru pickup-urile colectate
     for (const PointPickup& pickup : collectedPickups) {
         PickupCollectEffect effect{};
         effect.startPosition = Vector2{pickup.position.x, pickup.position.y};
@@ -95,7 +90,6 @@ void GameplayScreen::Draw() {
                     Renderer::DrawHexagonNode(x, y, size, hpPercentage, RED, rotation);
                     break;
                 case NodeShape::Boss:
-                    // Boss: Pink-purple large square
                     Renderer::DrawSquareNode(x, y, size, hpPercentage, Color{200, 50, 200, 255}, rotation);
                     break;
                 default:
@@ -166,6 +160,5 @@ void GameplayScreen::Draw() {
         static_cast<int>(centerSquareSize),
         WHITE);
 
-    // Draw Progress Bar
     Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
 }
