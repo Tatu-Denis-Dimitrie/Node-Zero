@@ -1,12 +1,13 @@
 #pragma once
 
-enum class GameScreen
-{
+enum class GameScreen {
     MainMenu,
 
     Playing,
 
     Paused,
+
+    LevelCompleted,
 
     GameOver,
 

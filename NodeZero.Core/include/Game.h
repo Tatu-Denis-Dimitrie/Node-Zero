@@ -47,6 +47,7 @@ class Game : public IGame {
     INode* m_Boss;
     float m_LevelTimer;
     float m_LevelDuration;
+    bool m_LevelCompleted;
 
    public:
     Game();
@@ -105,6 +106,9 @@ class Game : public IGame {
     int GetCurrentLevel() const override;
     int GetNodesDestroyedThisLevel() const override;
 
+    bool IsLevelCompleted() const override;
+    void StartNextLevel() override;
+
     // ISubject methods
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;
@@ -118,5 +122,5 @@ class Game : public IGame {
     float RandomRange(float minValue, float maxValue) const;
     void SpawnBoss();
     void CheckBossDefeat();
-    void AdvanceToNextLevel();
+    // void AdvanceToNextLevel(); // Removed or moved to public
 };

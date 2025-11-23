@@ -66,4 +66,7 @@ class IGame : public ISubject {
 
     virtual int GetCurrentLevel() const = 0;
     virtual int GetNodesDestroyedThisLevel() const = 0;
+
+    virtual bool IsLevelCompleted() const = 0;
+    virtual void StartNextLevel() = 0;
 };

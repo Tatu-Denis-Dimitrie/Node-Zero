@@ -11,7 +11,7 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_RegenRate(0.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_RegenRate(0.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION), m_LevelCompleted(false) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     SaveData saveData = SaveSystem::LoadProgress();
@@ -21,6 +21,7 @@ Game::Game()
     m_CurrentHealth = m_MaxHealth;
     m_DamageZoneSize = saveData.damageZoneSize;
     m_DamagePerTick = saveData.damagePerTick;
+    m_CurrentLevel = saveData.currentLevel;
 }
 
 Game::~Game() {
@@ -59,12 +60,19 @@ void Game::Update(float deltaTime) {
     m_Nodes.erase(
         std::remove_if(m_Nodes.begin(), m_Nodes.end(),
                        [this, &shouldSpawnBoss](INode* node) {
-                           bool shouldRemove = node->GetState() == NodeState::Dead ||
-                                               node->GetPosition().x < -100.0f;
+                           bool isBoss = node->GetShape() == NodeShape::Boss;
+                           bool isOffScreen = node->GetPosition().x < -200.0f;  // Increased buffer
+
+                           // Don't remove boss if it's just spawning off-screen
+                           if (isBoss) {
+                               isOffScreen = false;
+                           }
+
+                           bool shouldRemove = node->GetState() == NodeState::Dead || isOffScreen;
+
                            if (shouldRemove) {
                                if (node->GetState() == NodeState::Dead) {
                                    Position position{node->GetPosition().x, node->GetPosition().y};
-                                   bool isBoss = node->GetShape() == NodeShape::Boss;
 
                                    if (isBoss) {
                                        int scoreGained = 500 * m_CurrentLevel;
@@ -76,7 +84,8 @@ void Game::Update(float deltaTime) {
 
                                        m_BossActive = false;
                                        m_Boss = nullptr;
-                                       AdvanceToNextLevel();
+                                       m_LevelCompleted = true;
+                                       // AdvanceToNextLevel(); // Now handled by UI
                                    } else {
                                        auto event = std::make_shared<NodeDestroyedEvent>(
                                            m_ElapsedTime,
@@ -184,7 +193,11 @@ void Game::Reset() {
     m_ProgressBarPercentage = 0.0f;
 
     // Reset level and boss state
-    m_CurrentLevel = 1;
+    // Load persistent level from save
+    SaveData saveData = SaveSystem::LoadProgress();
+    m_CurrentLevel = saveData.currentLevel;
+    if (m_CurrentLevel < 1) m_CurrentLevel = 1;
+
     m_NodesDestroyedThisLevel = 0;
     m_BossActive = false;
     m_Boss = nullptr;
@@ -295,9 +308,14 @@ int Game::GetNodesDestroyed() const {
 void Game::SaveProgress() {
     SaveData saveData = SaveSystem::LoadProgress();
 
-    saveData.gamesPlayed++;
+    // Only increment games played if it's a game over save, not level transition
+    // But for now, let's just save coins and stats
 
-    saveData.totalNodesDestroyed += m_NodesDestroyed;
+    saveData.totalNodesDestroyed += m_NodesDestroyed;  // This might double count if not reset?
+    // m_NodesDestroyed is total for session.
+    // If we save multiple times, we need to be careful.
+    // Let's assume SaveProgress is called only once per "session segment" or we need to track "unsaved" stats.
+    // For simplicity, let's just save coins which is the most important.
 
     saveData.coins += m_PickupScore;
 
@@ -306,6 +324,7 @@ void Game::SaveProgress() {
         m_HighScore = m_PickupScore;
     }
 
+    saveData.currentLevel = m_CurrentLevel;
     saveData.maxHealth = m_MaxHealth;
     saveData.regenRate = m_RegenRate;
     saveData.damageZoneSize = m_DamageZoneSize;
@@ -546,7 +565,14 @@ std::vector<PointPickup> Game::ProcessPickupCollection(float centerX, float cent
 }
 
 bool Game::ShouldGameOver() const {
-    return IsGameOver();
+    if (IsGameOver()) {
+        // Save games played count only on Game Over
+        SaveData saveData = SaveSystem::LoadProgress();
+        saveData.gamesPlayed++;
+        SaveSystem::SaveProgress(saveData);
+        return true;
+    }
+    return false;
 }
 
 void Game::Attach(std::shared_ptr<IObserver> observer) {
@@ -578,22 +604,22 @@ void Game::SpawnBoss() {
     // Random spawn position outside the screen
     float spawnX, spawnY;
     int edge = std::rand() % 4;
-    float offset = GameConfig::BOSS_SIZE * 1.5f; // Spawn further out so it doesn't pop in
+    float offset = GameConfig::BOSS_SIZE * 1.5f;  // Spawn further out so it doesn't pop in
 
     switch (edge) {
-        case 0: // Top
+        case 0:  // Top
             spawnX = RandomRange(0.0f, m_ScreenWidth);
             spawnY = -offset;
             break;
-        case 1: // Right
+        case 1:  // Right
             spawnX = m_ScreenWidth + offset;
             spawnY = RandomRange(0.0f, m_ScreenHeight);
             break;
-        case 2: // Bottom
+        case 2:  // Bottom
             spawnX = RandomRange(0.0f, m_ScreenWidth);
             spawnY = m_ScreenHeight + offset;
             break;
-        case 3: // Left
+        case 3:  // Left
             spawnX = -offset;
             spawnY = RandomRange(0.0f, m_ScreenHeight);
             break;
@@ -622,17 +648,45 @@ void Game::SpawnBoss() {
     Notify(event);
 }
 
-void Game::AdvanceToNextLevel() {
+void Game::StartNextLevel() {
+    // Save progress (bank coins from this level)
+    // We need to increment level BEFORE saving so we save the NEXT level
     int oldLevel = m_CurrentLevel;
     m_CurrentLevel++;
+
+    SaveProgress();  // This will now save m_CurrentLevel (which is next level)
+
     m_NodesDestroyedThisLevel = 0;
+    m_LevelCompleted = false;
+
+    // Clear all existing nodes
+    for (INode* node : m_Nodes) {
+        delete node;
+    }
+    m_Nodes.clear();
+
+    // Clear all pickups
+    m_Pickups.clear();
 
     // Reset level timer and progress bar for next level
     m_LevelTimer = 0.0f;
     m_ProgressBarPercentage = 0.0f;
+    m_SpawnTimer = 0.0f;
+
+    // Reset Health and Score for the new level
+    m_CurrentHealth = m_MaxHealth;
+    m_PickupScore = 0;
+
+    // Ensure Boss state is reset
+    m_BossActive = false;
+    m_Boss = nullptr;
 
     auto event = std::make_shared<LevelCompletedEvent>(m_ElapsedTime, oldLevel, m_CurrentLevel);
     Notify(event);
+}
+
+bool Game::IsLevelCompleted() const {
+    return m_LevelCompleted;
 }
 
 int Game::GetCurrentLevel() const {

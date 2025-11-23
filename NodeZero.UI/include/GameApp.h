@@ -10,6 +10,7 @@ class GameplayScreen;
 class MainMenuScreen;
 class PauseMenuScreen;
 class SettingsScreen;
+class LevelCompletedScreen;
 
 class GameApp {
    public:
@@ -39,6 +40,7 @@ class GameApp {
     std::unique_ptr<MainMenuScreen> m_MainMenuScreen;
     std::unique_ptr<PauseMenuScreen> m_PauseMenuScreen;
     std::unique_ptr<SettingsScreen> m_SettingsScreen;
+    std::unique_ptr<LevelCompletedScreen> m_LevelCompletedScreen;
 
     // Rendering
     RenderTexture2D m_RenderTarget;

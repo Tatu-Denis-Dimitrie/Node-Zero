@@ -38,7 +38,7 @@ struct GameConfig {
     // Boss and level settings
     static constexpr int NODES_PER_LEVEL = 20;
     static constexpr float BOSS_SIZE = 120.0f;
-    static constexpr float BOSS_SPEED = 25.0f;
+    static constexpr float BOSS_SPEED = 35.0f;
     static constexpr float BOSS_HP_BASE = 200.0f;
     static constexpr float LEVEL_DURATION = 60.0f;  // 60 seconds per level
 };

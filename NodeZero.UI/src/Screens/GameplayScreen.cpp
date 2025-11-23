@@ -58,6 +58,11 @@ void GameplayScreen::Update(float deltaTime) {
 
     m_Game.Update(deltaTime);
 
+    if (m_Game.IsLevelCompleted()) {
+        m_StateChangeCallback(GameScreen::LevelCompleted);
+        return;
+    }
+
     if (IsKeyPressed(KEY_ESCAPE)) {
         m_StateChangeCallback(GameScreen::Paused);
     }
