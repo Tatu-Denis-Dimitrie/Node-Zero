@@ -11,12 +11,13 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_RegenRate(0.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     SaveData saveData = SaveSystem::LoadProgress();
     m_HighScore = saveData.highScore;
     m_MaxHealth = saveData.maxHealth;
+    m_RegenRate = saveData.regenRate;
     m_CurrentHealth = m_MaxHealth;
     m_DamageZoneSize = saveData.damageZoneSize;
     m_DamagePerTick = saveData.damagePerTick;
@@ -264,6 +265,14 @@ void Game::ReduceHealth(float amount) {
 }
 
 void Game::UpdateHealth(float deltaTime) {
+    // Apply regeneration
+    if (m_RegenRate > 0.0f && m_CurrentHealth < m_MaxHealth && m_CurrentHealth > 0.0f) {
+        m_CurrentHealth += m_RegenRate * deltaTime;
+        if (m_CurrentHealth > m_MaxHealth) {
+            m_CurrentHealth = m_MaxHealth;
+        }
+    }
+
     m_HealthTimer += deltaTime;
     if (m_HealthTimer >= m_HealthDepletionInterval) {
         m_CurrentHealth -= m_HealthDepletionRate;
@@ -298,6 +307,7 @@ void Game::SaveProgress() {
     }
 
     saveData.maxHealth = m_MaxHealth;
+    saveData.regenRate = m_RegenRate;
     saveData.damageZoneSize = m_DamageZoneSize;
     saveData.damagePerTick = m_DamagePerTick;
 
@@ -331,6 +341,31 @@ bool Game::BuyHealthUpgrade() {
 
 int Game::GetHealthUpgradeCost() const {
     return GameConfig::HEALTH_UPGRADE_COST;
+}
+
+bool Game::BuyRegenUpgrade() {
+    SaveData saveData = SaveSystem::LoadProgress();
+
+    if (saveData.coins < GameConfig::REGEN_UPGRADE_COST) {
+        return false;
+    }
+
+    saveData.coins -= GameConfig::REGEN_UPGRADE_COST;
+
+    m_RegenRate += GameConfig::REGEN_UPGRADE_AMOUNT;
+    saveData.regenRate = m_RegenRate;
+
+    SaveSystem::SaveProgress(saveData);
+
+    return true;
+}
+
+int Game::GetRegenUpgradeCost() const {
+    return GameConfig::REGEN_UPGRADE_COST;
+}
+
+float Game::GetRegenRate() const {
+    return m_RegenRate;
 }
 
 float Game::GetDamageZoneSize() const {

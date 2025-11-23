@@ -49,15 +49,19 @@ void SettingsScreen::Draw() {
     snprintf(maxHealthText, sizeof(maxHealthText), "Max Health: %.0f", m_Game.GetMaxHealth());
     DrawTextEx(m_Font, maxHealthText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 190)}, 22, 1, WHITE);
 
+    char regenRateText[64];
+    snprintf(regenRateText, sizeof(regenRateText), "Regen Rate: %.1f/s", m_Game.GetRegenRate());
+    DrawTextEx(m_Font, regenRateText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 225)}, 22, 1, WHITE);
+
     char damageZoneSizeText[64];
     snprintf(damageZoneSizeText, sizeof(damageZoneSizeText), "Damage Zone: %.0f", m_Game.GetDamageZoneSize());
-    DrawTextEx(m_Font, damageZoneSizeText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 225)}, 22, 1, WHITE);
+    DrawTextEx(m_Font, damageZoneSizeText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 260)}, 22, 1, WHITE);
 
     char damagePerTickText[64];
     snprintf(damagePerTickText, sizeof(damagePerTickText), "Damage/Tick: %.0f", m_Game.GetDamagePerTick());
-    DrawTextEx(m_Font, damagePerTickText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 260)}, 22, 1, WHITE);
+    DrawTextEx(m_Font, damagePerTickText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 295)}, 22, 1, WHITE);
 
-    int upgradeY = screenHeight / 2 - 80;
+    int upgradeY = screenHeight / 2 - 100; // Moved up slightly to fit more buttons
     DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - 80), static_cast<float>(upgradeY - 40)}, 30, 1, Color{100, 200, 255, 255});
 
     int buttonX = screenWidth / 2 - 140;
@@ -93,8 +97,35 @@ void SettingsScreen::Draw() {
         }
     }
 
+    // Regen Upgrade Button
+    int regenButtonY = upgradeY + 80;
+    Rectangle regenButton = {static_cast<float>(buttonX), static_cast<float>(regenButtonY),
+                             static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
+    bool isRegenHovered = CheckCollisionPointRec(mousePos, regenButton);
+
+    bool canAffordRegen = saveData.coins >= m_Game.GetRegenUpgradeCost();
+    Color regenButtonColor = canAffordRegen ? (isRegenHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
+                                            : Color{100, 100, 100, 255};
+
+    DrawRectangleRec(regenButton, regenButtonColor);
+    DrawRectangleLinesEx(regenButton, 1, WHITE);
+
+    char regenButtonText[64];
+    snprintf(regenButtonText, sizeof(regenButtonText), "Upgrade +0.1 Regen");
+    DrawTextEx(m_Font, regenButtonText, Vector2{static_cast<float>(buttonX + 55), static_cast<float>(regenButtonY + 8)}, 22, 1, WHITE);
+
+    char regenCostText[32];
+    snprintf(regenCostText, sizeof(regenCostText), "Cost: %d coins", m_Game.GetRegenUpgradeCost());
+    DrawTextEx(m_Font, regenCostText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(regenButtonY + 28)}, 18, 1, LIGHTGRAY);
+
+    if (!m_IsFirstFrame && isRegenHovered && canAffordRegen && isMousePressed && !m_WasMousePressed) {
+        if (m_Game.BuyRegenUpgrade()) {
+            saveData = SaveSystem::LoadProgress();
+        }
+    }
+
     // Damage Zone Upgrade Button
-    int damageZoneButtonY = upgradeY + 80;
+    int damageZoneButtonY = upgradeY + 150;
     Rectangle damageZoneButton = {static_cast<float>(buttonX), static_cast<float>(damageZoneButtonY),
                                    static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageZoneHovered = CheckCollisionPointRec(mousePos, damageZoneButton);
@@ -121,7 +152,7 @@ void SettingsScreen::Draw() {
     }
 
     // Damage Upgrade Button
-    int damageButtonY = upgradeY + 150;
+    int damageButtonY = upgradeY + 220;
     Rectangle damageButton = {static_cast<float>(buttonX), static_cast<float>(damageButtonY),
                               static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageHovered = CheckCollisionPointRec(mousePos, damageButton);

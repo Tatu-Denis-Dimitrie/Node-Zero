@@ -162,6 +162,4 @@ void GameplayScreen::Draw() {
 
     // Draw Progress Bar
     Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
-
-
 }

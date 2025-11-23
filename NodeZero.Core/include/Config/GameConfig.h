@@ -27,6 +27,8 @@ struct GameConfig
 
     // Health settings
     static constexpr int HEALTH_UPGRADE_COST = 50;
+    static constexpr int REGEN_UPGRADE_COST = 100;
+    static constexpr float REGEN_UPGRADE_AMOUNT = 0.1f;
 
     // Damage settings
     static constexpr int DAMAGE_ZONE_UPGRADE_COST = 75;

@@ -22,6 +22,7 @@ class Game : public IGame {
 
     float m_MaxHealth;
     float m_CurrentHealth;
+    float m_RegenRate;
     float m_HealthDepletionRate;
     float m_HealthDepletionInterval;
     float m_HealthTimer;
@@ -86,6 +87,10 @@ class Game : public IGame {
 
     bool BuyHealthUpgrade() override;
     int GetHealthUpgradeCost() const override;
+
+    bool BuyRegenUpgrade() override;
+    int GetRegenUpgradeCost() const override;
+    float GetRegenRate() const override;
 
     float GetDamageZoneSize() const override;
     bool BuyDamageZoneUpgrade() override;
