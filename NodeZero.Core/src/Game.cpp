@@ -521,7 +521,12 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
 
         if (inDamageZone) {
             node->TakeDamage(damage);
-            ReduceHealth(0.5f);
+
+            float healthCost = 0.5f;
+            if (node->GetShape() == NodeShape::Boss) {
+                healthCost *= 8.0f;
+            }
+            ReduceHealth(healthCost);
         }
     }
 }
