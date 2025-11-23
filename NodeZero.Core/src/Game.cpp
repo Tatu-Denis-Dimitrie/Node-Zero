@@ -10,7 +10,7 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(LEVEL_DURATION) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     SaveData saveData = SaveSystem::LoadProgress();
@@ -36,31 +36,55 @@ void Game::Initialize(float screenWidth, float screenHeight) {
 void Game::Update(float deltaTime) {
     m_ElapsedTime += deltaTime;
 
+    // Update level timer and progress bar based on time
+    if (!m_BossActive) {
+        m_LevelTimer += deltaTime;
+        m_ProgressBarPercentage = (m_LevelTimer / m_LevelDuration) * 100.0f;
+
+        // Clamp to 100%
+        if (m_ProgressBarPercentage > 100.0f) {
+            m_ProgressBarPercentage = 100.0f;
+        }
+    }
+
     for (INode* node : m_Nodes) {
         node->Update(deltaTime);
     }
 
+    // Track if we need to spawn boss after removal
+    bool shouldSpawnBoss = false;
+
     m_Nodes.erase(
         std::remove_if(m_Nodes.begin(), m_Nodes.end(),
-                       [this](INode* node) {
+                       [this, &shouldSpawnBoss](INode* node) {
                            bool shouldRemove = node->GetState() == NodeState::Dead ||
                                                node->GetPosition().x < -100.0f;
                            if (shouldRemove) {
                                if (node->GetState() == NodeState::Dead) {
                                    Position position{node->GetPosition().x, node->GetPosition().y};
-                                   auto event = std::make_shared<NodeDestroyedEvent>(
-                                       m_ElapsedTime,
-                                       node->GetShape(),
-                                       position,
-                                       100);
-                                   Notify(event);
-                                   SpawnPointPickups(position);
-                                   m_NodesDestroyed++;
+                                   bool isBoss = node->GetShape() == NodeShape::Boss;
 
-                                   // Increase progress bar by 5% for each enemy destroyed
-                                   m_ProgressBarPercentage += 5.0f;
-                                   if (m_ProgressBarPercentage > 100.0f) {
-                                       m_ProgressBarPercentage = 100.0f;
+                                   if (isBoss) {
+                                       int scoreGained = 500 * m_CurrentLevel;
+                                       auto event = std::make_shared<BossDefeatedEvent>(
+                                           m_ElapsedTime,
+                                           m_CurrentLevel,
+                                           scoreGained);
+                                       Notify(event);
+
+                                       m_BossActive = false;
+                                       m_Boss = nullptr;
+                                       AdvanceToNextLevel();
+                                   } else {
+                                       auto event = std::make_shared<NodeDestroyedEvent>(
+                                           m_ElapsedTime,
+                                           node->GetShape(),
+                                           position,
+                                           100);
+                                       Notify(event);
+                                       SpawnPointPickups(position);
+                                       m_NodesDestroyed++;
+                                       m_NodesDestroyedThisLevel++;
                                    }
                                }
 
@@ -69,6 +93,16 @@ void Game::Update(float deltaTime) {
                            return shouldRemove;
                        }),
         m_Nodes.end());
+
+    // Spawn boss AFTER removal is complete
+    if (shouldSpawnBoss) {
+        SpawnBoss();
+    }
+
+    // Check if level timer reached 100% and spawn boss
+    if (m_LevelTimer >= m_LevelDuration && !m_BossActive) {
+        SpawnBoss();
+    }
 
     UpdatePickups(deltaTime);
 }
@@ -146,6 +180,13 @@ void Game::Reset() {
     m_DamageTimer = 0.0f;
 
     m_ProgressBarPercentage = 0.0f;
+
+    // Reset level and boss state
+    m_CurrentLevel = 1;
+    m_NodesDestroyedThisLevel = 0;
+    m_BossActive = false;
+    m_Boss = nullptr;
+    m_LevelTimer = 0.0f;
 }
 
 INode* Game::CreateNode(NodeShape shape, float size, float speed) {
@@ -480,4 +521,50 @@ void Game::Notify(const std::shared_ptr<IEvent>& event) {
     for (const auto& observer : m_observers) {
         observer->Update(event);
     }
+}
+
+void Game::SpawnBoss() {
+    if (m_BossActive) return;
+
+    // Boss HP scales aggressively: 200 + (level-1) * 100
+    // Level 1: 200, Level 2: 300, Level 3: 400, etc.
+    float bossHP = BOSS_HP_BASE + (m_CurrentLevel - 1) * 100.0f;
+    m_Boss = CreateNode(NodeShape::Boss, BOSS_SIZE, BOSS_SPEED);
+
+    // Cast to Node* to call SetHP
+    Node* bossNode = static_cast<Node*>(m_Boss);
+    bossNode->SetHP(bossHP);
+
+    m_Boss->Spawn(m_ScreenWidth, m_ScreenHeight / 2.0f);
+    m_Boss->SetDirection(-1.0f, 0.0f);
+    m_Nodes.push_back(m_Boss);
+    m_BossActive = true;
+
+    auto event = std::make_shared<BossSpawnedEvent>(m_ElapsedTime, m_CurrentLevel, bossHP);
+    Notify(event);
+}
+
+void Game::AdvanceToNextLevel() {
+    int oldLevel = m_CurrentLevel;
+    m_CurrentLevel++;
+    m_NodesDestroyedThisLevel = 0;
+
+    // Reset level timer and progress bar for next level
+    m_LevelTimer = 0.0f;
+    m_ProgressBarPercentage = 0.0f;
+
+    auto event = std::make_shared<LevelCompletedEvent>(m_ElapsedTime, oldLevel, m_CurrentLevel);
+    Notify(event);
+}
+
+int Game::GetCurrentLevel() const {
+    return m_CurrentLevel;
+}
+
+int Game::GetNodesDestroyedThisLevel() const {
+    return m_NodesDestroyedThisLevel;
+}
+
+bool Game::IsBossActive() const {
+    return m_BossActive;
 }

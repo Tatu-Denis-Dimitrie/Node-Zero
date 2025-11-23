@@ -36,4 +36,6 @@ class Node : public INode {
     void Update(float deltaTime) override;
     void Kill() override;
     void TakeDamage(float damage) override;
+
+    void SetHP(float hp);
 };

@@ -2,8 +2,14 @@
 
 Node::Node(NodeShape shape, float size, float speed)
     : m_Position(0.0f, 0.0f), m_Shape(shape), m_State(NodeState::Inactive), m_Size(size), m_Speed(speed), m_VelocityX(0.0f), m_VelocityY(0.0f), m_Rotation(0.0f) {
-    m_MaxHP = size * 2.0f;
-    m_HP = m_MaxHP;
+    // Boss nodes have custom HP set externally, normal nodes use size-based HP
+    if (shape == NodeShape::Boss) {
+        m_MaxHP = 1.0f;  // Will be set by SpawnBoss
+        m_HP = 1.0f;
+    } else {
+        m_MaxHP = size * 2.0f;
+        m_HP = m_MaxHP;
+    }
 }
 
 Position& Node::GetPosition() {
@@ -80,4 +86,9 @@ void Node::Update(float deltaTime) {
     if (m_Rotation >= 360.0f) {
         m_Rotation -= 360.0f;
     }
+}
+
+void Node::SetHP(float hp) {
+    m_MaxHP = hp;
+    m_HP = hp;
 }

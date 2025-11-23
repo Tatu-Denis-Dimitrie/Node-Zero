@@ -127,3 +127,48 @@ class GameOverEvent : public GameEvent {
    private:
     int m_finalScore;
 };
+
+class BossSpawnedEvent : public GameEvent {
+   public:
+    BossSpawnedEvent(float timestamp, int level, float bossHP)
+        : GameEvent(timestamp), m_level(level), m_bossHP(bossHP) {}
+
+    std::string GetType() const override { return "BossSpawned"; }
+
+    int GetLevel() const { return m_level; }
+    float GetBossHP() const { return m_bossHP; }
+
+   private:
+    int m_level;
+    float m_bossHP;
+};
+
+class BossDefeatedEvent : public GameEvent {
+   public:
+    BossDefeatedEvent(float timestamp, int level, int scoreGained)
+        : GameEvent(timestamp), m_level(level), m_scoreGained(scoreGained) {}
+
+    std::string GetType() const override { return "BossDefeated"; }
+
+    int GetLevel() const { return m_level; }
+    int GetScoreGained() const { return m_scoreGained; }
+
+   private:
+    int m_level;
+    int m_scoreGained;
+};
+
+class LevelCompletedEvent : public GameEvent {
+   public:
+    LevelCompletedEvent(float timestamp, int oldLevel, int newLevel)
+        : GameEvent(timestamp), m_oldLevel(oldLevel), m_newLevel(newLevel) {}
+
+    std::string GetType() const override { return "LevelCompleted"; }
+
+    int GetOldLevel() const { return m_oldLevel; }
+    int GetNewLevel() const { return m_newLevel; }
+
+   private:
+    int m_oldLevel;
+    int m_newLevel;
+};

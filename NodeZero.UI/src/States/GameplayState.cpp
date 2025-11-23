@@ -104,6 +104,10 @@ void GameplayState::Draw() {
                 case NodeShape::Hexagon:
                     Renderer::DrawHexagonNode(x, y, size, hpPercentage, RED, rotation);
                     break;
+                case NodeShape::Boss:
+                    // Boss: Pink-purple large square
+                    Renderer::DrawSquareNode(x, y, size, hpPercentage, Color{200, 50, 200, 255}, rotation);
+                    break;
                 default:
                     Renderer::DrawCircleNode(x, y, size, hpPercentage, RED);
                     break;
@@ -196,4 +200,17 @@ void GameplayState::Draw() {
     snprintf(progressText, sizeof(progressText), "%.0f%%", progressPercentage);
     int textWidth = MeasureText(progressText, 20);
     DrawText(progressText, progressBarX + (progressBarWidth - textWidth) / 2, progressBarY + 5, 20, WHITE);
+
+    // Level Display with time indicator
+    char levelText[64];
+    int currentLevel = m_Game.GetCurrentLevel();
+    snprintf(levelText, sizeof(levelText), "Level %d - Progress", currentLevel);
+    DrawText(levelText, progressBarX, progressBarY - 30, 24, YELLOW);
+
+    // Boss Warning
+    if (m_Game.IsBossActive()) {
+        const char* bossWarning = "BOSS FIGHT!";
+        int bossTextWidth = MeasureText(bossWarning, 32);
+        DrawText(bossWarning, (GetScreenWidth() - bossTextWidth) / 2, 50, 32, Color{255, 0, 255, 255});
+    }
 }

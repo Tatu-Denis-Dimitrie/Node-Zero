@@ -40,6 +40,13 @@ class Game : public IGame {
 
     float m_ProgressBarPercentage;
 
+    int m_CurrentLevel;
+    int m_NodesDestroyedThisLevel;
+    bool m_BossActive;
+    INode* m_Boss;
+    float m_LevelTimer;
+    float m_LevelDuration;
+
    public:
     Game();
     ~Game();
@@ -90,6 +97,10 @@ class Game : public IGame {
 
     float GetProgressBarPercentage() const override;
 
+    int GetCurrentLevel() const override;
+    int GetNodesDestroyedThisLevel() const override;
+    bool IsBossActive() const override;
+
     // ISubject methods
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;
@@ -101,6 +112,9 @@ class Game : public IGame {
     void SpawnPointPickups(const Position& origin);
     void UpdatePickups(float deltaTime);
     float RandomRange(float minValue, float maxValue) const;
+    void SpawnBoss();
+    void CheckBossDefeat();
+    void AdvanceToNextLevel();
 
    private:
     static constexpr float PICKUP_LIFETIME = 10.0f;
@@ -111,4 +125,10 @@ class Game : public IGame {
     static constexpr float DAMAGE_ZONE_UPGRADE_AMOUNT = 10.0f;
     static constexpr int DAMAGE_UPGRADE_COST = 60;
     static constexpr float DAMAGE_UPGRADE_AMOUNT = 5.0f;
+
+    static constexpr int NODES_PER_LEVEL = 20;
+    static constexpr float BOSS_SIZE = 120.0f;
+    static constexpr float BOSS_SPEED = 25.0f;
+    static constexpr float BOSS_HP_BASE = 200.0f;
+    static constexpr float LEVEL_DURATION = 60.0f;  // 60 seconds per level
 };

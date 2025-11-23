@@ -59,4 +59,8 @@ class IGame : public ISubject {
     virtual int GetDamageUpgradeCost() const = 0;
 
     virtual float GetProgressBarPercentage() const = 0;
+
+    virtual int GetCurrentLevel() const = 0;
+    virtual int GetNodesDestroyedThisLevel() const = 0;
+    virtual bool IsBossActive() const = 0;
 };

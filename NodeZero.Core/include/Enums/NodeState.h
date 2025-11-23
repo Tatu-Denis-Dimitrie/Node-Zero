@@ -6,7 +6,9 @@ enum class NodeShape
 
     Square,
 
-    Hexagon
+    Hexagon,
+
+    Boss
 };
 
 enum class NodeState
