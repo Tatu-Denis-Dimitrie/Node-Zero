@@ -82,7 +82,7 @@ void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, 
         }
     }
 
-    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, RED);
+    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, color);
 }
 
 void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
@@ -110,10 +110,10 @@ void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, 
     }
 
     float borderThickness = 3.0f;
-    DrawLineEx(topLeft, topRight, borderThickness, RED);
-    DrawLineEx(topRight, bottomRight, borderThickness, RED);
-    DrawLineEx(bottomRight, bottomLeft, borderThickness, RED);
-    DrawLineEx(bottomLeft, topLeft, borderThickness, RED);
+    DrawLineEx(topLeft, topRight, borderThickness, color);
+    DrawLineEx(topRight, bottomRight, borderThickness, color);
+    DrawLineEx(bottomRight, bottomLeft, borderThickness, color);
+    DrawLineEx(bottomLeft, topLeft, borderThickness, color);
 }
 
 void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
@@ -171,7 +171,7 @@ void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage,
         }
     }
 
-    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, RED);
+    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, color);
 }
 
 void Renderer::DrawPickup(float x, float y, float size, Color color) {

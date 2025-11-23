@@ -61,7 +61,7 @@ void SettingsScreen::Draw() {
     snprintf(damagePerTickText, sizeof(damagePerTickText), "Damage/Tick: %.0f", m_Game.GetDamagePerTick());
     DrawTextEx(m_Font, damagePerTickText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 295)}, 22, 1, WHITE);
 
-    int upgradeY = screenHeight / 2 - 100; // Moved up slightly to fit more buttons
+    int upgradeY = screenHeight / 2 - 100;  // Moved up slightly to fit more buttons
     DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - 80), static_cast<float>(upgradeY - 40)}, 30, 1, Color{100, 200, 255, 255});
 
     int buttonX = screenWidth / 2 - 140;
@@ -127,12 +127,12 @@ void SettingsScreen::Draw() {
     // Damage Zone Upgrade Button
     int damageZoneButtonY = upgradeY + 150;
     Rectangle damageZoneButton = {static_cast<float>(buttonX), static_cast<float>(damageZoneButtonY),
-                                   static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
+                                  static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageZoneHovered = CheckCollisionPointRec(mousePos, damageZoneButton);
 
     bool canAffordDamageZone = saveData.coins >= m_Game.GetDamageZoneUpgradeCost();
     Color damageZoneButtonColor = canAffordDamageZone ? (isDamageZoneHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
-                                                       : Color{100, 100, 100, 255};
+                                                      : Color{100, 100, 100, 255};
 
     DrawRectangleRec(damageZoneButton, damageZoneButtonColor);
     DrawRectangleLinesEx(damageZoneButton, 1, WHITE);
@@ -159,7 +159,7 @@ void SettingsScreen::Draw() {
 
     bool canAffordDamage = saveData.coins >= m_Game.GetDamageUpgradeCost();
     Color damageButtonColor = canAffordDamage ? (isDamageHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
-                                               : Color{100, 100, 100, 255};
+                                              : Color{100, 100, 100, 255};
 
     DrawRectangleRec(damageButton, damageButtonColor);
     DrawRectangleLinesEx(damageButton, 1, WHITE);

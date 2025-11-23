@@ -1,7 +1,6 @@
 #pragma once
 
-struct GameConfig
-{
+struct GameConfig {
     // Screen settings
     static constexpr float DEFAULT_SCREEN_WIDTH = 1200.0f;
     static constexpr float DEFAULT_SCREEN_HEIGHT = 800.0f;
