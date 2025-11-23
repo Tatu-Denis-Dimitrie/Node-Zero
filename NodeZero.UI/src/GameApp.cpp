@@ -8,6 +8,7 @@
 #include "../include/Renderer.h"
 #include "../include/Screens/GameplayScreen.h"
 #include "../include/Screens/LevelCompletedScreen.h"
+#include "../include/Screens/GameOverScreen.h"
 #include "../include/Screens/MainMenuScreen.h"
 #include "../include/Screens/PauseMenuScreen.h"
 #include "../include/Screens/SettingsScreen.h"
@@ -56,6 +57,7 @@ void GameApp::Initialize() {
     m_PauseMenuScreen = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback, m_Font);
     m_SettingsScreen = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback, m_Font);
     m_LevelCompletedScreen = std::make_unique<LevelCompletedScreen>(*m_Game, stateChangeCallback, m_Font);
+    m_GameOverScreen = std::make_unique<GameOverScreen>(*m_Game, stateChangeCallback, m_Font);
 
     // CRT Shader setup
     m_RenderTarget = LoadRenderTexture(screenWidth, screenHeight);
@@ -113,6 +115,8 @@ void GameApp::Update() {
             m_SettingsScreen->Update(deltaTime);
             break;
         case GameScreen::GameOver:
+            m_GameOverScreen->Update(deltaTime);
+            break;
         case GameScreen::Quit:
             break;
     }
@@ -124,7 +128,7 @@ void GameApp::Draw() {
     ClearBackground(Color{40, 40, 40, 255});
 
     // Always draw gameplay if playing or paused (so pause menu has game background)
-    if (m_CurrentState == GameScreen::Playing || m_CurrentState == GameScreen::Paused || m_CurrentState == GameScreen::LevelCompleted) {
+    if (m_CurrentState == GameScreen::Playing || m_CurrentState == GameScreen::Paused || m_CurrentState == GameScreen::LevelCompleted || m_CurrentState == GameScreen::GameOver) {
         m_GameplayScreen->Draw();
     }
 
@@ -150,6 +154,8 @@ void GameApp::Draw() {
             m_SettingsScreen->Draw();
             break;
         case GameScreen::GameOver:
+            m_GameOverScreen->Draw();
+            break;
         case GameScreen::Quit:
             break;
     }

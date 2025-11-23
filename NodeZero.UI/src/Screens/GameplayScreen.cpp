@@ -28,9 +28,10 @@ void GameplayScreen::Update(float deltaTime) {
 
     // Verificare game over o singură dată (după toate update-urile)
     if (m_Game.ShouldGameOver()) {
+        // Save progress (coins, stats) before game over
         m_Game.SaveProgress();
-        m_Game.Reset();
-        m_StateChangeCallback(GameScreen::MainMenu);
+        // Do NOT reset here, so we can show the state in GameOver screen
+        m_StateChangeCallback(GameScreen::GameOver);
         return;
     }
 
