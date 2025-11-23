@@ -5,10 +5,11 @@
 #include "../../include/Widgets/Menu.h"
 #include "Enums/GameScreen.h"
 #include "IGame.h"
+#include "raylib.h"
 
 class PauseMenuScreen {
    public:
-    PauseMenuScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
+    PauseMenuScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
 
     void Update(float deltaTime);
     void Draw();

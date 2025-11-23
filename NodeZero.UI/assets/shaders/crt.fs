@@ -60,32 +60,26 @@ float vignette(vec2 uv, float intensity) {
 }
 
 void main() {
-    // Aplicare barrel distortion CLASIC cu colțuri negre vizibile
-    vec2 distortedUV = barrelDistortion(fragTexCoord, 0.1);
-
-    // Afișează negru în colțuri (afară din ecran după distorsiune)
-    if (distortedUV.x < -0.013 || distortedUV.x > 1.013 || distortedUV.y < -0.013 || distortedUV.y > 1.013) {
-        finalColor = vec4(0.0, 0.0, 0.0, 1.0);
-        return;
-    }
+    // Fără barrel distortion - folosim UV-urile normale
+    vec2 uv = fragTexCoord;
 
     // Chromatic aberration (subtil, ca în Nodebuster)
-    vec3 color = chromaticAberration(texture0, distortedUV, 1.0);
+    vec3 color = chromaticAberration(texture0, uv, 1.0);
 
     // Aplicare scanlines orizontale (subtile)
-    float scanH = scanlineHorizontal(distortedUV, 0.15);
+    float scanH = scanlineHorizontal(uv, 0.15);
     color *= scanH;
 
     // Aplicare scanlines verticale (foarte subtile)
-    // float scanV = scanlineVertical(distortedUV, 0.08);
+    // float scanV = scanlineVertical(uv, 0.08);
     // color *= scanV;
 
     // Noise flicker foarte fin
-    float noiseVal = noise(distortedUV * time * 0.01) * 0.02;
+    float noiseVal = noise(uv * time * 0.01) * 0.02;
     color += vec3(noiseVal);
 
     // Vignette ușor
-    float vig = vignette(distortedUV, 0.3);
+    float vig = vignette(uv, 0.3);
     color *= vig;
 
     // Flicker random foarte subtil (TV vechi)

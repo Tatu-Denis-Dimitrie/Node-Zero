@@ -5,8 +5,8 @@
 #include "Systems/SaveSystem.h"
 #include "Types/SaveData.h"
 
-SettingsScreen::SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback)
-    : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_WasMousePressed(false), m_IsFirstFrame(true) {
+SettingsScreen::SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
+    : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_WasMousePressed(false), m_IsFirstFrame(true), m_Font(font) {
 }
 
 void SettingsScreen::Update(float deltaTime) {
@@ -20,45 +20,45 @@ void SettingsScreen::Draw() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
 
-    DrawText("UPGRADES", screenWidth / 2 - 100, 50, 40, WHITE);
+    DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - 100), 50}, 40, 1, WHITE);
 
     SaveData saveData = SaveSystem::LoadProgress();
 
     int statsX = 50;
     int statsY = 150;
 
-    DrawText("STATISTICS", statsX, statsY, 28, YELLOW);
+    DrawTextEx(m_Font, "STATISTICS", Vector2{static_cast<float>(statsX), static_cast<float>(statsY)}, 28, 1, YELLOW);
 
     char coinsText[64];
     snprintf(coinsText, sizeof(coinsText), "Coins: %d", saveData.coins);
-    DrawText(coinsText, statsX, statsY + 50, 22, Color{255, 215, 0, 255});
+    DrawTextEx(m_Font, coinsText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 50)}, 22, 1, Color{255, 215, 0, 255});
 
     char highScoreText[64];
     snprintf(highScoreText, sizeof(highScoreText), "High Score: %d", saveData.highScore);
-    DrawText(highScoreText, statsX, statsY + 85, 22, WHITE);
+    DrawTextEx(m_Font, highScoreText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 85)}, 22, 1, WHITE);
 
     char gamesPlayedText[64];
     snprintf(gamesPlayedText, sizeof(gamesPlayedText), "Games Played: %d", saveData.gamesPlayed);
-    DrawText(gamesPlayedText, statsX, statsY + 120, 22, WHITE);
+    DrawTextEx(m_Font, gamesPlayedText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 120)}, 22, 1, WHITE);
 
     char totalNodesText[64];
     snprintf(totalNodesText, sizeof(totalNodesText), "Total Nodes: %d", saveData.totalNodesDestroyed);
-    DrawText(totalNodesText, statsX, statsY + 155, 22, WHITE);
+    DrawTextEx(m_Font, totalNodesText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 155)}, 22, 1, WHITE);
 
     char maxHealthText[64];
     snprintf(maxHealthText, sizeof(maxHealthText), "Max Health: %.0f", m_Game.GetMaxHealth());
-    DrawText(maxHealthText, statsX, statsY + 190, 22, WHITE);
+    DrawTextEx(m_Font, maxHealthText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 190)}, 22, 1, WHITE);
 
     char damageZoneSizeText[64];
     snprintf(damageZoneSizeText, sizeof(damageZoneSizeText), "Damage Zone: %.0f", m_Game.GetDamageZoneSize());
-    DrawText(damageZoneSizeText, statsX, statsY + 225, 22, WHITE);
+    DrawTextEx(m_Font, damageZoneSizeText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 225)}, 22, 1, WHITE);
 
     char damagePerTickText[64];
     snprintf(damagePerTickText, sizeof(damagePerTickText), "Damage/Tick: %.0f", m_Game.GetDamagePerTick());
-    DrawText(damagePerTickText, statsX, statsY + 260, 22, WHITE);
+    DrawTextEx(m_Font, damagePerTickText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 260)}, 22, 1, WHITE);
 
     int upgradeY = screenHeight / 2 - 80;
-    DrawText("UPGRADES", screenWidth / 2 - 80, upgradeY - 40, 30, Color{100, 200, 255, 255});
+    DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - 80), static_cast<float>(upgradeY - 40)}, 30, 1, Color{100, 200, 255, 255});
 
     int buttonX = screenWidth / 2 - 140;
     int buttonY = upgradeY + 10;
@@ -75,15 +75,15 @@ void SettingsScreen::Draw() {
                                   : Color{100, 100, 100, 255};
 
     DrawRectangleRec(upgradeButton, buttonColor);
-    DrawRectangleLinesEx(upgradeButton, 2, WHITE);
+    DrawRectangleLinesEx(upgradeButton, 1, WHITE);
 
     char buttonText[64];
     snprintf(buttonText, sizeof(buttonText), "Upgrade +1.0 HP", m_Game.GetHealthUpgradeCost());
-    DrawText(buttonText, buttonX + 65, buttonY + 8, 22, WHITE);
+    DrawTextEx(m_Font, buttonText, Vector2{static_cast<float>(buttonX + 65), static_cast<float>(buttonY + 8)}, 22, 1, WHITE);
 
     char costText[32];
     snprintf(costText, sizeof(costText), "Cost: %d coins", m_Game.GetHealthUpgradeCost());
-    DrawText(costText, buttonX + 75, buttonY + 28, 18, LIGHTGRAY);
+    DrawTextEx(m_Font, costText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(buttonY + 28)}, 18, 1, LIGHTGRAY);
 
     bool isMousePressed = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
 
@@ -104,15 +104,15 @@ void SettingsScreen::Draw() {
                                                        : Color{100, 100, 100, 255};
 
     DrawRectangleRec(damageZoneButton, damageZoneButtonColor);
-    DrawRectangleLinesEx(damageZoneButton, 2, WHITE);
+    DrawRectangleLinesEx(damageZoneButton, 1, WHITE);
 
     char damageZoneButtonText[64];
     snprintf(damageZoneButtonText, sizeof(damageZoneButtonText), "Upgrade +10 Zone");
-    DrawText(damageZoneButtonText, buttonX + 55, damageZoneButtonY + 8, 22, WHITE);
+    DrawTextEx(m_Font, damageZoneButtonText, Vector2{static_cast<float>(buttonX + 55), static_cast<float>(damageZoneButtonY + 8)}, 22, 1, WHITE);
 
     char damageZoneCostText[32];
     snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d coins", m_Game.GetDamageZoneUpgradeCost());
-    DrawText(damageZoneCostText, buttonX + 75, damageZoneButtonY + 28, 18, LIGHTGRAY);
+    DrawTextEx(m_Font, damageZoneCostText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(damageZoneButtonY + 28)}, 18, 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isDamageZoneHovered && canAffordDamageZone && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyDamageZoneUpgrade()) {
@@ -131,15 +131,15 @@ void SettingsScreen::Draw() {
                                                : Color{100, 100, 100, 255};
 
     DrawRectangleRec(damageButton, damageButtonColor);
-    DrawRectangleLinesEx(damageButton, 2, WHITE);
+    DrawRectangleLinesEx(damageButton, 1, WHITE);
 
     char damageButtonText[64];
     snprintf(damageButtonText, sizeof(damageButtonText), "Upgrade +5 Damage");
-    DrawText(damageButtonText, buttonX + 50, damageButtonY + 8, 22, WHITE);
+    DrawTextEx(m_Font, damageButtonText, Vector2{static_cast<float>(buttonX + 50), static_cast<float>(damageButtonY + 8)}, 22, 1, WHITE);
 
     char damageCostText[32];
     snprintf(damageCostText, sizeof(damageCostText), "Cost: %d coins", m_Game.GetDamageUpgradeCost());
-    DrawText(damageCostText, buttonX + 75, damageButtonY + 28, 18, LIGHTGRAY);
+    DrawTextEx(m_Font, damageCostText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(damageButtonY + 28)}, 18, 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isDamageHovered && canAffordDamage && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyDamageUpgrade()) {
@@ -150,5 +150,5 @@ void SettingsScreen::Draw() {
     m_WasMousePressed = isMousePressed;
     m_IsFirstFrame = false;
 
-    DrawText("Press ESC to return to menu", screenWidth / 2 - 180, screenHeight - 50, 20, LIGHTGRAY);
+    DrawTextEx(m_Font, "Press ESC to return to menu", Vector2{static_cast<float>(screenWidth / 2 - 180), static_cast<float>(screenHeight - 50)}, 20, 1, LIGHTGRAY);
 }

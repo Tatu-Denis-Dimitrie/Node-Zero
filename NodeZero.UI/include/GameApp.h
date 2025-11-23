@@ -46,4 +46,5 @@ class GameApp {
     int m_ResolutionLoc;
     int m_TimeLoc;
     float m_ElapsedTime;
+    Font m_Font;
 };

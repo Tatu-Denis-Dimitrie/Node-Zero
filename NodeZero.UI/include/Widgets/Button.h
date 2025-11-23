@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IWidget.h"
+#include "raylib.h"
 #include <string>
 #include <functional>
 
@@ -18,9 +19,10 @@ private:
     Color m_TextColor;
     bool m_IsActive;
     std::function<void()> m_OnClick;
+    Font m_Font;
 
 public:
-    Button(float x, float y, float width, float height, const char* text);
+    Button(float x, float y, float width, float height, const char* text, Font font);
 
     void Draw() override;
     void Update() override;

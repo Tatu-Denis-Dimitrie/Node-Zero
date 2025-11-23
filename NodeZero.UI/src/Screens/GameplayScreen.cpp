@@ -7,8 +7,8 @@
 #include "INode.h"
 #include "raymath.h"
 
-GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback)
-    : m_Game(game), m_StateChangeCallback(stateChangeCallback) {
+GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
+    : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font) {
 }
 
 void GameplayScreen::Update(float deltaTime) {
@@ -160,44 +160,13 @@ void GameplayScreen::Draw() {
         static_cast<int>(centerSquareSize),
         WHITE);
 
-    // Draw Progress Bar (bottom of screen, full width)
-    int screenWidth = GetScreenWidth();
-    int screenHeight = GetScreenHeight();
-    int progressBarHeight = 40;
-    int progressBarMargin = 10;
-    int progressBarY = screenHeight - progressBarHeight - progressBarMargin;
-    int progressBarX = 0;
-    int progressBarWidth = screenWidth;
-
-    float progressPercentage = m_Game.GetProgressBarPercentage();
-
-    // Background
-    DrawRectangle(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{20, 20, 30, 220});
-
-    // Fill (cyan/blue color similar to image)
-    int fillWidth = static_cast<int>(progressBarWidth * (progressPercentage / 100.0f));
-    DrawRectangle(progressBarX, progressBarY, fillWidth, progressBarHeight, Color{0, 180, 220, 255});
-
-    // Border
-    DrawRectangleLines(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{0, 200, 255, 255});
-
-    // Percentage Text
-    char progressText[32];
-    snprintf(progressText, sizeof(progressText), "%.0f%%", progressPercentage);
-    int textWidth = MeasureText(progressText, 22);
-    DrawText(progressText, (screenWidth - textWidth) / 2, progressBarY + 9, 22, WHITE);
-
-    // "progress" label above the bar
-    int currentLevel = m_Game.GetCurrentLevel();
-    char progressLabel[64];
-    snprintf(progressLabel, sizeof(progressLabel), "Level %d - progress", currentLevel);
-    int labelWidth = MeasureText(progressLabel, 20);
-    DrawText(progressLabel, (screenWidth - labelWidth) / 2, progressBarY - 30, 20, Color{200, 200, 200, 255});
+    // Draw Progress Bar
+    Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
 
     // Boss Warning
     if (m_Game.IsBossActive()) {
         const char* bossWarning = "BOSS FIGHT!";
-        int bossTextWidth = MeasureText(bossWarning, 32);
-        DrawText(bossWarning, (GetScreenWidth() - bossTextWidth) / 2, 50, 32, Color{255, 0, 255, 255});
+        Vector2 bossTextSize = MeasureTextEx(m_Font, bossWarning, 32, 1);
+        DrawTextEx(m_Font, bossWarning, Vector2{static_cast<float>((GetScreenWidth() - bossTextSize.x) / 2), 50.0f}, 32, 1, Color{255, 0, 255, 255});
     }
 }

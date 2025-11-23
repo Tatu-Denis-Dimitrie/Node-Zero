@@ -1,6 +1,6 @@
 #include "../../include/Widgets/Button.h"
 
-Button::Button(float x, float y, float width, float height, const char* text)
+Button::Button(float x, float y, float width, float height, const char* text, Font font)
     : m_X(x)
     , m_Y(y)
     , m_Width(width)
@@ -12,6 +12,7 @@ Button::Button(float x, float y, float width, float height, const char* text)
     , m_TextColor(BLACK)
     , m_IsActive(true)
     , m_OnClick(nullptr)
+    , m_Font(font)
 {
 }
 
@@ -46,11 +47,11 @@ void Button::Draw()
         BLACK
     );
 
-    int textWidth = MeasureText(m_Text.c_str(), 20);
-    int textX = static_cast<int>(m_X + (m_Width - textWidth) / 2);
-    int textY = static_cast<int>(m_Y + (m_Height - 20) / 2);
+    Vector2 textSize = MeasureTextEx(m_Font, m_Text.c_str(), 20, 1);
+    float textX = m_X + (m_Width - textSize.x) / 2;
+    float textY = m_Y + (m_Height - textSize.y) / 2;
 
-    DrawText(m_Text.c_str(), textX, textY, 20, m_TextColor);
+    DrawTextEx(m_Font, m_Text.c_str(), Vector2{textX, textY}, 20, 1, m_TextColor);
 }
 
 void Button::Update()

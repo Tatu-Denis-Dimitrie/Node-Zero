@@ -99,27 +99,28 @@ void Renderer::DrawPickup(float x, float y, float size, Color color) {
 
 // UI rendering methods (merged from UI.cpp)
 
-void Renderer::DrawDebugInfo(int posX, int posY) {
-    DrawFPS(posX, posY);
+void Renderer::DrawDebugInfo(int posX, int posY, Font font) {
+    std::string fpsText = "FPS: " + std::to_string(GetFPS());
+    DrawTextEx(font, fpsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, 20, 1, WHITE);
 }
 
-void Renderer::DrawTitle(const char* title, int posX, int posY, int fontSize, Color color) {
-    DrawText(title, posX, posY, fontSize, color);
+void Renderer::DrawTitle(const char* title, int posX, int posY, int fontSize, Color color, Font font) {
+    DrawTextEx(font, title, Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
 }
 
-void Renderer::DrawScore(int score, int posX, int posY, int fontSize, Color color) {
+void Renderer::DrawScore(int score, int posX, int posY, int fontSize, Color color, Font font) {
     std::string scoreText = "Score: " + std::to_string(score);
-    DrawText(scoreText.c_str(), posX, posY, fontSize, color);
+    DrawTextEx(font, scoreText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
 }
 
-void Renderer::DrawMultiplier(int multiplier, int posX, int posY, int fontSize, Color color) {
+void Renderer::DrawMultiplier(int multiplier, int posX, int posY, int fontSize, Color color, Font font) {
     if (multiplier > 1) {
         std::string multiplierText = "x" + std::to_string(multiplier);
-        DrawText(multiplierText.c_str(), posX, posY, fontSize, color);
+        DrawTextEx(font, multiplierText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
     }
 }
 
-void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, int width, int height) {
+void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, int width, int height, Font font) {
     DrawRectangle(posX, posY, width, height, Color{60, 60, 60, 255});
 
     float healthPercentage = health / maxHealth;
@@ -128,14 +129,8 @@ void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, 
 
     int barWidth = static_cast<int>(width * healthPercentage);
 
-    Color barColor;
-    if (healthPercentage > 0.6f) {
-        barColor = Color{0, 255, 100, 255};  // Green
-    } else if (healthPercentage > 0.3f) {
-        barColor = Color{255, 200, 0, 255};  // Yellow
-    } else {
-        barColor = Color{255, 50, 50, 255};  // Red
-    }
+    // Always red
+    Color barColor = Color{255, 50, 50, 255};
 
     DrawRectangle(posX, posY, barWidth, height, barColor);
 
@@ -143,5 +138,32 @@ void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, 
 
     char healthBuffer[32];
     snprintf(healthBuffer, sizeof(healthBuffer), "%.1f / %.0f", health, maxHealth);
-    DrawText(healthBuffer, posX + 5, posY + 2, 16, WHITE);
+    DrawTextEx(font, healthBuffer, Vector2{static_cast<float>(posX + 5), static_cast<float>(posY + 2)}, 16, 1, WHITE);
+}
+
+void Renderer::DrawProgressBar(float percentage, int currentLevel, Font font) {
+    int screenWidth = GetScreenWidth();
+    int screenHeight = GetScreenHeight();
+    int progressBarHeight = 25;
+    int progressBarMargin = 10;
+    int progressBarSideMargin = 20;
+    int progressBarY = screenHeight - progressBarHeight - progressBarMargin;
+    int progressBarX = progressBarSideMargin;
+    int progressBarWidth = screenWidth - (progressBarSideMargin * 2);
+
+    // Background
+    DrawRectangle(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{20, 20, 30, 220});
+
+    // Fill
+    int fillWidth = static_cast<int>(progressBarWidth * (percentage / 100.0f));
+    DrawRectangle(progressBarX, progressBarY, fillWidth, progressBarHeight, Color{255, 255, 255, 255});
+
+    // Border
+    DrawRectangleLines(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{255, 255, 255, 255});
+
+    // "progress" label above the bar
+    char progressLabel[64];
+    snprintf(progressLabel, sizeof(progressLabel), "Level %d - progress", currentLevel);
+    Vector2 labelSize = MeasureTextEx(font, progressLabel, 20, 1);
+    DrawTextEx(font, progressLabel, Vector2{static_cast<float>((screenWidth - labelSize.x) / 2), static_cast<float>(progressBarY - 30)}, 20, 1, Color{200, 200, 200, 255});
 }

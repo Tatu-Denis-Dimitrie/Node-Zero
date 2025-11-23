@@ -36,6 +36,9 @@ void GameApp::Initialize() {
     SetExitKey(KEY_NULL);
     SetTargetFPS(240);
 
+    // Load custom font
+    m_Font = LoadFont("assets/fonts/ari-w9500-display.ttf");
+
     // Initialize Game
     m_Game = std::make_unique<Game>();
     m_Game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
@@ -47,10 +50,10 @@ void GameApp::Initialize() {
     // Initialize Screens
     auto stateChangeCallback = [this](GameScreen newState) { ChangeState(newState); };
 
-    m_MainMenuScreen = std::make_unique<MainMenuScreen>(stateChangeCallback);
-    m_GameplayScreen = std::make_unique<GameplayScreen>(*m_Game, stateChangeCallback);
-    m_PauseMenuScreen = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback);
-    m_SettingsScreen = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback);
+    m_MainMenuScreen = std::make_unique<MainMenuScreen>(stateChangeCallback, m_Font);
+    m_GameplayScreen = std::make_unique<GameplayScreen>(*m_Game, stateChangeCallback, m_Font);
+    m_PauseMenuScreen = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback, m_Font);
+    m_SettingsScreen = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback, m_Font);
 
     // CRT Shader setup
     m_RenderTarget = LoadRenderTexture(screenWidth, screenHeight);
@@ -111,6 +114,7 @@ void GameApp::Update() {
 }
 
 void GameApp::Draw() {
+    // Draw EVERYTHING to the render target first (so CRT shader applies to all)
     BeginTextureMode(m_RenderTarget);
     ClearBackground(Color{40, 40, 40, 255});
 
@@ -119,29 +123,16 @@ void GameApp::Draw() {
         m_GameplayScreen->Draw();
     }
 
-    EndTextureMode();
-
-    BeginDrawing();
-    ClearBackground(BLACK);
-
-    BeginShaderMode(m_CrtShader);
-    DrawTextureRec(
-        m_RenderTarget.texture,
-        Rectangle{0, 0, static_cast<float>(m_RenderTarget.texture.width), static_cast<float>(-m_RenderTarget.texture.height)},
-        Vector2{0, 0},
-        WHITE);
-    EndShaderMode();
-
-    // Draw UI on top of shader
+    // Draw all UI elements inside the render target (before shader)
     switch (m_CurrentState) {
         case GameScreen::Playing:
-            Renderer::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
-            Renderer::DrawDebugInfo(10, 40);
-            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
-            Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24);
+            Renderer::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY, m_Font);
+            Renderer::DrawDebugInfo(10, 40, m_Font);
+            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE, m_Font);
+            Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24, m_Font);
             break;
         case GameScreen::Paused:
-            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
+            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE, m_Font);
             m_PauseMenuScreen->Draw();
             break;
         case GameScreen::MainMenu:
@@ -155,10 +146,25 @@ void GameApp::Draw() {
             break;
     }
 
+    EndTextureMode();
+
+    // Now draw the render target with CRT shader applied
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    BeginShaderMode(m_CrtShader);
+    DrawTextureRec(
+        m_RenderTarget.texture,
+        Rectangle{0, 0, static_cast<float>(m_RenderTarget.texture.width), static_cast<float>(-m_RenderTarget.texture.height)},
+        Vector2{0, 0},
+        WHITE);
+    EndShaderMode();
+
     EndDrawing();
 }
 
 void GameApp::Cleanup() {
+    UnloadFont(m_Font);
     UnloadShader(m_CrtShader);
     UnloadRenderTexture(m_RenderTarget);
     ShowCursor();

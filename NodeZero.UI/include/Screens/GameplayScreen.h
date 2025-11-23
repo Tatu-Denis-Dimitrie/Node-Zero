@@ -16,7 +16,7 @@ struct PickupCollectEffect {
 
 class GameplayScreen {
    public:
-    GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
+    GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
 
     void Update(float deltaTime);
     void Draw();
@@ -25,6 +25,7 @@ class GameplayScreen {
     IGame& m_Game;
     std::function<void(GameScreen)> m_StateChangeCallback;
     std::vector<PickupCollectEffect> m_PickupEffects;
+    Font m_Font;
 
     static constexpr float DAMAGE_ZONE_SIZE = 150.0f;
     static constexpr float DAMAGE_PER_TICK = 40.0f;

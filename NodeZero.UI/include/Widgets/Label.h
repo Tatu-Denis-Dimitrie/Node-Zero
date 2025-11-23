@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IWidget.h"
+#include "raylib.h"
 #include <string>
 
 class Label : public IWidget
@@ -12,9 +13,10 @@ private:
     int m_FontSize;
     Color m_Color;
     bool m_IsActive;
+    Font m_Font;
 
 public:
-    Label(float x, float y, const char* text, int fontSize = 20, Color color = BLACK);
+    Label(float x, float y, const char* text, Font font, int fontSize = 20, Color color = BLACK);
 
     void Draw() override;
     void Update() override;

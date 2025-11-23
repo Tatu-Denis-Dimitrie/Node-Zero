@@ -8,7 +8,7 @@
 
 class SettingsScreen {
    public:
-    SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
+    SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
 
     void Update(float deltaTime);
     void Draw();
@@ -18,4 +18,5 @@ class SettingsScreen {
     std::function<void(GameScreen)> m_StateChangeCallback;
     bool m_WasMousePressed;
     bool m_IsFirstFrame;
+    Font m_Font;
 };
