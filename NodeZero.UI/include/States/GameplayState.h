@@ -29,7 +29,7 @@ class GameplayState : public IAppState {
 
     static constexpr float DAMAGE_ZONE_SIZE = 150.0f;
     static constexpr float DAMAGE_PER_TICK = 40.0f;
-    static constexpr float PICKUP_COLLECT_DELAY = 1.0f;
+    // PICKUP_COLLECT_DELAY movută în Game.h (evită duplicare)
     static constexpr float PICKUP_COLLECT_EFFECT_DURATION = 1.0f;
     static constexpr float PICKUP_SPAWN_ANIM_DURATION = 0.45f;
 };

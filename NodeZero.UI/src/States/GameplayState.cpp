@@ -19,13 +19,6 @@ void GameplayState::Update(float deltaTime) {
     m_Game.UpdateAutoSpawn(deltaTime);
     m_Game.UpdateDamageTimer(deltaTime);
 
-    if (m_Game.ShouldGameOver()) {
-        m_Game.SaveProgress();
-        m_Game.Reset();
-        m_StateChangeCallback(GameState::MainMenu);
-        return;
-    }
-
     bool shouldDealDamage = m_Game.ShouldDealDamage();
     if (shouldDealDamage) {
         m_Game.ResetDamageTimer();
@@ -34,6 +27,7 @@ void GameplayState::Update(float deltaTime) {
     float damagePerTick = m_Game.GetDamagePerTick();
     m_Game.ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, damagePerTick, shouldDealDamage);
 
+    // Verificare game over o singură dată (după toate update-urile)
     if (m_Game.ShouldGameOver()) {
         m_Game.SaveProgress();
         m_Game.Reset();
@@ -41,26 +35,17 @@ void GameplayState::Update(float deltaTime) {
         return;
     }
 
-    const auto& pickups = m_Game.GetPickups();
-    for (const PointPickup& pickup : pickups) {
-        if (pickup.GetAge() < PICKUP_COLLECT_DELAY) continue;
+    // Colectare pickups - Core returnează pickup-urile colectate (fără logică de coliziune în UI)
+    std::vector<PointPickup> collectedPickups = m_Game.ProcessPickupCollection(mousePos.x, mousePos.y, damageZoneSize);
 
-        float collectRectX = mousePos.x - damageZoneSize / 2.0f;
-        float collectRectY = mousePos.y - damageZoneSize / 2.0f;
-
-        bool intersects = !(pickup.position.x + pickup.size < collectRectX ||
-                            pickup.position.x - pickup.size > collectRectX + damageZoneSize ||
-                            pickup.position.y + pickup.size < collectRectY ||
-                            pickup.position.y - pickup.size > collectRectY + damageZoneSize);
-
-        if (intersects && m_Game.CollectPickup(pickup.id)) {
-            PickupCollectEffect effect{};
-            effect.startPosition = Vector2{pickup.position.x, pickup.position.y};
-            effect.elapsed = 0.0f;
-            effect.duration = PICKUP_COLLECT_EFFECT_DURATION;
-            effect.size = pickup.size;
-            m_PickupEffects.push_back(effect);
-        }
+    // Creăm efecte vizuale pentru pickup-urile colectate
+    for (const PointPickup& pickup : collectedPickups) {
+        PickupCollectEffect effect{};
+        effect.startPosition = Vector2{pickup.position.x, pickup.position.y};
+        effect.elapsed = 0.0f;
+        effect.duration = PICKUP_COLLECT_EFFECT_DURATION;
+        effect.size = pickup.size;
+        m_PickupEffects.push_back(effect);
     }
 
     for (auto& effect : m_PickupEffects) {

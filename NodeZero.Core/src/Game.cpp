@@ -483,12 +483,13 @@ void Game::ResetDamageTimer() {
     m_DamageTimer = 0.0f;
 }
 
-void Game::ProcessPickupCollection(float centerX, float centerY, float zoneSize) {
+std::vector<PointPickup> Game::ProcessPickupCollection(float centerX, float centerY, float zoneSize) {
     float collectRectX = centerX - zoneSize / 2.0f;
     float collectRectY = centerY - zoneSize / 2.0f;
 
-    static constexpr float PICKUP_COLLECT_DELAY = 1.0f;
+    std::vector<PointPickup> collectedPickups;
 
+    // Folosim constanta din Game.h în loc de hardcoded (evită duplicare)
     for (const PointPickup& pickup : m_Pickups) {
         if (pickup.GetAge() < PICKUP_COLLECT_DELAY) {
             continue;
@@ -500,9 +501,12 @@ void Game::ProcessPickupCollection(float centerX, float centerY, float zoneSize)
                             pickup.position.y - pickup.size > collectRectY + zoneSize);
 
         if (intersects) {
+            collectedPickups.push_back(pickup);  // Salvăm pickup-ul înainte de colectare
             CollectPickup(pickup.id);
         }
     }
+
+    return collectedPickups;
 }
 
 bool Game::ShouldGameOver() const {
