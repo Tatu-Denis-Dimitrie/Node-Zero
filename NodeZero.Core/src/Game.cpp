@@ -5,12 +5,13 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "../include/Config/GameConfig.h"
 #include "../include/Events/GameEvents.h"
 #include "../include/Systems/SaveSystem.h"
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(LEVEL_DURATION) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     SaveData saveData = SaveSystem::LoadProgress();
@@ -125,7 +126,7 @@ const std::vector<PointPickup>& Game::GetPickups() const {
 
 void Game::SpawnNode(float x, float y) {
     NodeShape shape = GetRandomShape();
-    INode* node = CreateNode(shape, 30.0f, 100.0f);
+    INode* node = CreateNode(shape, GameConfig::NODE_DEFAULT_SIZE, GameConfig::NODE_DEFAULT_SPEED);
     node->Spawn(x, y);
     m_Nodes.push_back(node);
 
@@ -149,7 +150,7 @@ bool Game::CollectPickup(int pickupId) {
     }
 
     float age = it->GetAge();
-    if (age < PICKUP_COLLECT_DELAY) {
+    if (age < GameConfig::PICKUP_COLLECT_DELAY) {
         return false;
     }
 
@@ -217,9 +218,9 @@ void Game::SpawnPointPickups(const Position& origin) {
         pickup.position.x = origin.x + std::cos(angle) * radius;
         pickup.position.y = origin.y + std::sin(angle) * radius;
         pickup.spawnOrigin = origin;
-        pickup.size = PICKUP_SIZE;
-        pickup.lifetime = PICKUP_LIFETIME;
-        pickup.remainingTime = PICKUP_LIFETIME;
+        pickup.size = GameConfig::PICKUP_SIZE;
+        pickup.lifetime = GameConfig::PICKUP_LIFETIME;
+        pickup.remainingTime = GameConfig::PICKUP_LIFETIME;
         pickup.points = 1;
 
         m_Pickups.push_back(pickup);
@@ -310,11 +311,11 @@ int Game::GetHighScore() const {
 bool Game::BuyHealthUpgrade() {
     SaveData saveData = SaveSystem::LoadProgress();
 
-    if (saveData.coins < HEALTH_UPGRADE_COST) {
+    if (saveData.coins < GameConfig::HEALTH_UPGRADE_COST) {
         return false;
     }
 
-    saveData.coins -= HEALTH_UPGRADE_COST;
+    saveData.coins -= GameConfig::HEALTH_UPGRADE_COST;
 
     m_MaxHealth += 1.0f;
     saveData.maxHealth = m_MaxHealth;
@@ -329,7 +330,7 @@ bool Game::BuyHealthUpgrade() {
 }
 
 int Game::GetHealthUpgradeCost() const {
-    return HEALTH_UPGRADE_COST;
+    return GameConfig::HEALTH_UPGRADE_COST;
 }
 
 float Game::GetDamageZoneSize() const {
@@ -339,13 +340,13 @@ float Game::GetDamageZoneSize() const {
 bool Game::BuyDamageZoneUpgrade() {
     SaveData saveData = SaveSystem::LoadProgress();
 
-    if (saveData.coins < DAMAGE_ZONE_UPGRADE_COST) {
+    if (saveData.coins < GameConfig::DAMAGE_ZONE_UPGRADE_COST) {
         return false;
     }
 
-    saveData.coins -= DAMAGE_ZONE_UPGRADE_COST;
+    saveData.coins -= GameConfig::DAMAGE_ZONE_UPGRADE_COST;
 
-    m_DamageZoneSize += DAMAGE_ZONE_UPGRADE_AMOUNT;
+    m_DamageZoneSize += GameConfig::DAMAGE_ZONE_UPGRADE_AMOUNT;
     saveData.damageZoneSize = m_DamageZoneSize;
 
     SaveSystem::SaveProgress(saveData);
@@ -354,7 +355,7 @@ bool Game::BuyDamageZoneUpgrade() {
 }
 
 int Game::GetDamageZoneUpgradeCost() const {
-    return DAMAGE_ZONE_UPGRADE_COST;
+    return GameConfig::DAMAGE_ZONE_UPGRADE_COST;
 }
 
 float Game::GetDamagePerTick() const {
@@ -364,13 +365,13 @@ float Game::GetDamagePerTick() const {
 bool Game::BuyDamageUpgrade() {
     SaveData saveData = SaveSystem::LoadProgress();
 
-    if (saveData.coins < DAMAGE_UPGRADE_COST) {
+    if (saveData.coins < GameConfig::DAMAGE_UPGRADE_COST) {
         return false;
     }
 
-    saveData.coins -= DAMAGE_UPGRADE_COST;
+    saveData.coins -= GameConfig::DAMAGE_UPGRADE_COST;
 
-    m_DamagePerTick += DAMAGE_UPGRADE_AMOUNT;
+    m_DamagePerTick += GameConfig::DAMAGE_UPGRADE_AMOUNT;
     saveData.damagePerTick = m_DamagePerTick;
 
     SaveSystem::SaveProgress(saveData);
@@ -379,7 +380,7 @@ bool Game::BuyDamageUpgrade() {
 }
 
 int Game::GetDamageUpgradeCost() const {
-    return DAMAGE_UPGRADE_COST;
+    return GameConfig::DAMAGE_UPGRADE_COST;
 }
 
 float Game::GetProgressBarPercentage() const {
@@ -491,7 +492,7 @@ std::vector<PointPickup> Game::ProcessPickupCollection(float centerX, float cent
 
     // Folosim constanta din Game.h în loc de hardcoded (evită duplicare)
     for (const PointPickup& pickup : m_Pickups) {
-        if (pickup.GetAge() < PICKUP_COLLECT_DELAY) {
+        if (pickup.GetAge() < GameConfig::PICKUP_COLLECT_DELAY) {
             continue;
         }
 
@@ -532,8 +533,8 @@ void Game::SpawnBoss() {
 
     // Boss HP scales aggressively: 200 + (level-1) * 100
     // Level 1: 200, Level 2: 300, Level 3: 400, etc.
-    float bossHP = BOSS_HP_BASE + (m_CurrentLevel - 1) * 100.0f;
-    m_Boss = CreateNode(NodeShape::Boss, BOSS_SIZE, BOSS_SPEED);
+    float bossHP = GameConfig::BOSS_HP_BASE + (m_CurrentLevel - 1) * 100.0f;
+    m_Boss = CreateNode(NodeShape::Boss, GameConfig::BOSS_SIZE, GameConfig::BOSS_SPEED);
 
     // Cast to Node* to call SetHP
     Node* bossNode = static_cast<Node*>(m_Boss);

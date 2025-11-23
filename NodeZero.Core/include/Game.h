@@ -48,9 +48,6 @@ class Game : public IGame {
     float m_LevelDuration;
 
    public:
-    // Constante publice de configurare (accesibile pentru UI)
-    static constexpr float PICKUP_COLLECT_DELAY = 0.1f;  // Redus pentru colectare mai rapidă
-
     Game();
     ~Game();
 
@@ -118,20 +115,4 @@ class Game : public IGame {
     void SpawnBoss();
     void CheckBossDefeat();
     void AdvanceToNextLevel();
-
-   private:
-    static constexpr float PICKUP_LIFETIME = 10.0f;
-    static constexpr float PICKUP_SIZE = 6.0f;
-    // PICKUP_COLLECT_DELAY mutat în secțiunea publică
-    static constexpr int HEALTH_UPGRADE_COST = 50;
-    static constexpr int DAMAGE_ZONE_UPGRADE_COST = 75;
-    static constexpr float DAMAGE_ZONE_UPGRADE_AMOUNT = 10.0f;
-    static constexpr int DAMAGE_UPGRADE_COST = 60;
-    static constexpr float DAMAGE_UPGRADE_AMOUNT = 5.0f;
-
-    static constexpr int NODES_PER_LEVEL = 20;
-    static constexpr float BOSS_SIZE = 120.0f;
-    static constexpr float BOSS_SPEED = 25.0f;
-    static constexpr float BOSS_HP_BASE = 200.0f;
-    static constexpr float LEVEL_DURATION = 60.0f;  // 60 seconds per level
 };
