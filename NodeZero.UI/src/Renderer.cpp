@@ -8,7 +8,7 @@
 
 void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
     const int sides = 32;
-    
+
     // Generate vertices for the circle (polygon)
     std::vector<Vector2> vertices;
     vertices.reserve(sides);
@@ -31,7 +31,7 @@ void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, 
             // Local Up is (0, -1).
             // Rotated Up:
             float rad = rotation * DEG2RAD;
-            Vector2 fillDir = { sinf(rad), -cosf(rad) };
+            Vector2 fillDir = {sinf(rad), -cosf(rad)};
 
             // We want to keep vertices that are "below" the fill level.
             // "Below" means "towards the bottom", i.e. in the opposite direction of fillDir?
@@ -40,21 +40,21 @@ void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, 
             // Bottom is at projection -size (relative to center along fillDir).
             // Top is at projection +size.
             // We keep points with projection <= limit.
-            
+
             float limit = -size + hpPercentage * 2.0f * size;
-            
+
             std::vector<Vector2> clippedVertices;
             Vector2 center = {x, y};
-            
+
             // Sutherland-Hodgman clipping against the line defined by fillDir and limit
             Vector2 p1 = vertices.back();
             float dist1 = Vector2DotProduct(Vector2Subtract(p1, center), fillDir);
             bool p1Inside = (dist1 <= limit);
-            
+
             for (const auto& p2 : vertices) {
                 float dist2 = Vector2DotProduct(Vector2Subtract(p2, center), fillDir);
                 bool p2Inside = (dist2 <= limit);
-                
+
                 if (p1Inside && p2Inside) {
                     clippedVertices.push_back(p2);
                 } else if (p1Inside && !p2Inside) {
@@ -67,16 +67,16 @@ void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, 
                     clippedVertices.push_back(intersection);
                     clippedVertices.push_back(p2);
                 }
-                
+
                 p1 = p2;
                 dist1 = dist2;
                 p1Inside = p2Inside;
             }
-            
+
             if (clippedVertices.size() >= 3) {
                 Vector2 centerFan = clippedVertices[0];
                 for (size_t i = 1; i < clippedVertices.size() - 1; ++i) {
-                    DrawTriangle(centerFan, clippedVertices[i+1], clippedVertices[i], color);
+                    DrawTriangle(centerFan, clippedVertices[i + 1], clippedVertices[i], color);
                 }
             }
         }
@@ -130,7 +130,7 @@ void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage,
             DrawPoly(Vector2{x, y}, sides, size, rotation, color);
         } else {
             float rad = rotation * DEG2RAD;
-            Vector2 fillDir = { sinf(rad), -cosf(rad) };
+            Vector2 fillDir = {sinf(rad), -cosf(rad)};
             float limit = -size + hpPercentage * 2.0f * size;
 
             std::vector<Vector2> clippedVertices;
@@ -165,7 +165,7 @@ void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage,
             if (clippedVertices.size() >= 3) {
                 Vector2 centerFan = clippedVertices[0];
                 for (size_t i = 1; i < clippedVertices.size() - 1; ++i) {
-                    DrawTriangle(centerFan, clippedVertices[i+1], clippedVertices[i], color);
+                    DrawTriangle(centerFan, clippedVertices[i + 1], clippedVertices[i], color);
                 }
             }
         }
@@ -185,10 +185,6 @@ void Renderer::DrawPickup(float x, float y, float size, Color color) {
 void Renderer::DrawDebugInfo(int posX, int posY, Font font) {
     std::string fpsText = "FPS: " + std::to_string(GetFPS());
     DrawTextEx(font, fpsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, 20, 1, WHITE);
-}
-
-void Renderer::DrawTitle(const char* title, int posX, int posY, int fontSize, Color color, Font font) {
-    DrawTextEx(font, title, Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
 }
 
 void Renderer::DrawScore(int score, int posX, int posY, int fontSize, Color color, Font font) {

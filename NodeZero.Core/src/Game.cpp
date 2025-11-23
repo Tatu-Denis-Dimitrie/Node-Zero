@@ -569,7 +569,3 @@ int Game::GetCurrentLevel() const {
 int Game::GetNodesDestroyedThisLevel() const {
     return m_NodesDestroyedThisLevel;
 }
-
-bool Game::IsBossActive() const {
-    return m_BossActive;
-}

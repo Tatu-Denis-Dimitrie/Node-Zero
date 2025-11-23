@@ -163,10 +163,5 @@ void GameplayScreen::Draw() {
     // Draw Progress Bar
     Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
 
-    // Boss Warning
-    if (m_Game.IsBossActive()) {
-        const char* bossWarning = "BOSS FIGHT!";
-        Vector2 bossTextSize = MeasureTextEx(m_Font, bossWarning, 32, 1);
-        DrawTextEx(m_Font, bossWarning, Vector2{static_cast<float>((GetScreenWidth() - bossTextSize.x) / 2), 50.0f}, 32, 1, Color{255, 0, 255, 255});
-    }
+
 }

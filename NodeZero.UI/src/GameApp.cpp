@@ -126,10 +126,9 @@ void GameApp::Draw() {
     // Draw all UI elements inside the render target (before shader)
     switch (m_CurrentState) {
         case GameScreen::Playing:
-            Renderer::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY, m_Font);
-            Renderer::DrawDebugInfo(10, 40, m_Font);
-            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE, m_Font);
-            Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24, m_Font);
+            Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 10, 300, 24, m_Font);
+            Renderer::DrawDebugInfo(GetScreenWidth() - 100, 10, m_Font);
+            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 45, 20, WHITE, m_Font);
             break;
         case GameScreen::Paused:
             Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE, m_Font);

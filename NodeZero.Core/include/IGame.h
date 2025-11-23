@@ -62,5 +62,4 @@ class IGame : public ISubject {
 
     virtual int GetCurrentLevel() const = 0;
     virtual int GetNodesDestroyedThisLevel() const = 0;
-    virtual bool IsBossActive() const = 0;
 };

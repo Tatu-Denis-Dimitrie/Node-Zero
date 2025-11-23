@@ -99,7 +99,6 @@ class Game : public IGame {
 
     int GetCurrentLevel() const override;
     int GetNodesDestroyedThisLevel() const override;
-    bool IsBossActive() const override;
 
     // ISubject methods
     void Attach(std::shared_ptr<IObserver> observer) override;
