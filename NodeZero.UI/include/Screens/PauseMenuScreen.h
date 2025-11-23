@@ -3,13 +3,13 @@
 #include <functional>
 
 #include "../../include/Widgets/Menu.h"
-#include "Enums/GameState.h"
-#include "IAppState.h"
+#include "Enums/GameScreen.h"
+#include "IAppScreen.h"
 #include "IGame.h"
 
-class PauseMenuState : public IAppState {
+class PauseMenuScreen : public IAppScreen {
    public:
-    PauseMenuState(IGame& game, std::function<void(GameState)> stateChangeCallback);
+    PauseMenuScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
 
     void Update(float deltaTime) override;
     void Draw() override;
@@ -17,5 +17,5 @@ class PauseMenuState : public IAppState {
    private:
     std::unique_ptr<Menu> m_Menu;
     IGame& m_Game;
-    std::function<void(GameState)> m_StateChangeCallback;
+    std::function<void(GameScreen)> m_StateChangeCallback;
 };

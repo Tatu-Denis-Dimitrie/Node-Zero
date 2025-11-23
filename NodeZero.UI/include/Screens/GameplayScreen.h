@@ -3,8 +3,8 @@
 #include <functional>
 #include <vector>
 
-#include "Enums/GameState.h"
-#include "IAppState.h"
+#include "Enums/GameScreen.h"
+#include "IAppScreen.h"
 #include "IGame.h"
 #include "raylib.h"
 
@@ -15,16 +15,16 @@ struct PickupCollectEffect {
     float size;
 };
 
-class GameplayState : public IAppState {
+class GameplayScreen : public IAppScreen {
    public:
-    GameplayState(IGame& game, std::function<void(GameState)> stateChangeCallback);
+    GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
 
     void Update(float deltaTime) override;
     void Draw() override;
 
    private:
     IGame& m_Game;
-    std::function<void(GameState)> m_StateChangeCallback;
+    std::function<void(GameScreen)> m_StateChangeCallback;
     std::vector<PickupCollectEffect> m_PickupEffects;
 
     static constexpr float DAMAGE_ZONE_SIZE = 150.0f;

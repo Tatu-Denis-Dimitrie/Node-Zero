@@ -2,21 +2,21 @@
 
 #include <functional>
 
-#include "Enums/GameState.h"
-#include "IAppState.h"
+#include "Enums/GameScreen.h"
+#include "IAppScreen.h"
 #include "IGame.h"
 #include "raylib.h"
 
-class SettingsState : public IAppState {
+class SettingsScreen : public IAppScreen {
    public:
-    SettingsState(IGame& game, std::function<void(GameState)> stateChangeCallback);
+    SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
 
     void Update(float deltaTime) override;
     void Draw() override;
 
    private:
     IGame& m_Game;
-    std::function<void(GameState)> m_StateChangeCallback;
+    std::function<void(GameScreen)> m_StateChangeCallback;
     bool m_WasMousePressed;
     bool m_IsFirstFrame;
 };

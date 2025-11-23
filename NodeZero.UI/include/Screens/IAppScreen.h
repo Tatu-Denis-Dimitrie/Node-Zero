@@ -1,8 +1,8 @@
 #pragma once
 
-class IAppState {
+class IAppScreen {
    public:
-    virtual ~IAppState() = default;
+    virtual ~IAppScreen() = default;
     virtual void Update(float deltaTime) = 0;
     virtual void Draw() = 0;
 };

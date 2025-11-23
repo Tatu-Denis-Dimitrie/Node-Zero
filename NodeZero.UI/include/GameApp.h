@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "Enums/GameState.h"
-#include "States/IAppState.h"
+#include "Enums/GameScreen.h"
+#include "Screens/IAppScreen.h"
 #include "raylib.h"
 
 class IGame;
@@ -23,18 +23,18 @@ class GameApp {
     void Draw();
     void Cleanup();
 
-    void ChangeState(GameState newState);
+    void ChangeState(GameScreen newState);
 
-    // Game State
-    GameState m_CurrentState;
-    GameState m_PreviousState;
+    // Game Screen
+    GameScreen m_CurrentState;
+    GameScreen m_PreviousState;
     bool m_ShouldClose;
 
     // Core Systems
     std::unique_ptr<IGame> m_Game;
 
-    // States
-    std::map<GameState, std::unique_ptr<IAppState>> m_States;
+    // Screens
+    std::map<GameScreen, std::unique_ptr<IAppScreen>> m_States;
 
     // Rendering
     RenderTexture2D m_RenderTarget;

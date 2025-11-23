@@ -1,4 +1,4 @@
-#include "../../include/States/GameplayState.h"
+#include "../../include/Screens/GameplayScreen.h"
 
 #include <algorithm>
 
@@ -7,11 +7,11 @@
 #include "INode.h"
 #include "raymath.h"
 
-GameplayState::GameplayState(IGame& game, std::function<void(GameState)> stateChangeCallback)
+GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback) {
 }
 
-void GameplayState::Update(float deltaTime) {
+void GameplayScreen::Update(float deltaTime) {
     Vector2 mousePos = InputHandler::GetMousePosition();
 
     m_Game.UpdateHealth(deltaTime);
@@ -30,7 +30,7 @@ void GameplayState::Update(float deltaTime) {
     if (m_Game.ShouldGameOver()) {
         m_Game.SaveProgress();
         m_Game.Reset();
-        m_StateChangeCallback(GameState::MainMenu);
+        m_StateChangeCallback(GameScreen::MainMenu);
         return;
     }
 
@@ -59,11 +59,11 @@ void GameplayState::Update(float deltaTime) {
     m_Game.Update(deltaTime);
 
     if (IsKeyPressed(KEY_ESCAPE)) {
-        m_StateChangeCallback(GameState::Paused);
+        m_StateChangeCallback(GameScreen::Paused);
     }
 }
 
-void GameplayState::Draw() {
+void GameplayScreen::Draw() {
     Vector2 mousePos = InputHandler::GetMousePosition();
     float damageZoneSize = m_Game.GetDamageZoneSize();
     float damageRectX = mousePos.x - damageZoneSize / 2.0f;

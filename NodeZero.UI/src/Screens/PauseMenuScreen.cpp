@@ -1,10 +1,10 @@
-#include "../../include/States/PauseMenuState.h"
+#include "../../include/Screens/PauseMenuScreen.h"
 
 #include "../../include/Widgets/Button.h"
 #include "../../include/Widgets/Label.h"
 #include "Config/GameConfig.h"
 
-PauseMenuState::PauseMenuState(IGame& game, std::function<void(GameState)> stateChangeCallback)
+PauseMenuScreen::PauseMenuScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback) {
     m_Menu = std::make_unique<Menu>();
 
@@ -26,26 +26,26 @@ PauseMenuState::PauseMenuState(IGame& game, std::function<void(GameState)> state
 
     auto resumeButton = std::make_unique<Button>(centerX, startY, buttonWidth, buttonHeight, "Resume");
     resumeButton->SetColors(Color{50, 150, 50, 255}, Color{80, 180, 80, 255}, Color{30, 120, 30, 255}, WHITE);
-    resumeButton->SetOnClick([this]() { m_StateChangeCallback(GameState::Playing); });
+    resumeButton->SetOnClick([this]() { m_StateChangeCallback(GameScreen::Playing); });
     m_Menu->AddWidget(std::move(resumeButton));
 
     auto mainMenuButton = std::make_unique<Button>(centerX, startY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight, "Main Menu");
     mainMenuButton->SetColors(Color{70, 130, 180, 255}, Color{100, 160, 210, 255}, Color{40, 100, 150, 255}, WHITE);
     mainMenuButton->SetOnClick([this]() {
         m_Game.Reset();
-        m_StateChangeCallback(GameState::MainMenu);
+        m_StateChangeCallback(GameScreen::MainMenu);
     });
     m_Menu->AddWidget(std::move(mainMenuButton));
 }
 
-void PauseMenuState::Update(float deltaTime) {
+void PauseMenuScreen::Update(float deltaTime) {
     m_Menu->Update();
     if (IsKeyPressed(KEY_ESCAPE)) {
-        m_StateChangeCallback(GameState::Playing);
+        m_StateChangeCallback(GameScreen::Playing);
     }
 }
 
-void PauseMenuState::Draw() {
+void PauseMenuScreen::Draw() {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0, 0, 0, 150});
     m_Menu->Draw();
 }

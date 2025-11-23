@@ -1,5 +1,5 @@
 #pragma once
-#include "Enums/GameState.h"
+#include "Enums/GameScreen.h"
 #include "Enums/NodeShape.h"
 #include "Enums/NodeState.h"
 #include "IEvent.h"
@@ -103,17 +103,17 @@ class MultiplierChangedEvent : public GameEvent {
 
 class GameStateChangedEvent : public GameEvent {
    public:
-    GameStateChangedEvent(float timestamp, GameState newState, GameState oldState)
+    GameStateChangedEvent(float timestamp, GameScreen newState, GameScreen oldState)
         : GameEvent(timestamp), m_newState(newState), m_oldState(oldState) {}
 
     std::string GetType() const override { return "GameStateChanged"; }
 
-    GameState GetNewState() const { return m_newState; }
-    GameState GetOldState() const { return m_oldState; }
+    GameScreen GetNewState() const { return m_newState; }
+    GameScreen GetOldState() const { return m_oldState; }
 
    private:
-    GameState m_newState;
-    GameState m_oldState;
+    GameScreen m_newState;
+    GameScreen m_oldState;
 };
 
 class GameOverEvent : public GameEvent {

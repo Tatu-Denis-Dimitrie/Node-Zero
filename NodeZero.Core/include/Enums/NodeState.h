@@ -2,7 +2,7 @@
 
 enum class NodeState
 {
-    Inactive = 0,
+    Inactive,
 
     Active,
 

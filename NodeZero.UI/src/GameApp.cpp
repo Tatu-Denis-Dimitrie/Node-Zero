@@ -6,18 +6,18 @@
 #include "../include/GameEventLogger.h"
 #include "../include/InputHandler.h"
 #include "../include/Renderer.h"
-#include "../include/States/GameplayState.h"
-#include "../include/States/MainMenuState.h"
-#include "../include/States/PauseMenuState.h"
-#include "../include/States/SettingsState.h"
+#include "../include/Screens/GameplayScreen.h"
+#include "../include/Screens/MainMenuScreen.h"
+#include "../include/Screens/PauseMenuScreen.h"
+#include "../include/Screens/SettingsScreen.h"
 #include "Config/GameConfig.h"
 #include "Game.h"
 #include "IGame.h"
 #include "raymath.h"
 
 GameApp::GameApp()
-    : m_CurrentState(GameState::MainMenu),
-      m_PreviousState(GameState::MainMenu),
+    : m_CurrentState(GameScreen::MainMenu),
+      m_PreviousState(GameScreen::MainMenu),
       m_ShouldClose(false),
       m_ElapsedTime(0.0f),
       m_ResolutionLoc(0),
@@ -44,13 +44,13 @@ void GameApp::Initialize() {
     auto eventLogger = std::make_shared<GameEventLogger>();
     m_Game->Attach(eventLogger);
 
-    // Initialize States
-    auto stateChangeCallback = [this](GameState newState) { ChangeState(newState); };
+    // Initialize Screens
+    auto stateChangeCallback = [this](GameScreen newState) { ChangeState(newState); };
 
-    m_States[GameState::MainMenu] = std::make_unique<MainMenuState>(stateChangeCallback);
-    m_States[GameState::Playing] = std::make_unique<GameplayState>(*m_Game, stateChangeCallback);
-    m_States[GameState::Paused] = std::make_unique<PauseMenuState>(*m_Game, stateChangeCallback);
-    m_States[GameState::Settings] = std::make_unique<SettingsState>(*m_Game, stateChangeCallback);
+    m_States[GameScreen::MainMenu] = std::make_unique<MainMenuScreen>(stateChangeCallback);
+    m_States[GameScreen::Playing] = std::make_unique<GameplayScreen>(*m_Game, stateChangeCallback);
+    m_States[GameScreen::Paused] = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback);
+    m_States[GameScreen::Settings] = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback);
 
     // CRT Shader setup
     m_RenderTarget = LoadRenderTexture(screenWidth, screenHeight);
@@ -65,14 +65,14 @@ void GameApp::Initialize() {
     SetShaderValue(m_CrtShader, m_ResolutionLoc, resolution, SHADER_UNIFORM_VEC2);
 }
 
-void GameApp::ChangeState(GameState newState) {
+void GameApp::ChangeState(GameScreen newState) {
     m_CurrentState = newState;
 }
 
 void GameApp::Run() {
     Initialize();
 
-    while (!WindowShouldClose() && m_CurrentState != GameState::Quit) {
+    while (!WindowShouldClose() && m_CurrentState != GameScreen::Quit) {
         Update();
         Draw();
     }
@@ -84,9 +84,9 @@ void GameApp::Update() {
 
     SetShaderValue(m_CrtShader, m_TimeLoc, &m_ElapsedTime, SHADER_UNIFORM_FLOAT);
 
-    if (m_CurrentState == GameState::Playing && m_PreviousState != GameState::Playing) {
+    if (m_CurrentState == GameScreen::Playing && m_PreviousState != GameScreen::Playing) {
         HideCursor();
-    } else if (m_CurrentState != GameState::Playing && m_PreviousState == GameState::Playing) {
+    } else if (m_CurrentState != GameScreen::Playing && m_PreviousState == GameScreen::Playing) {
         ShowCursor();
     }
     m_PreviousState = m_CurrentState;
@@ -101,9 +101,9 @@ void GameApp::Draw() {
     ClearBackground(Color{40, 40, 40, 255});
 
     // Always draw gameplay if playing or paused (so pause menu has game background)
-    if (m_CurrentState == GameState::Playing || m_CurrentState == GameState::Paused) {
-        if (m_States.find(GameState::Playing) != m_States.end()) {
-            m_States[GameState::Playing]->Draw();
+    if (m_CurrentState == GameScreen::Playing || m_CurrentState == GameScreen::Paused) {
+        if (m_States.find(GameScreen::Playing) != m_States.end()) {
+            m_States[GameScreen::Playing]->Draw();
         }
     }
 
@@ -121,15 +121,15 @@ void GameApp::Draw() {
     EndShaderMode();
 
     // Draw UI on top of shader
-    if (m_CurrentState == GameState::Playing) {
+    if (m_CurrentState == GameScreen::Playing) {
         Renderer::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
         Renderer::DrawDebugInfo(10, 40);
         Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
         Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24);
-    } else if (m_CurrentState == GameState::Paused) {
+    } else if (m_CurrentState == GameScreen::Paused) {
         Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
-        if (m_States.find(GameState::Paused) != m_States.end()) {
-            m_States[GameState::Paused]->Draw();
+        if (m_States.find(GameScreen::Paused) != m_States.end()) {
+            m_States[GameScreen::Paused]->Draw();
         }
     } else {
         if (m_States.find(m_CurrentState) != m_States.end()) {

@@ -1,22 +1,22 @@
-#include "../../include/States/SettingsState.h"
+#include "../../include/Screens/SettingsScreen.h"
 
 #include <cstdio>
 
 #include "Systems/SaveSystem.h"
 #include "Types/SaveData.h"
 
-SettingsState::SettingsState(IGame& game, std::function<void(GameState)> stateChangeCallback)
+SettingsScreen::SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_WasMousePressed(false), m_IsFirstFrame(true) {
 }
 
-void SettingsState::Update(float deltaTime) {
+void SettingsScreen::Update(float deltaTime) {
     if (IsKeyPressed(KEY_ESCAPE)) {
-        m_StateChangeCallback(GameState::MainMenu);
+        m_StateChangeCallback(GameScreen::MainMenu);
         m_IsFirstFrame = true;
     }
 }
 
-void SettingsState::Draw() {
+void SettingsScreen::Draw() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
 

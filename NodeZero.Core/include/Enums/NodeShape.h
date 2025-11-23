@@ -2,7 +2,7 @@
 
 enum class NodeShape
 {
-    Circle = 0,
+    Circle,
 
     Square,
 
