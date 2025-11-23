@@ -575,8 +575,46 @@ void Game::SpawnBoss() {
     Node* bossNode = static_cast<Node*>(m_Boss);
     bossNode->SetHP(bossHP);
 
-    m_Boss->Spawn(m_ScreenWidth, m_ScreenHeight / 2.0f);
-    m_Boss->SetDirection(-1.0f, 0.0f);
+    // Random spawn position outside the screen
+    float spawnX, spawnY;
+    int edge = std::rand() % 4;
+    float offset = GameConfig::BOSS_SIZE * 1.5f; // Spawn further out so it doesn't pop in
+
+    switch (edge) {
+        case 0: // Top
+            spawnX = RandomRange(0.0f, m_ScreenWidth);
+            spawnY = -offset;
+            break;
+        case 1: // Right
+            spawnX = m_ScreenWidth + offset;
+            spawnY = RandomRange(0.0f, m_ScreenHeight);
+            break;
+        case 2: // Bottom
+            spawnX = RandomRange(0.0f, m_ScreenWidth);
+            spawnY = m_ScreenHeight + offset;
+            break;
+        case 3: // Left
+            spawnX = -offset;
+            spawnY = RandomRange(0.0f, m_ScreenHeight);
+            break;
+    }
+
+    m_Boss->Spawn(spawnX, spawnY);
+
+    // Move towards center
+    float centerX = m_ScreenWidth / 2.0f;
+    float centerY = m_ScreenHeight / 2.0f;
+    float dirX = centerX - spawnX;
+    float dirY = centerY - spawnY;
+
+    // Normalize direction
+    float length = std::sqrt(dirX * dirX + dirY * dirY);
+    if (length > 0) {
+        dirX /= length;
+        dirY /= length;
+    }
+
+    m_Boss->SetDirection(dirX, dirY);
     m_Nodes.push_back(m_Boss);
     m_BossActive = true;
 
