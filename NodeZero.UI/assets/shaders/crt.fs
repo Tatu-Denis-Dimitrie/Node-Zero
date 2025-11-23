@@ -13,7 +13,7 @@ uniform float time;
 
 out vec4 finalColor;
 
-// Barrel distortion (ecran curbat)
+// Barrel distortion (ecran curbat) - clasic cu colțuri negre
 vec2 barrelDistortion(vec2 coord, float amount) {
     vec2 cc = coord - 0.5;
     float dist = dot(cc, cc);
@@ -60,11 +60,11 @@ float vignette(vec2 uv, float intensity) {
 }
 
 void main() {
-    // Aplicare barrel distortion (subtil, ca în Nodebuster)
-    vec2 distortedUV = barrelDistortion(fragTexCoord, 0.15);
+    // Aplicare barrel distortion CLASIC cu colțuri negre vizibile
+    vec2 distortedUV = barrelDistortion(fragTexCoord, 0.1);
 
-    // Verificare margini (afară din ecran după distorsiune)
-    if (distortedUV.x < 0.0 || distortedUV.x > 1.0 || distortedUV.y < 0.0 || distortedUV.y > 1.0) {
+    // Afișează negru în colțuri (afară din ecran după distorsiune)
+    if (distortedUV.x < -0.013 || distortedUV.x > 1.013 || distortedUV.y < -0.013 || distortedUV.y > 1.013) {
         finalColor = vec4(0.0, 0.0, 0.0, 1.0);
         return;
     }
