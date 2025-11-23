@@ -10,7 +10,6 @@
 #include "../include/States/MainMenuState.h"
 #include "../include/States/PauseMenuState.h"
 #include "../include/States/SettingsState.h"
-#include "../include/UI.h"
 #include "Config/GameConfig.h"
 #include "Game.h"
 #include "IGame.h"
@@ -123,12 +122,12 @@ void GameApp::Draw() {
 
     // Draw UI on top of shader
     if (m_CurrentState == GameState::Playing) {
-        UI::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
-        UI::DrawDebugInfo(10, 40);
-        UI::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
-        UI::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24);
+        Renderer::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
+        Renderer::DrawDebugInfo(10, 40);
+        Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
+        Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24);
     } else if (m_CurrentState == GameState::Paused) {
-        UI::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
+        Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
         if (m_States.find(GameState::Paused) != m_States.end()) {
             m_States[GameState::Paused]->Draw();
         }

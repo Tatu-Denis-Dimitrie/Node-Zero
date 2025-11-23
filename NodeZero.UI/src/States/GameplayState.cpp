@@ -4,7 +4,6 @@
 
 #include "../../include/InputHandler.h"
 #include "../../include/Renderer.h"
-#include "../../include/UI.h"
 #include "INode.h"
 #include "raymath.h"
 
