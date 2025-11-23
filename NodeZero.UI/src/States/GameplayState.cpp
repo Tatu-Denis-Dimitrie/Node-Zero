@@ -176,36 +176,39 @@ void GameplayState::Draw() {
         static_cast<int>(centerSquareSize),
         WHITE);
 
-    // Draw Progress Bar
+    // Draw Progress Bar (bottom of screen, full width)
     int screenWidth = GetScreenWidth();
-    int progressBarWidth = 400;
-    int progressBarHeight = 30;
-    int progressBarX = (screenWidth - progressBarWidth) / 2;
-    int progressBarY = 20;
+    int screenHeight = GetScreenHeight();
+    int progressBarHeight = 40;
+    int progressBarMargin = 10;
+    int progressBarY = screenHeight - progressBarHeight - progressBarMargin;
+    int progressBarX = 0;
+    int progressBarWidth = screenWidth;
 
     float progressPercentage = m_Game.GetProgressBarPercentage();
 
     // Background
-    DrawRectangle(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{40, 40, 40, 200});
+    DrawRectangle(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{20, 20, 30, 220});
 
-    // Fill
+    // Fill (cyan/blue color similar to image)
     int fillWidth = static_cast<int>(progressBarWidth * (progressPercentage / 100.0f));
-    DrawRectangle(progressBarX, progressBarY, fillWidth, progressBarHeight, Color{0, 200, 100, 255});
+    DrawRectangle(progressBarX, progressBarY, fillWidth, progressBarHeight, Color{0, 180, 220, 255});
 
     // Border
-    DrawRectangleLines(progressBarX, progressBarY, progressBarWidth, progressBarHeight, WHITE);
+    DrawRectangleLines(progressBarX, progressBarY, progressBarWidth, progressBarHeight, Color{0, 200, 255, 255});
 
     // Percentage Text
     char progressText[32];
     snprintf(progressText, sizeof(progressText), "%.0f%%", progressPercentage);
-    int textWidth = MeasureText(progressText, 20);
-    DrawText(progressText, progressBarX + (progressBarWidth - textWidth) / 2, progressBarY + 5, 20, WHITE);
+    int textWidth = MeasureText(progressText, 22);
+    DrawText(progressText, (screenWidth - textWidth) / 2, progressBarY + 9, 22, WHITE);
 
-    // Level Display with time indicator
-    char levelText[64];
+    // "progress" label above the bar
     int currentLevel = m_Game.GetCurrentLevel();
-    snprintf(levelText, sizeof(levelText), "Level %d - Progress", currentLevel);
-    DrawText(levelText, progressBarX, progressBarY - 30, 24, YELLOW);
+    char progressLabel[64];
+    snprintf(progressLabel, sizeof(progressLabel), "Level %d - progress", currentLevel);
+    int labelWidth = MeasureText(progressLabel, 20);
+    DrawText(progressLabel, (screenWidth - labelWidth) / 2, progressBarY - 30, 20, Color{200, 200, 200, 255});
 
     // Boss Warning
     if (m_Game.IsBossActive()) {
