@@ -4,14 +4,13 @@
 
 #include "../../include/Widgets/Menu.h"
 #include "Enums/GameScreen.h"
-#include "IAppScreen.h"
 
-class MainMenuScreen : public IAppScreen {
+class MainMenuScreen {
    public:
     MainMenuScreen(std::function<void(GameScreen)> stateChangeCallback);
 
-    void Update(float deltaTime) override;
-    void Draw() override;
+    void Update(float deltaTime);
+    void Draw();
 
    private:
     std::unique_ptr<Menu> m_Menu;

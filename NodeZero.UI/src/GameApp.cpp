@@ -47,10 +47,10 @@ void GameApp::Initialize() {
     // Initialize Screens
     auto stateChangeCallback = [this](GameScreen newState) { ChangeState(newState); };
 
-    m_States[GameScreen::MainMenu] = std::make_unique<MainMenuScreen>(stateChangeCallback);
-    m_States[GameScreen::Playing] = std::make_unique<GameplayScreen>(*m_Game, stateChangeCallback);
-    m_States[GameScreen::Paused] = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback);
-    m_States[GameScreen::Settings] = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback);
+    m_MainMenuScreen = std::make_unique<MainMenuScreen>(stateChangeCallback);
+    m_GameplayScreen = std::make_unique<GameplayScreen>(*m_Game, stateChangeCallback);
+    m_PauseMenuScreen = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback);
+    m_SettingsScreen = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback);
 
     // CRT Shader setup
     m_RenderTarget = LoadRenderTexture(screenWidth, screenHeight);
@@ -91,8 +91,22 @@ void GameApp::Update() {
     }
     m_PreviousState = m_CurrentState;
 
-    if (m_States.find(m_CurrentState) != m_States.end()) {
-        m_States[m_CurrentState]->Update(deltaTime);
+    switch (m_CurrentState) {
+        case GameScreen::MainMenu:
+            m_MainMenuScreen->Update(deltaTime);
+            break;
+        case GameScreen::Playing:
+            m_GameplayScreen->Update(deltaTime);
+            break;
+        case GameScreen::Paused:
+            m_PauseMenuScreen->Update(deltaTime);
+            break;
+        case GameScreen::Settings:
+            m_SettingsScreen->Update(deltaTime);
+            break;
+        case GameScreen::GameOver:
+        case GameScreen::Quit:
+            break;
     }
 }
 
@@ -102,9 +116,7 @@ void GameApp::Draw() {
 
     // Always draw gameplay if playing or paused (so pause menu has game background)
     if (m_CurrentState == GameScreen::Playing || m_CurrentState == GameScreen::Paused) {
-        if (m_States.find(GameScreen::Playing) != m_States.end()) {
-            m_States[GameScreen::Playing]->Draw();
-        }
+        m_GameplayScreen->Draw();
     }
 
     EndTextureMode();
@@ -121,20 +133,26 @@ void GameApp::Draw() {
     EndShaderMode();
 
     // Draw UI on top of shader
-    if (m_CurrentState == GameScreen::Playing) {
-        Renderer::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
-        Renderer::DrawDebugInfo(10, 40);
-        Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
-        Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24);
-    } else if (m_CurrentState == GameScreen::Paused) {
-        Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
-        if (m_States.find(GameScreen::Paused) != m_States.end()) {
-            m_States[GameScreen::Paused]->Draw();
-        }
-    } else {
-        if (m_States.find(m_CurrentState) != m_States.end()) {
-            m_States[m_CurrentState]->Draw();
-        }
+    switch (m_CurrentState) {
+        case GameScreen::Playing:
+            Renderer::DrawTitle("NodeZero - Nodebuster Clone", 10, 10, 20, DARKGRAY);
+            Renderer::DrawDebugInfo(10, 40);
+            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
+            Renderer::DrawHealthBar(m_Game->GetCurrentHealth(), m_Game->GetMaxHealth(), 10, 100, 200, 24);
+            break;
+        case GameScreen::Paused:
+            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE);
+            m_PauseMenuScreen->Draw();
+            break;
+        case GameScreen::MainMenu:
+            m_MainMenuScreen->Draw();
+            break;
+        case GameScreen::Settings:
+            m_SettingsScreen->Draw();
+            break;
+        case GameScreen::GameOver:
+        case GameScreen::Quit:
+            break;
     }
 
     EndDrawing();

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <map>
 #include <memory>
-#include <vector>
 
 #include "Enums/GameScreen.h"
-#include "Screens/IAppScreen.h"
 #include "raylib.h"
 
 class IGame;
+class GameplayScreen;
+class MainMenuScreen;
+class PauseMenuScreen;
+class SettingsScreen;
 
 class GameApp {
    public:
@@ -34,7 +35,10 @@ class GameApp {
     std::unique_ptr<IGame> m_Game;
 
     // Screens
-    std::map<GameScreen, std::unique_ptr<IAppScreen>> m_States;
+    std::unique_ptr<GameplayScreen> m_GameplayScreen;
+    std::unique_ptr<MainMenuScreen> m_MainMenuScreen;
+    std::unique_ptr<PauseMenuScreen> m_PauseMenuScreen;
+    std::unique_ptr<SettingsScreen> m_SettingsScreen;
 
     // Rendering
     RenderTexture2D m_RenderTarget;

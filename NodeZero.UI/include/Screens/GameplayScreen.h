@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "Enums/GameScreen.h"
-#include "IAppScreen.h"
 #include "IGame.h"
 #include "raylib.h"
 
@@ -15,12 +14,12 @@ struct PickupCollectEffect {
     float size;
 };
 
-class GameplayScreen : public IAppScreen {
+class GameplayScreen {
    public:
     GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
 
-    void Update(float deltaTime) override;
-    void Draw() override;
+    void Update(float deltaTime);
+    void Draw();
 
    private:
     IGame& m_Game;

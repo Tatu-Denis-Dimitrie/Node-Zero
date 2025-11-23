@@ -3,16 +3,15 @@
 #include <functional>
 
 #include "Enums/GameScreen.h"
-#include "IAppScreen.h"
 #include "IGame.h"
 #include "raylib.h"
 
-class SettingsScreen : public IAppScreen {
+class SettingsScreen {
    public:
     SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback);
 
-    void Update(float deltaTime) override;
-    void Draw() override;
+    void Update(float deltaTime);
+    void Draw();
 
    private:
     IGame& m_Game;
