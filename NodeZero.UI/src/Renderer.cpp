@@ -2,32 +2,87 @@
 
 #include <cmath>
 #include <string>
+#include <vector>
 
 #include "raymath.h"
 
-void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, Color color) {
+void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
+    const int sides = 32;
+    
+    // Generate vertices for the circle (polygon)
+    std::vector<Vector2> vertices;
+    vertices.reserve(sides);
+    for (int i = 0; i < sides; ++i) {
+        float angle = (rotation + i * (360.0f / sides)) * DEG2RAD;
+        vertices.push_back({x + size * cosf(angle), y + size * sinf(angle)});
+    }
+
     if (hpPercentage > 0.0f) {
-        float fillHeight = size * 2.0f * hpPercentage;
-        float topY = y + size - fillHeight;
+        if (hpPercentage >= 1.0f) {
+            DrawPoly(Vector2{x, y}, sides, size, rotation, color);
+        } else {
+            // Calculate fill direction (Up vector rotated)
+            // When rotation is 0, Up is (0, -1) (Visual Up)
+            // But we want to fill from Bottom to Top.
+            // Bottom is +Y (in screen), Top is -Y.
+            // So we fill from +Y towards -Y.
+            // Let's define the "Up" vector as the direction of growth.
+            // Growth is from Bottom to Top.
+            // Local Up is (0, -1).
+            // Rotated Up:
+            float rad = rotation * DEG2RAD;
+            Vector2 fillDir = { sinf(rad), -cosf(rad) };
 
-        for (int i = 0; i < static_cast<int>(fillHeight); i++) {
-            float currentY = y + size - i;
-            float distFromCenter = currentY - y;
-
-            float widthAtHeight = sqrtf(size * size - distFromCenter * distFromCenter);
-
-            if (widthAtHeight > 0) {
-                DrawLine(
-                    static_cast<int>(x - widthAtHeight),
-                    static_cast<int>(currentY),
-                    static_cast<int>(x + widthAtHeight),
-                    static_cast<int>(currentY),
-                    color);
+            // We want to keep vertices that are "below" the fill level.
+            // "Below" means "towards the bottom", i.e. in the opposite direction of fillDir?
+            // No, we want to keep the filled part.
+            // The filled part starts at Bottom and goes up to Level.
+            // Bottom is at projection -size (relative to center along fillDir).
+            // Top is at projection +size.
+            // We keep points with projection <= limit.
+            
+            float limit = -size + hpPercentage * 2.0f * size;
+            
+            std::vector<Vector2> clippedVertices;
+            Vector2 center = {x, y};
+            
+            // Sutherland-Hodgman clipping against the line defined by fillDir and limit
+            Vector2 p1 = vertices.back();
+            float dist1 = Vector2DotProduct(Vector2Subtract(p1, center), fillDir);
+            bool p1Inside = (dist1 <= limit);
+            
+            for (const auto& p2 : vertices) {
+                float dist2 = Vector2DotProduct(Vector2Subtract(p2, center), fillDir);
+                bool p2Inside = (dist2 <= limit);
+                
+                if (p1Inside && p2Inside) {
+                    clippedVertices.push_back(p2);
+                } else if (p1Inside && !p2Inside) {
+                    float t = (limit - dist1) / (dist2 - dist1);
+                    Vector2 intersection = Vector2Add(p1, Vector2Scale(Vector2Subtract(p2, p1), t));
+                    clippedVertices.push_back(intersection);
+                } else if (!p1Inside && p2Inside) {
+                    float t = (limit - dist1) / (dist2 - dist1);
+                    Vector2 intersection = Vector2Add(p1, Vector2Scale(Vector2Subtract(p2, p1), t));
+                    clippedVertices.push_back(intersection);
+                    clippedVertices.push_back(p2);
+                }
+                
+                p1 = p2;
+                dist1 = dist2;
+                p1Inside = p2Inside;
+            }
+            
+            if (clippedVertices.size() >= 3) {
+                Vector2 centerFan = clippedVertices[0];
+                for (size_t i = 1; i < clippedVertices.size() - 1; ++i) {
+                    DrawTriangle(centerFan, clippedVertices[i+1], clippedVertices[i], color);
+                }
             }
         }
     }
 
-    DrawCircleLines(static_cast<int>(x), static_cast<int>(y), size, RED);
+    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, RED);
 }
 
 void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
@@ -63,29 +118,57 @@ void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, 
 
 void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
     const int sides = 6;
-    Vector2 vertices[sides];
+    std::vector<Vector2> vertices;
+    vertices.reserve(sides);
     for (int i = 0; i < sides; ++i) {
         float angle = DEG2RAD * (rotation + i * 60.0f);
-        vertices[i] = {x + size * cosf(angle), y + size * sinf(angle)};
+        vertices.push_back({x + size * cosf(angle), y + size * sinf(angle)});
     }
 
     if (hpPercentage > 0.0f) {
-        float minY = y - size;
-        float maxY = y + size;
-        float height = maxY - minY;
+        if (hpPercentage >= 1.0f) {
+            DrawPoly(Vector2{x, y}, sides, size, rotation, color);
+        } else {
+            float rad = rotation * DEG2RAD;
+            Vector2 fillDir = { sinf(rad), -cosf(rad) };
+            float limit = -size + hpPercentage * 2.0f * size;
 
-        float fillHeight = height * hpPercentage;
-        float currentFillY = maxY - fillHeight;
+            std::vector<Vector2> clippedVertices;
+            Vector2 center = {x, y};
 
-        BeginScissorMode(
-            static_cast<int>(x - size),
-            static_cast<int>(currentFillY),
-            static_cast<int>(size * 2),
-            static_cast<int>(fillHeight));
+            Vector2 p1 = vertices.back();
+            float dist1 = Vector2DotProduct(Vector2Subtract(p1, center), fillDir);
+            bool p1Inside = (dist1 <= limit);
 
-        DrawPoly(Vector2{x, y}, sides, size, rotation, color);
+            for (const auto& p2 : vertices) {
+                float dist2 = Vector2DotProduct(Vector2Subtract(p2, center), fillDir);
+                bool p2Inside = (dist2 <= limit);
 
-        EndScissorMode();
+                if (p1Inside && p2Inside) {
+                    clippedVertices.push_back(p2);
+                } else if (p1Inside && !p2Inside) {
+                    float t = (limit - dist1) / (dist2 - dist1);
+                    Vector2 intersection = Vector2Add(p1, Vector2Scale(Vector2Subtract(p2, p1), t));
+                    clippedVertices.push_back(intersection);
+                } else if (!p1Inside && p2Inside) {
+                    float t = (limit - dist1) / (dist2 - dist1);
+                    Vector2 intersection = Vector2Add(p1, Vector2Scale(Vector2Subtract(p2, p1), t));
+                    clippedVertices.push_back(intersection);
+                    clippedVertices.push_back(p2);
+                }
+
+                p1 = p2;
+                dist1 = dist2;
+                p1Inside = p2Inside;
+            }
+
+            if (clippedVertices.size() >= 3) {
+                Vector2 centerFan = clippedVertices[0];
+                for (size_t i = 1; i < clippedVertices.size() - 1; ++i) {
+                    DrawTriangle(centerFan, clippedVertices[i+1], clippedVertices[i], color);
+                }
+            }
+        }
     }
 
     DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, RED);

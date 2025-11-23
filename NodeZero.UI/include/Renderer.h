@@ -6,7 +6,7 @@ class Renderer
 {
 public:
     // Game entity rendering
-    static void DrawCircleNode(float x, float y, float size, float hpPercentage, Color color);
+    static void DrawCircleNode(float x, float y, float size, float hpPercentage, Color color, float rotation = 0.0f);
     static void DrawSquareNode(float x, float y, float size, float hpPercentage, Color color, float rotation = 0.0f);
     static void DrawHexagonNode(float x, float y, float size, float hpPercentage, Color color, float rotation = 0.0f);
     static void DrawPickup(float x, float y, float size, Color color);

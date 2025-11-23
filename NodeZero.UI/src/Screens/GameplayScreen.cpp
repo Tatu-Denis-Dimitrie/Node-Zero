@@ -80,7 +80,7 @@ void GameplayScreen::Draw() {
 
             switch (node->GetShape()) {
                 case NodeShape::Circle:
-                    Renderer::DrawCircleNode(x, y, size, hpPercentage, RED);
+                    Renderer::DrawCircleNode(x, y, size, hpPercentage, RED, rotation);
                     break;
                 case NodeShape::Square:
                     Renderer::DrawSquareNode(x, y, size, hpPercentage, RED, rotation);
@@ -93,7 +93,7 @@ void GameplayScreen::Draw() {
                     Renderer::DrawSquareNode(x, y, size, hpPercentage, Color{200, 50, 200, 255}, rotation);
                     break;
                 default:
-                    Renderer::DrawCircleNode(x, y, size, hpPercentage, RED);
+                    Renderer::DrawCircleNode(x, y, size, hpPercentage, RED, rotation);
                     break;
             }
         }
