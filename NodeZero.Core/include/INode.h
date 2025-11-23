@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Enums/NodeShape.h"
 #include "Enums/NodeState.h"
 #include "Types/Position.h"
 
