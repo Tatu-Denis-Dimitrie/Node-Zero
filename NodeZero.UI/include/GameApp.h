@@ -37,7 +37,7 @@ class GameApp {
     std::unique_ptr<IGame> m_Game;
 
     // Screens
-    std::unique_ptr<GameplayScreen> m_GameplayScreen;
+    std::shared_ptr<GameplayScreen> m_GameplayScreen;
     std::unique_ptr<MainMenuScreen> m_MainMenuScreen;
     std::unique_ptr<PauseMenuScreen> m_PauseMenuScreen;
     std::unique_ptr<SettingsScreen> m_SettingsScreen;

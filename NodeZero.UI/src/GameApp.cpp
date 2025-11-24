@@ -53,11 +53,14 @@ void GameApp::Initialize() {
     auto stateChangeCallback = [this](GameScreen newState) { ChangeState(newState); };
 
     m_MainMenuScreen = std::make_unique<MainMenuScreen>(stateChangeCallback, m_Font);
-    m_GameplayScreen = std::make_unique<GameplayScreen>(*m_Game, stateChangeCallback, m_Font);
+    m_GameplayScreen = std::make_shared<GameplayScreen>(*m_Game, stateChangeCallback, m_Font);
     m_PauseMenuScreen = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback, m_Font);
     m_SettingsScreen = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback, m_Font);
     m_LevelCompletedScreen = std::make_unique<LevelCompletedScreen>(*m_Game, stateChangeCallback, m_Font);
     m_GameOverScreen = std::make_unique<GameOverScreen>(*m_Game, stateChangeCallback, m_Font);
+
+    // Attach GameplayScreen as observer to receive game events
+    m_Game->Attach(m_GameplayScreen);
 
     // CRT Shader setup
     m_RenderTarget = LoadRenderTexture(screenWidth, screenHeight);

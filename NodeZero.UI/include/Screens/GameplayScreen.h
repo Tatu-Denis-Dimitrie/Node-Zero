@@ -1,9 +1,11 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include "Enums/GameScreen.h"
+#include "Events/IObserver.h"
 #include "IGame.h"
 #include "raylib.h"
 
@@ -14,12 +16,15 @@ struct PickupCollectEffect {
     float size;
 };
 
-class GameplayScreen {
+class GameplayScreen : public IObserver, public std::enable_shared_from_this<GameplayScreen> {
    public:
     GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
 
     void Update(float deltaTime);
     void Draw();
+
+    // IObserver implementation
+    void Update(const std::shared_ptr<IEvent>& event) override;
 
    private:
     IGame& m_Game;

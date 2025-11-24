@@ -4,11 +4,24 @@
 
 #include "../../include/InputHandler.h"
 #include "../../include/Renderer.h"
+#include "Events/GameEvents.h"
 #include "INode.h"
 #include "raymath.h"
 
 GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font) {
+}
+
+void GameplayScreen::Update(const std::shared_ptr<IEvent>& event) {
+    // Handle game events from the Observer pattern
+    // Currently we don't need to react to specific events in the UI,
+    // but this allows for future event-driven UI updates
+
+    // Example: You could add visual effects or sounds based on events:
+    // if (event->GetType() == "NodeDestroyed") {
+    //     auto nodeEvent = std::static_pointer_cast<NodeDestroyedEvent>(event);
+    //     // Add explosion effect at nodeEvent->GetPosition()
+    // }
 }
 
 void GameplayScreen::Update(float deltaTime) {
