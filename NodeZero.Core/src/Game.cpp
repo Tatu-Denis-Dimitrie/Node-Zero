@@ -130,6 +130,12 @@ const std::vector<PointPickup>& Game::GetPickups() const {
 void Game::SpawnNode(float x, float y) {
     NodeShape shape = GetRandomShape();
     INode* node = CreateNode(shape, GameConfig::NODE_DEFAULT_SIZE, GameConfig::NODE_DEFAULT_SPEED);
+
+    Node* concreteNode = static_cast<Node*>(node);
+    float baseHP = concreteNode->GetHP();
+    float scaledHP = baseHP * (1.0f + (m_CurrentLevel - 1) * 0.2f);
+    concreteNode->SetHP(scaledHP);
+
     node->Spawn(x, y);
     m_Nodes.push_back(node);
 
@@ -268,7 +274,6 @@ void Game::ReduceHealth(float amount) {
 }
 
 void Game::UpdateHealth(float deltaTime) {
-    // Apply regeneration
     if (m_RegenRate > 0.0f && m_CurrentHealth < m_MaxHealth && m_CurrentHealth > 0.0f) {
         m_CurrentHealth += m_RegenRate * deltaTime;
         if (m_CurrentHealth > m_MaxHealth) {
@@ -278,7 +283,8 @@ void Game::UpdateHealth(float deltaTime) {
 
     m_HealthTimer += deltaTime;
     if (m_HealthTimer >= m_HealthDepletionInterval) {
-        m_CurrentHealth -= m_HealthDepletionRate;
+        float scaledDepletionRate = m_HealthDepletionRate * (1.0f + (m_CurrentLevel - 1) * 0.15f);
+        m_CurrentHealth -= scaledDepletionRate;
         m_HealthTimer = 0.0f;
 
         if (m_CurrentHealth < 0.0f) {
