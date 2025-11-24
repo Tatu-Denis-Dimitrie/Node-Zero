@@ -1,19 +1,18 @@
 #pragma once
 
-#include <list>
 #include <memory>
 #include <vector>
 
-#include "Events/IObserver.h"
+#include "Events/Subject.h"
 #include "IGame.h"
 #include "INode.h"
 #include "Types/PointPickup.h"
 
 class Game : public IGame {
    private:
+    Subject m_Subject;
     std::vector<INode*> m_Nodes;
     std::vector<PointPickup> m_Pickups;
-    std::list<std::shared_ptr<IObserver>> m_observers;
     float m_ScreenWidth;
     float m_ScreenHeight;
     float m_ElapsedTime;
@@ -118,6 +117,7 @@ class Game : public IGame {
     int GetCoins() const override;
     SaveData GetSaveData() const override;
 
+    // Observer pattern - forward to m_Subject
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;
     void Notify(const std::shared_ptr<IEvent>& event) override;

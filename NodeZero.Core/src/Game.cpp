@@ -584,17 +584,15 @@ bool Game::ShouldGameOver() const {
 }
 
 void Game::Attach(std::shared_ptr<IObserver> observer) {
-    m_observers.push_back(observer);
+    m_Subject.Attach(observer);
 }
 
 void Game::Detach(std::shared_ptr<IObserver> observer) {
-    m_observers.remove(observer);
+    m_Subject.Detach(observer);
 }
 
 void Game::Notify(const std::shared_ptr<IEvent>& event) {
-    for (const auto& observer : m_observers) {
-        observer->Update(event);
-    }
+    m_Subject.Notify(event);
 }
 
 void Game::SpawnBoss() {
