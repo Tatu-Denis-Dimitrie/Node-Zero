@@ -25,6 +25,7 @@ cmake --build build --config Debug
 ```
 
 **VS Code:** `Ctrl+Shift+B` to build, `F5` to debug (launch configs in `.vscode/launch.json`)
+
 **Visual Studio:** Open folder → `Ctrl+Shift+B` → `F5`
 
 ## Gameplay
