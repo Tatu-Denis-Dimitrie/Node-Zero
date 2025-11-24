@@ -4,6 +4,7 @@
 
 #include "Events/ISubject.h"
 #include "Types/PointPickup.h"
+#include "Types/SaveData.h"
 
 class INode;
 class ILevel;
@@ -69,4 +70,7 @@ class IGame : public ISubject {
 
     virtual bool IsLevelCompleted() const = 0;
     virtual void StartNextLevel() = 0;
+
+    virtual int GetCoins() const = 0;
+    virtual SaveData GetSaveData() const = 0;
 };

@@ -2,9 +2,6 @@
 
 #include <cstdio>
 
-#include "Systems/SaveSystem.h"
-#include "Types/SaveData.h"
-
 SettingsScreen::SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_WasMousePressed(false), m_IsFirstFrame(true), m_Font(font) {
 }
@@ -22,7 +19,7 @@ void SettingsScreen::Draw() {
 
     DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - 100), 50}, 40, 1, WHITE);
 
-    SaveData saveData = SaveSystem::LoadProgress();
+    SaveData saveData = m_Game.GetSaveData();
 
     int statsX = 50;
     int statsY = 150;
@@ -93,7 +90,7 @@ void SettingsScreen::Draw() {
 
     if (!m_IsFirstFrame && isHovered && canAfford && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyHealthUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveData();
         }
     }
 
@@ -119,7 +116,7 @@ void SettingsScreen::Draw() {
 
     if (!m_IsFirstFrame && isRegenHovered && canAffordRegen && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyRegenUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveData();
         }
     }
 
@@ -145,7 +142,7 @@ void SettingsScreen::Draw() {
 
     if (!m_IsFirstFrame && isDamageZoneHovered && canAffordDamageZone && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyDamageZoneUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveData();
         }
     }
 
@@ -171,7 +168,7 @@ void SettingsScreen::Draw() {
 
     if (!m_IsFirstFrame && isDamageHovered && canAffordDamage && isMousePressed && !m_WasMousePressed) {
         if (m_Game.BuyDamageUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveData();
         }
     }
 

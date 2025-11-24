@@ -109,6 +109,9 @@ class Game : public IGame {
     bool IsLevelCompleted() const override;
     void StartNextLevel() override;
 
+    int GetCoins() const override;
+    SaveData GetSaveData() const override;
+
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;
     void Notify(const std::shared_ptr<IEvent>& event) override;

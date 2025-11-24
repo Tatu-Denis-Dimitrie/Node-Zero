@@ -677,3 +677,12 @@ int Game::GetCurrentLevel() const {
 int Game::GetNodesDestroyedThisLevel() const {
     return m_NodesDestroyedThisLevel;
 }
+
+int Game::GetCoins() const {
+    SaveData saveData = SaveSystem::LoadProgress();
+    return saveData.coins;
+}
+
+SaveData Game::GetSaveData() const {
+    return SaveSystem::LoadProgress();
+}
