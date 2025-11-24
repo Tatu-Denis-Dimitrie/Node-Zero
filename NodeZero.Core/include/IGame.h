@@ -16,6 +16,8 @@ class IGame : public ISubject {
     virtual void Initialize(float screenWidth, float screenHeight) = 0;
 
     virtual void Update(float deltaTime) = 0;
+    virtual void SetMousePosition(float x, float y) = 0;
+    virtual std::vector<PointPickup> GetCollectedPickupsThisFrame() const = 0;
 
     virtual float GetScreenWidth() const = 0;
 

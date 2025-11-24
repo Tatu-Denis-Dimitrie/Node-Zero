@@ -49,12 +49,18 @@ class Game : public IGame {
     float m_LevelDuration;
     bool m_LevelCompleted;
 
+    float m_MouseX;
+    float m_MouseY;
+    std::vector<PointPickup> m_CollectedPickupsThisFrame;
+
    public:
     Game();
     ~Game();
 
     void Initialize(float screenWidth, float screenHeight) override;
     void Update(float deltaTime) override;
+    void SetMousePosition(float x, float y) override;
+    std::vector<PointPickup> GetCollectedPickupsThisFrame() const override;
 
     float GetScreenWidth() const override;
     float GetScreenHeight() const override;

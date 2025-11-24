@@ -11,7 +11,7 @@
 #include "Node.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_RegenRate(0.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION), m_LevelCompleted(false) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupScore(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_RegenRate(0.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighScore(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION), m_LevelCompleted(false), m_MouseX(0.0f), m_MouseY(0.0f) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     SaveData saveData = SaveSystem::LoadProgress();
@@ -37,6 +37,20 @@ void Game::Initialize(float screenWidth, float screenHeight) {
 }
 
 void Game::Update(float deltaTime) {
+    m_CollectedPickupsThisFrame.clear();
+
+    UpdateHealth(deltaTime);
+    UpdateAutoSpawn(deltaTime);
+    UpdateDamageTimer(deltaTime);
+
+    bool shouldDealDamage = ShouldDealDamage();
+    if (shouldDealDamage) {
+        ResetDamageTimer();
+    }
+    ProcessDamageZone(m_MouseX, m_MouseY, m_DamageZoneSize, m_DamagePerTick, shouldDealDamage);
+
+    m_CollectedPickupsThisFrame = ProcessPickupCollection(m_MouseX, m_MouseY, m_DamageZoneSize);
+
     m_ElapsedTime += deltaTime;
 
     if (!m_BossActive) {
@@ -685,4 +699,13 @@ int Game::GetCoins() const {
 
 SaveData Game::GetSaveData() const {
     return SaveSystem::LoadProgress();
+}
+
+void Game::SetMousePosition(float x, float y) {
+    m_MouseX = x;
+    m_MouseY = y;
+}
+
+std::vector<PointPickup> Game::GetCollectedPickupsThisFrame() const {
+    return m_CollectedPickupsThisFrame;
 }

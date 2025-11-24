@@ -13,18 +13,9 @@ GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stat
 
 void GameplayScreen::Update(float deltaTime) {
     Vector2 mousePos = InputHandler::GetMousePosition();
+    m_Game.SetMousePosition(mousePos.x, mousePos.y);
 
-    m_Game.UpdateHealth(deltaTime);
-    m_Game.UpdateAutoSpawn(deltaTime);
-    m_Game.UpdateDamageTimer(deltaTime);
-
-    bool shouldDealDamage = m_Game.ShouldDealDamage();
-    if (shouldDealDamage) {
-        m_Game.ResetDamageTimer();
-    }
-    float damageZoneSize = m_Game.GetDamageZoneSize();
-    float damagePerTick = m_Game.GetDamagePerTick();
-    m_Game.ProcessDamageZone(mousePos.x, mousePos.y, damageZoneSize, damagePerTick, shouldDealDamage);
+    m_Game.Update(deltaTime);
 
     if (m_Game.ShouldGameOver()) {
         m_Game.SaveProgress();
@@ -32,8 +23,7 @@ void GameplayScreen::Update(float deltaTime) {
         return;
     }
 
-    std::vector<PointPickup> collectedPickups = m_Game.ProcessPickupCollection(mousePos.x, mousePos.y, damageZoneSize);
-
+    std::vector<PointPickup> collectedPickups = m_Game.GetCollectedPickupsThisFrame();
     for (const PointPickup& pickup : collectedPickups) {
         PickupCollectEffect effect{};
         effect.startPosition = Vector2{pickup.position.x, pickup.position.y};
@@ -51,8 +41,6 @@ void GameplayScreen::Update(float deltaTime) {
         std::remove_if(m_PickupEffects.begin(), m_PickupEffects.end(),
                        [](const PickupCollectEffect& effect) { return effect.elapsed >= effect.duration; }),
         m_PickupEffects.end());
-
-    m_Game.Update(deltaTime);
 
     if (m_Game.IsLevelCompleted()) {
         m_StateChangeCallback(GameScreen::LevelCompleted);
