@@ -4,12 +4,10 @@
 #include "../../NodeZero.Core/include/IGame.h"
 #include "../../NodeZero.Core/include/Types/SaveData.h"
 
-// Basic game tests
 TEST(GameTest, PlaceholderTest) {
     EXPECT_TRUE(true);
 }
 
-// Node spawn tests
 class NodeSpawnTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -43,7 +41,6 @@ TEST_F(NodeSpawnTest, MultipleNodesCanSpawn) {
     EXPECT_EQ(nodes.size(), 3);
 }
 
-// Pickup system tests
 class PickupSystemTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -71,7 +68,6 @@ TEST_F(PickupSystemTest, NodesDestroyedCountStartsAtZero) {
     EXPECT_EQ(game->GetNodesDestroyed(), 0);
 }
 
-// Damage system tests
 class DamageSystemTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -102,7 +98,6 @@ TEST_F(DamageSystemTest, DamageTimerResets) {
     EXPECT_FALSE(game->ShouldDealDamage());
 }
 
-// Save system tests
 class SaveSystemTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -140,7 +135,6 @@ TEST_F(SaveSystemTest, GetHighScoreReturnsValidValue) {
     EXPECT_GE(highScore, 0);
 }
 
-// Mouse position tests
 class MousePositionTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -173,7 +167,6 @@ TEST_F(MousePositionTest, CollectedPickupsClearedAfterUpdate) {
     EXPECT_GE(pickups.size(), 0);
 }
 
-// Screen dimensions tests
 class ScreenDimensionsTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -196,7 +189,6 @@ TEST_F(ScreenDimensionsTest, ScreenHeightIsSetCorrectly) {
     EXPECT_FLOAT_EQ(game->GetScreenHeight(), 1080.0f);
 }
 
-// Game over tests
 class GameOverTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -228,7 +220,6 @@ TEST_F(GameOverTest, ResetRestoresHealth) {
     EXPECT_GT(game->GetCurrentHealth(), healthAfterDamage);
 }
 
-// Auto spawn tests
 class AutoSpawnTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -263,7 +254,6 @@ TEST_F(AutoSpawnTest, MultipleManualSpawns) {
     EXPECT_EQ(game->GetNodes().size(), initialNodeCount + 3);
 }
 
-// Level progress tests
 class LevelProgressTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -296,7 +286,6 @@ TEST_F(LevelProgressTest, StartNextLevelIncrementsLevel) {
     EXPECT_EQ(game->GetCurrentLevel(), initialLevel + 1);
 }
 
-// Game update tests
 class GameUpdateTest : public ::testing::Test {
    protected:
     void SetUp() override {
