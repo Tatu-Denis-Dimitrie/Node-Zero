@@ -380,3 +380,154 @@ TEST_F(GameOverTest, ResetRestoresHealth) {
     game->Reset();
     EXPECT_GT(game->GetCurrentHealth(), healthAfterDamage);
 }
+
+class UpgradePurchaseTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(800.0f, 600.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(UpgradePurchaseTest, HealthUpgradeIncreasesMaxHealth) {
+    float initialMaxHealth = game->GetMaxHealth();
+    bool success = game->BuyHealthUpgrade();
+    if (success) {
+        EXPECT_GT(game->GetMaxHealth(), initialMaxHealth);
+    }
+}
+
+TEST_F(UpgradePurchaseTest, RegenUpgradeIncreasesRegenRate) {
+    float initialRegenRate = game->GetRegenRate();
+    bool success = game->BuyRegenUpgrade();
+    if (success) {
+        EXPECT_GT(game->GetRegenRate(), initialRegenRate);
+    }
+}
+
+TEST_F(UpgradePurchaseTest, DamageZoneUpgradeIncreasesSize) {
+    float initialSize = game->GetDamageZoneSize();
+    bool success = game->BuyDamageZoneUpgrade();
+    if (success) {
+        EXPECT_GT(game->GetDamageZoneSize(), initialSize);
+    }
+}
+
+TEST_F(UpgradePurchaseTest, DamageUpgradeIncreasesDamage) {
+    float initialDamage = game->GetDamagePerTick();
+    bool success = game->BuyDamageUpgrade();
+    if (success) {
+        EXPECT_GT(game->GetDamagePerTick(), initialDamage);
+    }
+}
+
+class AutoSpawnTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(800.0f, 600.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(AutoSpawnTest, UpdateAutoSpawnDoesNotCrash) {
+    game->UpdateAutoSpawn(0.5f);
+    game->UpdateAutoSpawn(1.0f);
+    game->UpdateAutoSpawn(2.5f);
+}
+
+TEST_F(AutoSpawnTest, NodesCanBeSpawnedManually) {
+    size_t initialNodeCount = game->GetNodes().size();
+    game->SpawnNode(400.0f, 300.0f);
+    EXPECT_EQ(game->GetNodes().size(), initialNodeCount + 1);
+}
+
+TEST_F(AutoSpawnTest, MultipleManualSpawns) {
+    size_t initialNodeCount = game->GetNodes().size();
+    game->SpawnNode(100.0f, 100.0f);
+    game->SpawnNode(200.0f, 200.0f);
+    game->SpawnNode(300.0f, 300.0f);
+    EXPECT_EQ(game->GetNodes().size(), initialNodeCount + 3);
+}
+
+class LevelProgressTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(800.0f, 600.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(LevelProgressTest, InitialLevelProgressIsZero) {
+    EXPECT_FLOAT_EQ(game->GetProgressBarPercentage(), 0.0f);
+}
+
+TEST_F(LevelProgressTest, NotLevelCompletedAtStart) {
+    EXPECT_FALSE(game->IsLevelCompleted());
+}
+
+TEST_F(LevelProgressTest, NodesDestroyedThisLevelStartsAtZero) {
+    EXPECT_EQ(game->GetNodesDestroyedThisLevel(), 0);
+}
+
+TEST_F(LevelProgressTest, StartNextLevelIncrementsLevel) {
+    int initialLevel = game->GetCurrentLevel();
+    game->StartNextLevel();
+    EXPECT_EQ(game->GetCurrentLevel(), initialLevel + 1);
+}
+
+class GameUpdateTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(800.0f, 600.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(GameUpdateTest, UpdateDoesNotCrashWithZeroDelta) {
+    game->Update(0.0f);
+}
+
+TEST_F(GameUpdateTest, UpdateDoesNotCrashWithSmallDelta) {
+    game->Update(0.001f);
+}
+
+TEST_F(GameUpdateTest, UpdateDoesNotCrashWithLargeDelta) {
+    game->Update(1.0f);
+}
+
+TEST_F(GameUpdateTest, MultipleUpdatesDoNotCrash) {
+    for (int i = 0; i < 100; ++i) {
+        game->Update(0.016f);
+    }
+}
+
+TEST_F(GameUpdateTest, UpdateWithMousePositionSet) {
+    game->SetMousePosition(400.0f, 300.0f);
+    game->Update(0.016f);
+    game->SetMousePosition(500.0f, 400.0f);
+    game->Update(0.016f);
+}
