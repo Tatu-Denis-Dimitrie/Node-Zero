@@ -1,174 +1,15 @@
 #include <gtest/gtest.h>
 
-#include "../NodeZero.Core/include/Game.h"
-#include "../NodeZero.Core/include/IGame.h"
-#include "../NodeZero.Core/include/Types/SaveData.h"
+#include "../../NodeZero.Core/include/Game.h"
+#include "../../NodeZero.Core/include/IGame.h"
+#include "../../NodeZero.Core/include/Types/SaveData.h"
 
+// Basic game tests
 TEST(GameTest, PlaceholderTest) {
     EXPECT_TRUE(true);
 }
 
-class HealthSystemTest : public ::testing::Test {
-   protected:
-    void SetUp() override {
-        game = std::make_unique<Game>();
-        game->Initialize(800.0f, 600.0f);
-    }
-
-    void TearDown() override {
-        game.reset();
-    }
-
-    std::unique_ptr<IGame> game;
-};
-
-TEST_F(HealthSystemTest, InitialHealthValues) {
-    EXPECT_LE(game->GetCurrentHealth(), game->GetMaxHealth());
-    EXPECT_GT(game->GetMaxHealth(), 0.0f);
-    EXPECT_FALSE(game->IsGameOver());
-}
-
-TEST_F(HealthSystemTest, HealthDepletionOverTime) {
-    float initialHealth = game->GetCurrentHealth();
-    game->UpdateHealth(0.3f);
-    game->UpdateHealth(0.3f);
-    game->UpdateHealth(0.3f);
-
-    EXPECT_LT(game->GetCurrentHealth(), initialHealth);
-}
-
-TEST_F(HealthSystemTest, DirectHealthReduction) {
-    float initialHealth = game->GetCurrentHealth();
-    game->ReduceHealth(0.5f);
-    game->ReduceHealth(0.5f);
-    game->ReduceHealth(0.5f);
-
-    EXPECT_FLOAT_EQ(game->GetCurrentHealth(), initialHealth - 1.5f);
-}
-
-TEST_F(HealthSystemTest, HealthCannotGoBelowZero) {
-    game->ReduceHealth(20.0f);
-
-    EXPECT_FLOAT_EQ(game->GetCurrentHealth(), 0.0f);
-    EXPECT_TRUE(game->IsGameOver());
-}
-
-TEST_F(HealthSystemTest, CombinedHealthReduction) {
-    float initialHealth = game->GetCurrentHealth();
-    game->UpdateHealth(0.3f);
-
-    game->ReduceHealth(0.5f);
-
-    game->UpdateHealth(0.3f);
-
-    EXPECT_LT(game->GetCurrentHealth(), initialHealth);
-}
-
-TEST_F(HealthSystemTest, HealthResetAfterGameOver) {
-    game->ReduceHealth(1000.0f);
-    EXPECT_TRUE(game->IsGameOver());
-
-    game->Reset();
-
-    EXPECT_EQ(game->GetCurrentHealth(), game->GetMaxHealth());
-    EXPECT_FALSE(game->IsGameOver());
-}
-
-TEST_F(HealthSystemTest, RealisticGameplayScenario) {
-    float initialHealth = game->GetCurrentHealth();
-    for (int i = 0; i < 16; ++i) {
-        game->UpdateHealth(0.3f);
-    }
-
-    game->ReduceHealth(0.5f);
-    game->ReduceHealth(0.5f);
-    game->ReduceHealth(0.5f);
-
-    EXPECT_LT(game->GetCurrentHealth(), initialHealth - 1.0f);
-    EXPECT_GT(game->GetCurrentHealth(), 0.0f);
-}
-
-class LevelSystemTest : public ::testing::Test {
-   protected:
-    void SetUp() override {
-        game = std::make_unique<Game>();
-        game->Initialize(800.0f, 600.0f);
-    }
-
-    void TearDown() override {
-        game.reset();
-    }
-
-    std::unique_ptr<IGame> game;
-};
-
-TEST_F(LevelSystemTest, InitialLevelIsOne) {
-    EXPECT_GT(game->GetCurrentLevel(), 0);
-}
-
-TEST_F(LevelSystemTest, ProgressBarStartsAtZero) {
-    EXPECT_FLOAT_EQ(game->GetProgressBarPercentage(), 0.0f);
-}
-
-TEST_F(LevelSystemTest, ProgressBarIncreasesOverTime) {
-    game->Update(30.0f);
-    float progress = game->GetProgressBarPercentage();
-    EXPECT_GT(progress, 0.0f);
-    EXPECT_LT(progress, 100.0f);
-}
-
-TEST_F(LevelSystemTest, ProgressBarCapsAt100Percent) {
-    game->Update(120.0f);
-    EXPECT_FLOAT_EQ(game->GetProgressBarPercentage(), 100.0f);
-}
-
-TEST_F(LevelSystemTest, LevelCompletedAfterBossDefeat) {
-    game->Update(61.0f);
-    EXPECT_FALSE(game->IsLevelCompleted());
-}
-
-class UpgradeSystemTest : public ::testing::Test {
-   protected:
-    void SetUp() override {
-        game = std::make_unique<Game>();
-        game->Initialize(800.0f, 600.0f);
-    }
-
-    void TearDown() override {
-        game.reset();
-    }
-
-    std::unique_ptr<IGame> game;
-};
-
-TEST_F(UpgradeSystemTest, InitialDamageZoneSize) {
-    EXPECT_GT(game->GetDamageZoneSize(), 0.0f);
-}
-
-TEST_F(UpgradeSystemTest, InitialDamagePerTick) {
-    EXPECT_GT(game->GetDamagePerTick(), 0.0f);
-}
-
-TEST_F(UpgradeSystemTest, HealthUpgradeCost) {
-    EXPECT_EQ(game->GetHealthUpgradeCost(), 50);
-}
-
-TEST_F(UpgradeSystemTest, DamageZoneUpgradeCost) {
-    EXPECT_EQ(game->GetDamageZoneUpgradeCost(), 75);
-}
-
-TEST_F(UpgradeSystemTest, DamageUpgradeCost) {
-    EXPECT_EQ(game->GetDamageUpgradeCost(), 60);
-}
-
-TEST_F(UpgradeSystemTest, RegenUpgradeCost) {
-    EXPECT_EQ(game->GetRegenUpgradeCost(), 100);
-}
-
-TEST_F(UpgradeSystemTest, InitialRegenRate) {
-    EXPECT_GE(game->GetRegenRate(), 0.0f);
-}
-
+// Node spawn tests
 class NodeSpawnTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -195,13 +36,14 @@ TEST_F(NodeSpawnTest, NodeSpawnsAtPosition) {
 }
 
 TEST_F(NodeSpawnTest, MultipleNodesCanSpawn) {
-    game->SpawnNode(400.0f, 300.0f);
-    game->SpawnNode(200.0f, 150.0f);
-    game->SpawnNode(600.0f, 450.0f);
+    game->SpawnNode(100.0f, 100.0f);
+    game->SpawnNode(200.0f, 200.0f);
+    game->SpawnNode(300.0f, 300.0f);
     const auto& nodes = game->GetNodes();
     EXPECT_EQ(nodes.size(), 3);
 }
 
+// Pickup system tests
 class PickupSystemTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -229,6 +71,7 @@ TEST_F(PickupSystemTest, NodesDestroyedCountStartsAtZero) {
     EXPECT_EQ(game->GetNodesDestroyed(), 0);
 }
 
+// Damage system tests
 class DamageSystemTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -259,6 +102,7 @@ TEST_F(DamageSystemTest, DamageTimerResets) {
     EXPECT_FALSE(game->ShouldDealDamage());
 }
 
+// Save system tests
 class SaveSystemTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -296,6 +140,7 @@ TEST_F(SaveSystemTest, GetHighScoreReturnsValidValue) {
     EXPECT_GE(highScore, 0);
 }
 
+// Mouse position tests
 class MousePositionTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -328,6 +173,7 @@ TEST_F(MousePositionTest, CollectedPickupsClearedAfterUpdate) {
     EXPECT_GE(pickups.size(), 0);
 }
 
+// Screen dimensions tests
 class ScreenDimensionsTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -350,6 +196,7 @@ TEST_F(ScreenDimensionsTest, ScreenHeightIsSetCorrectly) {
     EXPECT_FLOAT_EQ(game->GetScreenHeight(), 1080.0f);
 }
 
+// Game over tests
 class GameOverTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -381,52 +228,7 @@ TEST_F(GameOverTest, ResetRestoresHealth) {
     EXPECT_GT(game->GetCurrentHealth(), healthAfterDamage);
 }
 
-class UpgradePurchaseTest : public ::testing::Test {
-   protected:
-    void SetUp() override {
-        game = std::make_unique<Game>();
-        game->Initialize(800.0f, 600.0f);
-    }
-
-    void TearDown() override {
-        game.reset();
-    }
-
-    std::unique_ptr<IGame> game;
-};
-
-TEST_F(UpgradePurchaseTest, HealthUpgradeIncreasesMaxHealth) {
-    float initialMaxHealth = game->GetMaxHealth();
-    bool success = game->BuyHealthUpgrade();
-    if (success) {
-        EXPECT_GT(game->GetMaxHealth(), initialMaxHealth);
-    }
-}
-
-TEST_F(UpgradePurchaseTest, RegenUpgradeIncreasesRegenRate) {
-    float initialRegenRate = game->GetRegenRate();
-    bool success = game->BuyRegenUpgrade();
-    if (success) {
-        EXPECT_GT(game->GetRegenRate(), initialRegenRate);
-    }
-}
-
-TEST_F(UpgradePurchaseTest, DamageZoneUpgradeIncreasesSize) {
-    float initialSize = game->GetDamageZoneSize();
-    bool success = game->BuyDamageZoneUpgrade();
-    if (success) {
-        EXPECT_GT(game->GetDamageZoneSize(), initialSize);
-    }
-}
-
-TEST_F(UpgradePurchaseTest, DamageUpgradeIncreasesDamage) {
-    float initialDamage = game->GetDamagePerTick();
-    bool success = game->BuyDamageUpgrade();
-    if (success) {
-        EXPECT_GT(game->GetDamagePerTick(), initialDamage);
-    }
-}
-
+// Auto spawn tests
 class AutoSpawnTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -461,6 +263,7 @@ TEST_F(AutoSpawnTest, MultipleManualSpawns) {
     EXPECT_EQ(game->GetNodes().size(), initialNodeCount + 3);
 }
 
+// Level progress tests
 class LevelProgressTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -493,6 +296,7 @@ TEST_F(LevelProgressTest, StartNextLevelIncrementsLevel) {
     EXPECT_EQ(game->GetCurrentLevel(), initialLevel + 1);
 }
 
+// Game update tests
 class GameUpdateTest : public ::testing::Test {
    protected:
     void SetUp() override {
