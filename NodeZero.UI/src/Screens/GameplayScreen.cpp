@@ -1,6 +1,7 @@
 #include "../../include/Screens/GameplayScreen.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 
 #include "../../include/InputHandler.h"
@@ -20,6 +21,12 @@ void GameplayScreen::Update(const std::shared_ptr<IEvent>& event) {
     if (event->GetType() == "NodeDamaged") {
         // Trigger camera shake when nodes take damage
         TriggerShake(SHAKE_INTENSITY, SHAKE_DURATION);
+
+        // Spawn damage particles
+        auto damageEvent = std::static_pointer_cast<NodeDamagedEvent>(event);
+        Position nodePos = damageEvent->GetPosition();
+        Vector2 particlePos = {nodePos.x, nodePos.y};
+        SpawnDamageParticles(particlePos, RED, PARTICLE_COUNT);
     }
 }
 
@@ -47,6 +54,54 @@ void GameplayScreen::UpdateShake(float deltaTime) {
     }
 }
 
+void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int count) {
+    for (int i = 0; i < count; ++i) {
+        DamageParticle particle;
+        particle.position = position;
+
+        // Random angle for particle direction
+        float angle = (static_cast<float>(rand()) / RAND_MAX) * 6.28318530718f;  // 2 * PI
+        float speed = PARTICLE_SPEED_MIN + (static_cast<float>(rand()) / RAND_MAX) * (PARTICLE_SPEED_MAX - PARTICLE_SPEED_MIN);
+
+        particle.velocity.x = cos(angle) * speed;
+        particle.velocity.y = sin(angle) * speed;
+
+        particle.lifetime = 0.0f;
+        particle.maxLifetime = PARTICLE_LIFETIME;
+        particle.size = 3.0f + (static_cast<float>(rand()) / RAND_MAX) * 3.0f;  // Random size between 3-6
+
+        // Vary the color slightly
+        unsigned char r = baseColor.r + (rand() % 40) - 20;
+        unsigned char g = baseColor.g + (rand() % 40) - 20;
+        unsigned char b = baseColor.b + (rand() % 40) - 20;
+        particle.color = Color{r, g, b, 255};
+
+        m_DamageParticles.push_back(particle);
+    }
+}
+
+void GameplayScreen::UpdateParticles(float deltaTime) {
+    // Update all particles
+    for (auto& particle : m_DamageParticles) {
+        particle.lifetime += deltaTime;
+        particle.position.x += particle.velocity.x * deltaTime;
+        particle.position.y += particle.velocity.y * deltaTime;
+
+        // Apply gravity
+        particle.velocity.y += 200.0f * deltaTime;
+
+        // Fade out based on lifetime
+        float lifeRatio = particle.lifetime / particle.maxLifetime;
+        particle.color.a = static_cast<unsigned char>((1.0f - lifeRatio) * 255.0f);
+    }
+
+    // Remove dead particles
+    m_DamageParticles.erase(
+        std::remove_if(m_DamageParticles.begin(), m_DamageParticles.end(),
+                       [](const DamageParticle& p) { return p.lifetime >= p.maxLifetime; }),
+        m_DamageParticles.end());
+}
+
 void GameplayScreen::Update(float deltaTime) {
     Vector2 mousePos = InputHandler::GetMousePosition();
     m_Game.SetMousePosition(mousePos.x, mousePos.y);
@@ -55,6 +110,9 @@ void GameplayScreen::Update(float deltaTime) {
 
     // Update camera shake
     UpdateShake(deltaTime);
+
+    // Update damage particles
+    UpdateParticles(deltaTime);
 
     if (m_Game.ShouldGameOver()) {
         m_Game.SaveProgress();
@@ -156,6 +214,11 @@ void GameplayScreen::Draw() {
         Vector2 currentPos = Vector2Lerp(effect.startPosition, targetPos, t);
         unsigned char alpha = static_cast<unsigned char>((1.0f - t) * 255.0f);
         Renderer::DrawPickup(currentPos.x, currentPos.y, effect.size, Color{255, 50, 50, alpha});
+    }
+
+    // Draw damage particles
+    for (const DamageParticle& particle : m_DamageParticles) {
+        DrawCircleV(particle.position, particle.size, particle.color);
     }
 
     DrawRectangle(

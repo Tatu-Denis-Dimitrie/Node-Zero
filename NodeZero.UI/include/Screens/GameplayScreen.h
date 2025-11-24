@@ -16,6 +16,15 @@ struct PickupCollectEffect {
     float size;
 };
 
+struct DamageParticle {
+    Vector2 position;
+    Vector2 velocity;
+    float lifetime;
+    float maxLifetime;
+    float size;
+    Color color;
+};
+
 class GameplayScreen : public IObserver, public std::enable_shared_from_this<GameplayScreen> {
    public:
     GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
@@ -30,6 +39,7 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
     IGame& m_Game;
     std::function<void(GameScreen)> m_StateChangeCallback;
     std::vector<PickupCollectEffect> m_PickupEffects;
+    std::vector<DamageParticle> m_DamageParticles;
     Font m_Font;
 
     // Camera shake
@@ -40,6 +50,8 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
 
     void TriggerShake(float intensity, float duration);
     void UpdateShake(float deltaTime);
+    void SpawnDamageParticles(Vector2 position, Color baseColor, int count);
+    void UpdateParticles(float deltaTime);
 
     static constexpr float DAMAGE_ZONE_SIZE = 150.0f;
     static constexpr float DAMAGE_PER_TICK = 40.0f;
@@ -47,4 +59,8 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
     static constexpr float PICKUP_SPAWN_ANIM_DURATION = 0.45f;
     static constexpr float SHAKE_INTENSITY = 8.0f;
     static constexpr float SHAKE_DURATION = 0.15f;
+    static constexpr float PARTICLE_LIFETIME = 0.6f;
+    static constexpr float PARTICLE_SPEED_MIN = 50.0f;
+    static constexpr float PARTICLE_SPEED_MAX = 150.0f;
+    static constexpr int PARTICLE_COUNT = 8;
 };
