@@ -30,9 +30,48 @@ cmake --build build --config Debug
 
 ## Gameplay
 
-Destroy nodes by hovering over them with your damage zone (mouse cursor). Nodes spawn from the right and move left - if they escape, you lose health. Destroyed nodes drop pickups for coins and points.
+### How to Play
 
-**Progression:** Complete levels by destroying the required number of nodes. Spend coins on upgrades (health, regeneration, damage, zone size) to handle increasing difficulty.
+**Controls:**
+- **Mouse Movement** - Move your damage zone (circular area around cursor)
+- **ESC** - Pause game / Access settings menu
+
+**Game Objective:**
+Survive as long as possible by destroying enemy nodes before they escape the screen. Your goal is to progress through increasingly difficult levels while managing your health and upgrading your abilities.
+
+**Core Mechanics:**
+1. **Destroy Nodes** - Hover your damage zone over enemy nodes to deal damage
+2. **Collect Pickups** - Destroyed nodes drop pickups for coins and score points
+3. **Complete Levels** - Destroy the required number of nodes to face the level boss and advance
+
+**Enemy Nodes:**
+- Have different shapes (Circle, Square, Hexagon) with varying HP
+- Boss nodes appear at the end of each level with significantly more HP
+- Enemy HP scales up with each level, increasing difficulty
+
+**Upgrade System:**
+Spend coins earned from destroyed nodes on permanent upgrades:
+- **Health Upgrade (50 coins)** - Increases maximum health
+- **Regeneration Upgrade (100 coins)** - Adds health regeneration over time
+- **Damage Upgrade (60 coins)** - Increases damage per tick to nodes
+- **Damage Zone Upgrade (75 coins)** - Expands the size of your damage zone
+
+**Difficulty Scaling:**
+As you progress through levels:
+- Nodes gain more HP (scaling factor based on level)
+- More nodes spawn per level
+- Spawn rate increases
+- Damage received increases
+
+**Game Over:**
+The game ends when your health reaches zero. Your final score and coins are saved for future upgrade purchases.
+
+**Save System:**
+Game progress (coins, high score, upgrades, level) is automatically saved to:
+- **Windows:** `%APPDATA%\NodeZero\save.txt`
+- **Linux/macOS:** `~/.config/NodeZero/save.txt`
+
+Your save data persists between sessions, allowing you to accumulate coins and upgrades over multiple playthroughs.
 
 ## Architecture
 
@@ -130,6 +169,11 @@ Verify Raylib: `build/_deps/raylib-src/`
 
 **Tests not found in VS?**
 Rebuild: `cmake --build build --config Debug --target NodeZero.Tests`
+
+**Want to reset game progress?**
+Delete the save file:
+- **Windows:** `%APPDATA%\NodeZero\save.txt`
+- **Linux/macOS:** `~/.config/NodeZero/save.txt`
 
 ---
 
