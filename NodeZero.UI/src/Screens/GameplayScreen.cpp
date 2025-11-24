@@ -193,6 +193,11 @@ void GameplayScreen::Draw() {
 
     Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
 
+    // Draw HUD elements (affected by camera shake)
+    Renderer::DrawHealthBar(m_Game.GetCurrentHealth(), m_Game.GetMaxHealth(), 10, 10, 300, 24, m_Font);
+    Renderer::DrawScore(m_Game.GetPickupScore(), 10, 45, 20, WHITE, m_Font);
+    Renderer::DrawDebugInfo(GetScreenWidth() - 100, 10, m_Font);
+
     // Restore original matrix (remove shake offset)
     rlPopMatrix();
 }
