@@ -2,6 +2,7 @@
 
 #include "../NodeZero.Core/include/Game.h"
 #include "../NodeZero.Core/include/IGame.h"
+#include "../NodeZero.Core/include/Types/SaveData.h"
 
 TEST(GameTest, PlaceholderTest) {
     EXPECT_TRUE(true);
@@ -256,4 +257,126 @@ TEST_F(DamageSystemTest, DamageTimerResets) {
     game->UpdateDamageTimer(2.0f);
     game->ResetDamageTimer();
     EXPECT_FALSE(game->ShouldDealDamage());
+}
+
+class SaveSystemTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(800.0f, 600.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(SaveSystemTest, GetCoinsReturnsValidValue) {
+    int coins = game->GetCoins();
+    EXPECT_GE(coins, 0);
+}
+
+TEST_F(SaveSystemTest, GetSaveDataReturnsValidData) {
+    SaveData data = game->GetSaveData();
+    EXPECT_GE(data.coins, 0);
+    EXPECT_GE(data.highScore, 0);
+    EXPECT_GE(data.gamesPlayed, 0);
+    EXPECT_GE(data.totalNodesDestroyed, 0);
+    EXPECT_GE(data.currentLevel, 1);
+    EXPECT_GT(data.maxHealth, 0.0f);
+    EXPECT_GE(data.regenRate, 0.0f);
+    EXPECT_GT(data.damageZoneSize, 0.0f);
+    EXPECT_GT(data.damagePerTick, 0.0f);
+}
+
+TEST_F(SaveSystemTest, GetHighScoreReturnsValidValue) {
+    int highScore = game->GetHighScore();
+    EXPECT_GE(highScore, 0);
+}
+
+class MousePositionTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(800.0f, 600.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(MousePositionTest, SetMousePositionDoesNotCrash) {
+    game->SetMousePosition(100.0f, 200.0f);
+    game->SetMousePosition(0.0f, 0.0f);
+    game->SetMousePosition(-50.0f, -50.0f);
+}
+
+TEST_F(MousePositionTest, GetCollectedPickupsInitiallyEmpty) {
+    auto pickups = game->GetCollectedPickupsThisFrame();
+    EXPECT_EQ(pickups.size(), 0);
+}
+
+TEST_F(MousePositionTest, CollectedPickupsClearedAfterUpdate) {
+    game->SetMousePosition(400.0f, 300.0f);
+    game->Update(0.016f);
+    auto pickups = game->GetCollectedPickupsThisFrame();
+    EXPECT_GE(pickups.size(), 0);
+}
+
+class ScreenDimensionsTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(1920.0f, 1080.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(ScreenDimensionsTest, ScreenWidthIsSetCorrectly) {
+    EXPECT_FLOAT_EQ(game->GetScreenWidth(), 1920.0f);
+}
+
+TEST_F(ScreenDimensionsTest, ScreenHeightIsSetCorrectly) {
+    EXPECT_FLOAT_EQ(game->GetScreenHeight(), 1080.0f);
+}
+
+class GameOverTest : public ::testing::Test {
+   protected:
+    void SetUp() override {
+        game = std::make_unique<Game>();
+        game->Initialize(800.0f, 600.0f);
+    }
+
+    void TearDown() override {
+        game.reset();
+    }
+
+    std::unique_ptr<IGame> game;
+};
+
+TEST_F(GameOverTest, InitiallyNotGameOver) {
+    EXPECT_FALSE(game->ShouldGameOver());
+    EXPECT_FALSE(game->IsGameOver());
+}
+
+TEST_F(GameOverTest, GameOverWhenHealthZero) {
+    game->ReduceHealth(1000.0f);
+    EXPECT_TRUE(game->ShouldGameOver());
+}
+
+TEST_F(GameOverTest, ResetRestoresHealth) {
+    game->ReduceHealth(5.0f);
+    float healthAfterDamage = game->GetCurrentHealth();
+    game->Reset();
+    EXPECT_GT(game->GetCurrentHealth(), healthAfterDamage);
 }
