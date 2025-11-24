@@ -17,12 +17,9 @@ GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stat
 }
 
 void GameplayScreen::Update(const std::shared_ptr<IEvent>& event) {
-    // React to game events through Observer pattern
     if (event->GetType() == "NodeDamaged") {
-        // Trigger camera shake when nodes take damage
         TriggerShake(SHAKE_INTENSITY, SHAKE_DURATION);
 
-        // Spawn damage particles
         auto damageEvent = std::static_pointer_cast<NodeDamagedEvent>(event);
         Position nodePos = damageEvent->GetPosition();
         Vector2 particlePos = {nodePos.x, nodePos.y};
@@ -40,11 +37,9 @@ void GameplayScreen::UpdateShake(float deltaTime) {
     if (m_ShakeTimer < m_ShakeDuration) {
         m_ShakeTimer += deltaTime;
 
-        // Calculate shake intensity that decays over time
         float progress = m_ShakeTimer / m_ShakeDuration;
         float currentIntensity = m_ShakeIntensity * (1.0f - progress);
 
-        // Generate random shake offset
         float randomX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * currentIntensity;
         float randomY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * currentIntensity;
 
@@ -59,8 +54,7 @@ void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int
         DamageParticle particle;
         particle.position = position;
 
-        // Random angle for particle direction
-        float angle = (static_cast<float>(rand()) / RAND_MAX) * 6.28318530718f;  // 2 * PI
+        float angle = (static_cast<float>(rand()) / RAND_MAX) * 6.28318530718f;
         float speed = PARTICLE_SPEED_MIN + (static_cast<float>(rand()) / RAND_MAX) * (PARTICLE_SPEED_MAX - PARTICLE_SPEED_MIN);
 
         particle.velocity.x = cos(angle) * speed;
@@ -68,9 +62,8 @@ void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int
 
         particle.lifetime = 0.0f;
         particle.maxLifetime = PARTICLE_LIFETIME;
-        particle.size = 3.0f + (static_cast<float>(rand()) / RAND_MAX) * 3.0f;  // Random size between 3-6
+        particle.size = 3.0f + (static_cast<float>(rand()) / RAND_MAX) * 3.0f;
 
-        // Vary the color slightly
         unsigned char r = baseColor.r + (rand() % 40) - 20;
         unsigned char g = baseColor.g + (rand() % 40) - 20;
         unsigned char b = baseColor.b + (rand() % 40) - 20;
@@ -81,21 +74,17 @@ void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int
 }
 
 void GameplayScreen::UpdateParticles(float deltaTime) {
-    // Update all particles
     for (auto& particle : m_DamageParticles) {
         particle.lifetime += deltaTime;
         particle.position.x += particle.velocity.x * deltaTime;
         particle.position.y += particle.velocity.y * deltaTime;
 
-        // Apply gravity
         particle.velocity.y += 200.0f * deltaTime;
 
-        // Fade out based on lifetime
         float lifeRatio = particle.lifetime / particle.maxLifetime;
         particle.color.a = static_cast<unsigned char>((1.0f - lifeRatio) * 255.0f);
     }
 
-    // Remove dead particles
     m_DamageParticles.erase(
         std::remove_if(m_DamageParticles.begin(), m_DamageParticles.end(),
                        [](const DamageParticle& p) { return p.lifetime >= p.maxLifetime; }),
@@ -108,10 +97,7 @@ void GameplayScreen::Update(float deltaTime) {
 
     m_Game.Update(deltaTime);
 
-    // Update camera shake
     UpdateShake(deltaTime);
-
-    // Update damage particles
     UpdateParticles(deltaTime);
 
     if (m_Game.ShouldGameOver()) {
@@ -150,7 +136,6 @@ void GameplayScreen::Update(float deltaTime) {
 }
 
 void GameplayScreen::Draw() {
-    // Apply camera shake offset
     rlPushMatrix();
     rlTranslatef(m_ShakeOffset.x, m_ShakeOffset.y, 0.0f);
 
@@ -216,7 +201,6 @@ void GameplayScreen::Draw() {
         Renderer::DrawPickup(currentPos.x, currentPos.y, effect.size, Color{255, 50, 50, alpha});
     }
 
-    // Draw damage particles
     for (const DamageParticle& particle : m_DamageParticles) {
         DrawCircleV(particle.position, particle.size, particle.color);
     }
@@ -256,11 +240,9 @@ void GameplayScreen::Draw() {
 
     Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
 
-    // Draw HUD elements (affected by camera shake)
     Renderer::DrawHealthBar(m_Game.GetCurrentHealth(), m_Game.GetMaxHealth(), 10, 10, 300, 24, m_Font);
     Renderer::DrawScore(m_Game.GetPickupScore(), 10, 45, 20, WHITE, m_Font);
     Renderer::DrawDebugInfo(GetScreenWidth() - 100, 10, m_Font);
 
-    // Restore original matrix (remove shake offset)
     rlPopMatrix();
 }

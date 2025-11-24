@@ -32,7 +32,6 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
     void Update(float deltaTime);
     void Draw();
 
-    // IObserver implementation
     void Update(const std::shared_ptr<IEvent>& event) override;
 
    private:
@@ -42,7 +41,6 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
     std::vector<DamageParticle> m_DamageParticles;
     Font m_Font;
 
-    // Camera shake
     float m_ShakeIntensity;
     float m_ShakeDuration;
     float m_ShakeTimer;

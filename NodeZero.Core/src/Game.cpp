@@ -525,7 +525,6 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
         if (inDamageZone) {
             node->TakeDamage(damage);
 
-            // Emit NodeDamaged event for camera shake and other effects
             Position nodePos = node->GetPosition();
             auto event = std::make_shared<NodeDamagedEvent>(
                 m_ElapsedTime,
