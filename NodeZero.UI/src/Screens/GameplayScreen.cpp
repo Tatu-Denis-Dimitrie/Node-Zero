@@ -1,27 +1,50 @@
 #include "../../include/Screens/GameplayScreen.h"
 
 #include <algorithm>
+#include <cstdlib>
 
 #include "../../include/InputHandler.h"
 #include "../../include/Renderer.h"
 #include "Events/GameEvents.h"
 #include "INode.h"
+#include "raylib.h"
 #include "raymath.h"
+#include "rlgl.h"
 
 GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
-    : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font) {
+    : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font), m_ShakeIntensity(0.0f), m_ShakeDuration(0.0f), m_ShakeTimer(0.0f), m_ShakeOffset{0.0f, 0.0f} {
 }
 
 void GameplayScreen::Update(const std::shared_ptr<IEvent>& event) {
-    // Handle game events from the Observer pattern
-    // Currently we don't need to react to specific events in the UI,
-    // but this allows for future event-driven UI updates
+    // React to game events through Observer pattern
+    if (event->GetType() == "NodeDamaged") {
+        // Trigger camera shake when nodes take damage
+        TriggerShake(SHAKE_INTENSITY, SHAKE_DURATION);
+    }
+}
 
-    // Example: You could add visual effects or sounds based on events:
-    // if (event->GetType() == "NodeDestroyed") {
-    //     auto nodeEvent = std::static_pointer_cast<NodeDestroyedEvent>(event);
-    //     // Add explosion effect at nodeEvent->GetPosition()
-    // }
+void GameplayScreen::TriggerShake(float intensity, float duration) {
+    m_ShakeIntensity = intensity;
+    m_ShakeDuration = duration;
+    m_ShakeTimer = 0.0f;
+}
+
+void GameplayScreen::UpdateShake(float deltaTime) {
+    if (m_ShakeTimer < m_ShakeDuration) {
+        m_ShakeTimer += deltaTime;
+
+        // Calculate shake intensity that decays over time
+        float progress = m_ShakeTimer / m_ShakeDuration;
+        float currentIntensity = m_ShakeIntensity * (1.0f - progress);
+
+        // Generate random shake offset
+        float randomX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * currentIntensity;
+        float randomY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * currentIntensity;
+
+        m_ShakeOffset = Vector2{randomX, randomY};
+    } else {
+        m_ShakeOffset = Vector2{0.0f, 0.0f};
+    }
 }
 
 void GameplayScreen::Update(float deltaTime) {
@@ -29,6 +52,9 @@ void GameplayScreen::Update(float deltaTime) {
     m_Game.SetMousePosition(mousePos.x, mousePos.y);
 
     m_Game.Update(deltaTime);
+
+    // Update camera shake
+    UpdateShake(deltaTime);
 
     if (m_Game.ShouldGameOver()) {
         m_Game.SaveProgress();
@@ -66,6 +92,10 @@ void GameplayScreen::Update(float deltaTime) {
 }
 
 void GameplayScreen::Draw() {
+    // Apply camera shake offset
+    rlPushMatrix();
+    rlTranslatef(m_ShakeOffset.x, m_ShakeOffset.y, 0.0f);
+
     Vector2 mousePos = InputHandler::GetMousePosition();
     float damageZoneSize = m_Game.GetDamageZoneSize();
     float damageRectX = mousePos.x - damageZoneSize / 2.0f;
@@ -162,4 +192,7 @@ void GameplayScreen::Draw() {
         WHITE);
 
     Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
+
+    // Restore original matrix (remove shake offset)
+    rlPopMatrix();
 }

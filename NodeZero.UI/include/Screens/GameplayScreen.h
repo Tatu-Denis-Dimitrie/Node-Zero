@@ -32,8 +32,19 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
     std::vector<PickupCollectEffect> m_PickupEffects;
     Font m_Font;
 
+    // Camera shake
+    float m_ShakeIntensity;
+    float m_ShakeDuration;
+    float m_ShakeTimer;
+    Vector2 m_ShakeOffset;
+
+    void TriggerShake(float intensity, float duration);
+    void UpdateShake(float deltaTime);
+
     static constexpr float DAMAGE_ZONE_SIZE = 150.0f;
     static constexpr float DAMAGE_PER_TICK = 40.0f;
     static constexpr float PICKUP_COLLECT_EFFECT_DURATION = 1.0f;
     static constexpr float PICKUP_SPAWN_ANIM_DURATION = 0.45f;
+    static constexpr float SHAKE_INTENSITY = 8.0f;
+    static constexpr float SHAKE_DURATION = 0.15f;
 };

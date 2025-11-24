@@ -525,6 +525,15 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
         if (inDamageZone) {
             node->TakeDamage(damage);
 
+            // Emit NodeDamaged event for camera shake and other effects
+            Position nodePos = node->GetPosition();
+            auto event = std::make_shared<NodeDamagedEvent>(
+                m_ElapsedTime,
+                nodePos,
+                static_cast<int>(damage),
+                static_cast<int>(node->GetHP()));
+            Notify(event);
+
             float healthCost = 0.5f;
             if (node->GetShape() == NodeShape::Boss) {
                 healthCost *= 8.0f;
