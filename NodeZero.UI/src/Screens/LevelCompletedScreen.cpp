@@ -18,12 +18,17 @@ LevelCompletedScreen::LevelCompletedScreen(IGame& game, std::function<void(GameS
     float startY = screenHeight / 2.0f;
     float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
 
+    const char* titleText = "LEVEL COMPLETED!";
+    int fontSize = 40;
+    Vector2 textSize = MeasureTextEx(font, titleText, static_cast<float>(fontSize), 1);
+    float titleX = screenWidth / 2.0f - textSize.x / 2.0f;
+
     auto title = std::make_unique<Label>(
-        screenWidth / 2.0f - 200.0f,
+        titleX,
         screenHeight / 2.0f - 150.0f,
-        "LEVEL COMPLETED!",
+        titleText,
         font,
-        40,
+        fontSize,
         GOLD);
     m_Menu->AddWidget(std::move(title));
 

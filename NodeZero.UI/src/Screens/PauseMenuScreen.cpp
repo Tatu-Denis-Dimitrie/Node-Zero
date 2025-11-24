@@ -16,12 +16,17 @@ PauseMenuScreen::PauseMenuScreen(IGame& game, std::function<void(GameScreen)> st
     float startY = screenHeight / 2.0f - 50.0f;
     float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
 
+    const char* titleText = "GAME PAUSED";
+    int fontSize = 40;
+    Vector2 textSize = MeasureTextEx(font, titleText, static_cast<float>(fontSize), 1);
+    float titleX = screenWidth / 2.0f - textSize.x / 2.0f;
+
     auto pauseTitle = std::make_unique<Label>(
-        screenWidth / 2.0f - 150.0f,
+        titleX,
         screenHeight / 2.0f - 150.0f,
-        "GAME PAUSED",
+        titleText,
         font,
-        40,
+        fontSize,
         WHITE);
     m_Menu->AddWidget(std::move(pauseTitle));
 

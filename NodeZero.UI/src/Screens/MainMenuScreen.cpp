@@ -16,12 +16,17 @@ MainMenuScreen::MainMenuScreen(std::function<void(GameScreen)> stateChangeCallba
     float startY = screenHeight / 2.0f - 100.0f;
     float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
 
+    const char* titleText = "NodeZero";
+    int fontSize = 40;
+    Vector2 textSize = MeasureTextEx(font, titleText, static_cast<float>(fontSize), 1);
+    float titleX = screenWidth / 2.0f - textSize.x / 2.0f;
+
     auto titleLabel = std::make_unique<Label>(
-        screenWidth / 2.0f - 150.0f,
+        titleX,
         screenHeight / 2.0f - 200.0f,
-        "NodeZero",
+        titleText,
         font,
-        40,
+        fontSize,
         WHITE);
     m_Menu->AddWidget(std::move(titleLabel));
 

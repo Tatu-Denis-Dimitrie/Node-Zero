@@ -18,12 +18,17 @@ GameOverScreen::GameOverScreen(IGame& game, std::function<void(GameScreen)> stat
     float startY = screenHeight / 2.0f;
     float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
 
+    const char* titleText = "GAME OVER";
+    int fontSize = 60;
+    Vector2 textSize = MeasureTextEx(font, titleText, static_cast<float>(fontSize), 1);
+    float titleX = screenWidth / 2.0f - textSize.x / 2.0f;
+
     auto title = std::make_unique<Label>(
-        screenWidth / 2.0f - 150.0f,
+        titleX,
         screenHeight / 2.0f - 150.0f,
-        "GAME OVER",
+        titleText,
         font,
-        60,
+        fontSize,
         RED);
     m_Menu->AddWidget(std::move(title));
 
