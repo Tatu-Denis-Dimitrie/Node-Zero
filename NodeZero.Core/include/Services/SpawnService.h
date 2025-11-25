@@ -5,8 +5,9 @@
 
 #include "Enums/NodeShape.h"
 #include "INode.h"
+#include "ISpawnService.h"
 
-class SpawnService {
+class SpawnService : public ISpawnService {
    private:
     float m_ScreenWidth;
     float m_ScreenHeight;
@@ -18,17 +19,19 @@ class SpawnService {
 
    public:
     SpawnService();
-    ~SpawnService() = default;
+    ~SpawnService() override = default;
 
     void Initialize(float screenWidth, float screenHeight);
-    void UpdateAutoSpawn(float deltaTime);
+    void UpdateAutoSpawn(float deltaTime) override;
+    void ResetAutoSpawnTimer() override;
     void Reset();
 
     void SetCurrentLevel(int level);
     void SetOnNodeSpawnedCallback(std::function<void(float, float, NodeShape, float, float)> callback);
 
-    NodeShape GetRandomShape() const;
-    float CalculateNodeHP(float baseHP) const;
+    NodeShape GetRandomShape() const override;
+    float CalculateNodeHP(float baseHP) const override;
+    bool ShouldAutoSpawn() const override;
 
    private:
     float RandomRange(float minValue, float maxValue) const;

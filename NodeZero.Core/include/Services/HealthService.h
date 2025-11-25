@@ -1,6 +1,8 @@
 #pragma once
 
-class HealthService {
+#include "IHealthService.h"
+
+class HealthService : public IHealthService {
    private:
     float m_MaxHealth;
     float m_CurrentHealth;
@@ -12,21 +14,21 @@ class HealthService {
 
    public:
     HealthService();
-    ~HealthService() = default;
+    ~HealthService() override = default;
 
-    void Initialize(float maxHealth, float regenRate);
-    void Update(float deltaTime);
+    void Initialize(float maxHealth, float regenRate) override;
+    void Update(float deltaTime) override;
     void Reset(float maxHealth);
 
-    void Reduce(float amount);
+    void Reduce(float amount) override;
     void SetMaxHealth(float maxHealth);
     void SetRegenRate(float regenRate);
     void SetCurrentLevel(int level);
-    void RestoreToMax();
+    void RestoreToMax() override;
 
-    float GetCurrent() const;
-    float GetMax() const;
-    bool IsZero() const;
+    float GetCurrent() const override;
+    float GetMax() const override;
+    bool IsZero() const override;
 
    private:
     void ApplyRegeneration(float deltaTime);

@@ -3,7 +3,7 @@
 #include <cstdio>
 
 #include "Services/UpgradeService.h"
-#include "Systems/SaveSystem.h"
+#include "Services/ISaveService.h"
 
 UpgradesScreen::UpgradesScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_WasMousePressed(false), m_IsFirstFrame(true), m_Font(font) {
@@ -24,7 +24,7 @@ void UpgradesScreen::Draw() {
     Vector2 titleSize = MeasureTextEx(m_Font, "UPGRADES", static_cast<float>(titleFontSize), 1);
     DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - titleSize.x / 2), static_cast<float>(screenHeight * 0.05f)}, static_cast<float>(titleFontSize), 1, WHITE);
 
-    SaveData saveData = SaveSystem::LoadProgress();
+    SaveData saveData = m_Game.GetSaveService().GetCurrentData();
 
     int statsX = static_cast<int>(screenWidth * 0.03f);
     int statsY = static_cast<int>(screenHeight * 0.15f);
@@ -106,7 +106,7 @@ void UpgradesScreen::Draw() {
 
     if (!m_IsFirstFrame && isHovered && canAfford && isMousePressed && !m_WasMousePressed) {
         if (m_Game.GetUpgradeService().BuyHealthUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveService().GetCurrentData();
         }
     }
 
@@ -135,7 +135,7 @@ void UpgradesScreen::Draw() {
 
     if (!m_IsFirstFrame && isRegenHovered && canAffordRegen && isMousePressed && !m_WasMousePressed) {
         if (m_Game.GetUpgradeService().BuyRegenUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveService().GetCurrentData();
         }
     }
 
@@ -173,7 +173,7 @@ void UpgradesScreen::Draw() {
 
     if (!m_IsFirstFrame && isDamageZoneHovered && canAffordDamageZone && isMousePressed && !m_WasMousePressed) {
         if (m_Game.GetUpgradeService().BuyDamageZoneUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveService().GetCurrentData();
         }
     }
 
@@ -201,7 +201,7 @@ void UpgradesScreen::Draw() {
 
     if (!m_IsFirstFrame && isDamageHovered && canAffordDamage && isMousePressed && !m_WasMousePressed) {
         if (m_Game.GetUpgradeService().BuyDamageUpgrade()) {
-            saveData = SaveSystem::LoadProgress();
+            saveData = m_Game.GetSaveService().GetCurrentData();
         }
     }
 

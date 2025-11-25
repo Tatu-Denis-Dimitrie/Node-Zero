@@ -112,3 +112,49 @@ float PickupService::RandomRange(float minValue, float maxValue) const {
     float t = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     return minValue + (maxValue - minValue) * t;
 }
+void PickupService::SpawnPointPickups(const Position& origin, int count, int pointValue) {
+    for (int i = 0; i < count; ++i) {
+        float angle = RandomRange(0.0f, 6.28318530718f);
+        float radius = RandomRange(m_ScreenHeight * 0.0125f, m_ScreenHeight * 0.05f);
+
+        PointPickup pickup{};
+        pickup.id = m_NextPickupId++;
+        pickup.position.x = origin.x + std::cos(angle) * radius;
+        pickup.position.y = origin.y + std::sin(angle) * radius;
+        pickup.spawnOrigin = origin;
+        pickup.size = m_ScreenHeight * 0.0075f;
+        pickup.lifetime = GameConfig::PICKUP_LIFETIME;
+        pickup.remainingTime = GameConfig::PICKUP_LIFETIME;
+        pickup.points = pointValue;
+
+        m_Pickups.push_back(pickup);
+    }
+}
+
+void PickupService::ProcessPickupCollection(float mouseX, float mouseY, float damageZoneSize,
+                                           std::vector<PointPickup>& collectedPickups) {
+    collectedPickups.clear();
+    
+    float collectRectX = mouseX - damageZoneSize / 2.0f;
+    float collectRectY = mouseY - damageZoneSize / 2.0f;
+
+    for (const PointPickup& pickup : m_Pickups) {
+        if (pickup.GetAge() < GameConfig::PICKUP_COLLECT_DELAY) {
+            continue;
+        }
+
+        bool intersects = !(pickup.position.x + pickup.size < collectRectX ||
+                            pickup.position.x - pickup.size > collectRectX + damageZoneSize ||
+                            pickup.position.y + pickup.size < collectRectY ||
+                            pickup.position.y - pickup.size > collectRectY + damageZoneSize);
+
+        if (intersects) {
+            collectedPickups.push_back(pickup);
+            CollectPickup(pickup.id);
+        }
+    }
+}
+
+void PickupService::Clear() {
+    Reset();
+}

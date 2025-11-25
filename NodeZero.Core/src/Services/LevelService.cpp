@@ -82,3 +82,10 @@ float LevelService::GetProgressBarPercentage() const {
     }
     return percentage;
 }
+void LevelService::Update(float deltaTime) {
+    Update(deltaTime, m_BossActive);
+}
+
+void LevelService::Reset() {
+    Reset(1);
+}

@@ -3,20 +3,25 @@
 #include <functional>
 #include <vector>
 
+#include "IDamageZoneService.h"
 #include "INode.h"
 
-class DamageZoneService {
+class DamageZoneService : public IDamageZoneService {
    private:
     float m_DamageTimer;
     float m_DamageInterval;
 
    public:
     DamageZoneService();
-    ~DamageZoneService() = default;
+    ~DamageZoneService() override = default;
 
-    void UpdateTimer(float deltaTime);
-    void ResetTimer();
-    bool ShouldDealDamage() const;
+    void UpdateTimer(float deltaTime) override;
+    void ResetTimer() override;
+    bool ShouldDealDamage() const override;
+
+    void ProcessDamageZone(float mouseX, float mouseY, float damageZoneSize,
+                          float damagePerTick,
+                          std::function<void(int nodeIndex, float damage)> onDamageNode) override;
 
     void ProcessDamageZone(
         float centerX,

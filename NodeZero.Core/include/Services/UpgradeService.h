@@ -1,6 +1,8 @@
 #pragma once
 
-class UpgradeService {
+#include "IUpgradeService.h"
+
+class UpgradeService : public IUpgradeService {
    private:
     float m_MaxHealth;
     float m_RegenRate;
@@ -9,23 +11,25 @@ class UpgradeService {
 
    public:
     UpgradeService();
-    ~UpgradeService() = default;
+    ~UpgradeService() override = default;
 
     void Initialize(float maxHealth, float regenRate, float damageZoneSize, float damagePerTick);
 
-    bool BuyHealthUpgrade();
-    int GetHealthUpgradeCost() const;
-    float GetMaxHealth() const;
+    bool BuyHealthUpgrade() override;
+    int GetHealthUpgradeCost() const override;
+    float GetMaxHealth() const override;
 
-    bool BuyRegenUpgrade();
-    int GetRegenUpgradeCost() const;
-    float GetRegenRate() const;
+    bool BuyRegenUpgrade() override;
+    int GetRegenUpgradeCost() const override;
+    float GetRegenRate() const override;
 
-    bool BuyDamageZoneUpgrade();
-    int GetDamageZoneUpgradeCost() const;
-    float GetDamageZoneSize() const;
+    bool BuyDamageZoneUpgrade() override;
+    int GetDamageZoneUpgradeCost() const override;
+    float GetDamageZoneSize() const override;
 
-    bool BuyDamageUpgrade();
-    int GetDamageUpgradeCost() const;
-    float GetDamagePerTick() const;
+    bool BuyDamageUpgrade() override;
+    int GetDamageUpgradeCost() const override;
+    float GetDamagePerTick() const override;
+
+    void LoadFromSave() override;
 };

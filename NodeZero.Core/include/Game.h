@@ -10,6 +10,7 @@
 #include "Services/HealthService.h"
 #include "Services/LevelService.h"
 #include "Services/PickupService.h"
+#include "Services/SaveService.h"
 #include "Services/SpawnService.h"
 #include "Services/UpgradeService.h"
 #include "Types/PointPickup.h"
@@ -37,6 +38,7 @@ class Game : public IGame {
     SpawnService m_SpawnService;
     LevelService m_LevelService;
     DamageZoneService m_DamageZoneService;
+    SaveService m_SaveService;
 
    public:
     Game();
@@ -60,12 +62,13 @@ class Game : public IGame {
     void SaveProgress() override;
     int GetHighPoints() const override;
 
-    UpgradeService& GetUpgradeService() override;
-    PickupService& GetPickupService() override;
-    HealthService& GetHealthService() override;
-    LevelService& GetLevelService() override;
-    DamageZoneService& GetDamageZoneService() override;
-    SpawnService& GetSpawnService() override;
+    IUpgradeService& GetUpgradeService() override;
+    IPickupService& GetPickupService() override;
+    IHealthService& GetHealthService() override;
+    ILevelService& GetLevelService() override;
+    IDamageZoneService& GetDamageZoneService() override;
+    ISpawnService& GetSpawnService() override;
+    ISaveService& GetSaveService() override;
 
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;

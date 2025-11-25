@@ -6,12 +6,13 @@
 #include "Types/PointPickup.h"
 
 class INode;
-class UpgradeService;
-class PickupService;
-class HealthService;
-class LevelService;
-class DamageZoneService;
-class SpawnService;
+class IUpgradeService;
+class IPickupService;
+class IHealthService;
+class ILevelService;
+class IDamageZoneService;
+class ISpawnService;
+class ISaveService;
 
 class IGame : public ISubject {
    public:
@@ -35,10 +36,11 @@ class IGame : public ISubject {
     virtual void SaveProgress() = 0;
     virtual int GetHighPoints() const = 0;
 
-    virtual UpgradeService& GetUpgradeService() = 0;
-    virtual PickupService& GetPickupService() = 0;
-    virtual HealthService& GetHealthService() = 0;
-    virtual LevelService& GetLevelService() = 0;
-    virtual DamageZoneService& GetDamageZoneService() = 0;
-    virtual SpawnService& GetSpawnService() = 0;
+    virtual IUpgradeService& GetUpgradeService() = 0;
+    virtual IPickupService& GetPickupService() = 0;
+    virtual IHealthService& GetHealthService() = 0;
+    virtual ILevelService& GetLevelService() = 0;
+    virtual IDamageZoneService& GetDamageZoneService() = 0;
+    virtual ISpawnService& GetSpawnService() = 0;
+    virtual ISaveService& GetSaveService() = 0;
 };

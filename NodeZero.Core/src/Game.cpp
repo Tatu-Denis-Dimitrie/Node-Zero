@@ -8,7 +8,7 @@
 #include "Config/GameConfig.h"
 #include "Events/GameEvents.h"
 #include "Node.h"
-#include "Systems/SaveSystem.h"
+
 
 Game::Game()
     : m_ScreenWidth(0.0f),
@@ -21,7 +21,7 @@ Game::Game()
       m_MouseY(0.0f) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
-    SaveData saveData = SaveSystem::LoadProgress();
+    SaveData saveData = m_SaveService.LoadProgress();
     m_HighPoints = saveData.highPoints;
 
     m_UpgradeService.Initialize(saveData.maxHealth, saveData.regenRate, saveData.damageZoneSize, saveData.damagePerTick);
@@ -196,7 +196,7 @@ void Game::Reset() {
     m_SpawnService.Reset();
     m_DamageZoneService.ResetTimer();
 
-    SaveData saveData = SaveSystem::LoadProgress();
+    SaveData saveData = m_SaveService.LoadProgress();
     m_LevelService.Reset(saveData.currentLevel);
 
     m_Boss = nullptr;
@@ -211,7 +211,7 @@ int Game::GetNodesDestroyed() const {
 }
 
 void Game::SaveProgress() {
-    SaveData saveData = SaveSystem::LoadProgress();
+    SaveData saveData = m_SaveService.LoadProgress();
 
     saveData.totalNodesDestroyed += m_NodesDestroyed;
     saveData.points += m_PickupService.GetPickupPoints();
@@ -227,35 +227,39 @@ void Game::SaveProgress() {
     saveData.damageZoneSize = m_UpgradeService.GetDamageZoneSize();
     saveData.damagePerTick = m_UpgradeService.GetDamagePerTick();
 
-    SaveSystem::SaveProgress(saveData);
+    m_SaveService.SaveProgress(saveData);
 }
 
 int Game::GetHighPoints() const {
     return m_HighPoints;
 }
 
-UpgradeService& Game::GetUpgradeService() {
+IUpgradeService& Game::GetUpgradeService() {
     return m_UpgradeService;
 }
 
-PickupService& Game::GetPickupService() {
+IPickupService& Game::GetPickupService() {
     return m_PickupService;
 }
 
-HealthService& Game::GetHealthService() {
+IHealthService& Game::GetHealthService() {
     return m_HealthService;
 }
 
-LevelService& Game::GetLevelService() {
+ILevelService& Game::GetLevelService() {
     return m_LevelService;
 }
 
-DamageZoneService& Game::GetDamageZoneService() {
+IDamageZoneService& Game::GetDamageZoneService() {
     return m_DamageZoneService;
 }
 
-SpawnService& Game::GetSpawnService() {
+ISpawnService& Game::GetSpawnService() {
     return m_SpawnService;
+}
+
+ISaveService& Game::GetSaveService() {
+    return m_SaveService;
 }
 
 void Game::Attach(std::shared_ptr<IObserver> observer) {
