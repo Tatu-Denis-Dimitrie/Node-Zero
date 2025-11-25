@@ -166,7 +166,9 @@ void Renderer::DrawPickup(float x, float y, float size, Color color) {
 void Renderer::DrawDebugInfo(int posX, int posY, Font font) {
     std::string fpsText = "FPS: " + std::to_string(GetFPS());
     int fontSize = static_cast<int>(GetScreenHeight() * 0.025f);
-    DrawTextEx(font, fpsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, WHITE);
+    Vector2 textSize = MeasureTextEx(font, fpsText.c_str(), static_cast<float>(fontSize), 1);
+    float alignedX = posX - textSize.x;
+    DrawTextEx(font, fpsText.c_str(), Vector2{alignedX, static_cast<float>(posY)}, static_cast<float>(fontSize), 1, WHITE);
 }
 
 void Renderer::DrawPoints(int points, int posX, int posY, int fontSize, Color color, Font font) {

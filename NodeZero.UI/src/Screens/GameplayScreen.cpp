@@ -354,7 +354,7 @@ void GameplayScreen::Draw() {
     int pointsFontSize = static_cast<int>(GetScreenHeight() * 0.025f);
     Renderer::DrawPoints(m_Game.GetPickupPoints(), pointsX, pointsY, pointsFontSize, WHITE, m_Font);
 
-    int debugX = GetScreenWidth() - static_cast<int>(GetScreenWidth() * 0.065f);
+    int debugX = GetScreenWidth() - static_cast<int>(GetScreenWidth() * 0.02f);  // 2% margin from right edge
     int debugY = static_cast<int>(GetScreenHeight() * 0.01f);
     Renderer::DrawDebugInfo(debugX, debugY, m_Font);
 
