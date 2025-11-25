@@ -2,6 +2,9 @@
 
 #include <cstdio>
 
+#include "Services/UpgradeService.h"
+#include "Systems/SaveSystem.h"
+
 UpgradesScreen::UpgradesScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_WasMousePressed(false), m_IsFirstFrame(true), m_Font(font) {
 }
@@ -21,7 +24,7 @@ void UpgradesScreen::Draw() {
     Vector2 titleSize = MeasureTextEx(m_Font, "UPGRADES", static_cast<float>(titleFontSize), 1);
     DrawTextEx(m_Font, "UPGRADES", Vector2{static_cast<float>(screenWidth / 2 - titleSize.x / 2), static_cast<float>(screenHeight * 0.05f)}, static_cast<float>(titleFontSize), 1, WHITE);
 
-    SaveData saveData = m_Game.GetSaveData();
+    SaveData saveData = SaveSystem::LoadProgress();
 
     int statsX = static_cast<int>(screenWidth * 0.03f);
     int statsY = static_cast<int>(screenHeight * 0.15f);
@@ -49,19 +52,19 @@ void UpgradesScreen::Draw() {
     DrawTextEx(m_Font, totalNodesText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + statsSpacing * 4)}, static_cast<float>(statTextFontSize), 1, WHITE);
 
     char maxHealthText[64];
-    snprintf(maxHealthText, sizeof(maxHealthText), "Max Health: %.0f", m_Game.GetMaxHealth());
+    snprintf(maxHealthText, sizeof(maxHealthText), "Max Health: %.0f", m_Game.GetUpgradeService().GetMaxHealth());
     DrawTextEx(m_Font, maxHealthText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + statsSpacing * 5)}, static_cast<float>(statTextFontSize), 1, WHITE);
 
     char regenRateText[64];
-    snprintf(regenRateText, sizeof(regenRateText), "Regen Rate: %.1f/s", m_Game.GetRegenRate());
+    snprintf(regenRateText, sizeof(regenRateText), "Regen Rate: %.1f/s", m_Game.GetUpgradeService().GetRegenRate());
     DrawTextEx(m_Font, regenRateText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + statsSpacing * 6)}, static_cast<float>(statTextFontSize), 1, WHITE);
 
     char damageZoneSizeText[64];
-    snprintf(damageZoneSizeText, sizeof(damageZoneSizeText), "Damage Zone: %.0f", m_Game.GetDamageZoneSize());
+    snprintf(damageZoneSizeText, sizeof(damageZoneSizeText), "Damage Zone: %.0f", m_Game.GetUpgradeService().GetDamageZoneSize());
     DrawTextEx(m_Font, damageZoneSizeText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + statsSpacing * 7)}, static_cast<float>(statTextFontSize), 1, WHITE);
 
     char damagePerTickText[64];
-    snprintf(damagePerTickText, sizeof(damagePerTickText), "Damage/Tick: %.0f", m_Game.GetDamagePerTick());
+    snprintf(damagePerTickText, sizeof(damagePerTickText), "Damage/Tick: %.0f", m_Game.GetUpgradeService().GetDamagePerTick());
     DrawTextEx(m_Font, damagePerTickText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + statsSpacing * 8)}, static_cast<float>(statTextFontSize), 1, WHITE);
 
     int upgradeY = screenHeight / 2 - static_cast<int>(screenHeight * 0.1f);
@@ -79,7 +82,7 @@ void UpgradesScreen::Draw() {
     Vector2 mousePos = GetMousePosition();
     bool isHovered = CheckCollisionPointRec(mousePos, upgradeButton);
 
-    bool canAfford = saveData.points >= m_Game.GetHealthUpgradeCost();
+    bool canAfford = saveData.points >= m_Game.GetUpgradeService().GetHealthUpgradeCost();
     Color buttonColor = canAfford ? (isHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                   : Color{100, 100, 100, 255};
 
@@ -95,15 +98,15 @@ void UpgradesScreen::Draw() {
     DrawTextEx(m_Font, buttonText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - buttonTextSize.x / 2), static_cast<float>(buttonY + buttonHeight * 0.15f)}, static_cast<float>(buttonTextFontSize), 1, WHITE);
 
     char costText[32];
-    snprintf(costText, sizeof(costText), "Cost: %d points", m_Game.GetHealthUpgradeCost());
+    snprintf(costText, sizeof(costText), "Cost: %d points", m_Game.GetUpgradeService().GetHealthUpgradeCost());
     Vector2 costTextSize = MeasureTextEx(m_Font, costText, static_cast<float>(costTextFontSize), 1);
     DrawTextEx(m_Font, costText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - costTextSize.x / 2), static_cast<float>(buttonY + buttonHeight * 0.55f)}, static_cast<float>(costTextFontSize), 1, LIGHTGRAY);
 
     bool isMousePressed = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
 
     if (!m_IsFirstFrame && isHovered && canAfford && isMousePressed && !m_WasMousePressed) {
-        if (m_Game.BuyHealthUpgrade()) {
-            saveData = m_Game.GetSaveData();
+        if (m_Game.GetUpgradeService().BuyHealthUpgrade()) {
+            saveData = SaveSystem::LoadProgress();
         }
     }
 
@@ -113,7 +116,7 @@ void UpgradesScreen::Draw() {
                              static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isRegenHovered = CheckCollisionPointRec(mousePos, regenButton);
 
-    bool canAffordRegen = saveData.points >= m_Game.GetRegenUpgradeCost();
+    bool canAffordRegen = saveData.points >= m_Game.GetUpgradeService().GetRegenUpgradeCost();
     Color regenButtonColor = canAffordRegen ? (isRegenHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                             : Color{100, 100, 100, 255};
 
@@ -126,13 +129,13 @@ void UpgradesScreen::Draw() {
     DrawTextEx(m_Font, regenButtonText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - regenButtonTextSize.x / 2), static_cast<float>(regenButtonY + buttonHeight * 0.15f)}, static_cast<float>(buttonTextFontSize), 1, WHITE);
 
     char regenCostText[32];
-    snprintf(regenCostText, sizeof(regenCostText), "Cost: %d points", m_Game.GetRegenUpgradeCost());
+    snprintf(regenCostText, sizeof(regenCostText), "Cost: %d points", m_Game.GetUpgradeService().GetRegenUpgradeCost());
     Vector2 regenCostTextSize = MeasureTextEx(m_Font, regenCostText, static_cast<float>(costTextFontSize), 1);
     DrawTextEx(m_Font, regenCostText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - regenCostTextSize.x / 2), static_cast<float>(regenButtonY + buttonHeight * 0.55f)}, static_cast<float>(costTextFontSize), 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isRegenHovered && canAffordRegen && isMousePressed && !m_WasMousePressed) {
-        if (m_Game.BuyRegenUpgrade()) {
-            saveData = m_Game.GetSaveData();
+        if (m_Game.GetUpgradeService().BuyRegenUpgrade()) {
+            saveData = SaveSystem::LoadProgress();
         }
     }
 
@@ -141,9 +144,9 @@ void UpgradesScreen::Draw() {
                                   static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageZoneHovered = CheckCollisionPointRec(mousePos, damageZoneButton);
 
-    bool isDamageZoneMaxed = m_Game.GetDamageZoneSize() >= 300.0f;
+    bool isDamageZoneMaxed = m_Game.GetUpgradeService().GetDamageZoneSize() >= 300.0f;
 
-    bool canAffordDamageZone = saveData.points >= m_Game.GetDamageZoneUpgradeCost() && !isDamageZoneMaxed;
+    bool canAffordDamageZone = saveData.points >= m_Game.GetUpgradeService().GetDamageZoneUpgradeCost() && !isDamageZoneMaxed;
     Color damageZoneButtonColor = canAffordDamageZone ? (isDamageZoneHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                                       : Color{100, 100, 100, 255};
 
@@ -163,14 +166,14 @@ void UpgradesScreen::Draw() {
     if (isDamageZoneMaxed) {
         snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Maxed out");
     } else {
-        snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d points", m_Game.GetDamageZoneUpgradeCost());
+        snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d points", m_Game.GetUpgradeService().GetDamageZoneUpgradeCost());
     }
     Vector2 damageZoneCostTextSize = MeasureTextEx(m_Font, damageZoneCostText, static_cast<float>(costTextFontSize), 1);
     DrawTextEx(m_Font, damageZoneCostText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - damageZoneCostTextSize.x / 2), static_cast<float>(damageZoneButtonY + buttonHeight * 0.55f)}, static_cast<float>(costTextFontSize), 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isDamageZoneHovered && canAffordDamageZone && isMousePressed && !m_WasMousePressed) {
-        if (m_Game.BuyDamageZoneUpgrade()) {
-            saveData = m_Game.GetSaveData();
+        if (m_Game.GetUpgradeService().BuyDamageZoneUpgrade()) {
+            saveData = SaveSystem::LoadProgress();
         }
     }
 
@@ -179,7 +182,7 @@ void UpgradesScreen::Draw() {
                               static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageHovered = CheckCollisionPointRec(mousePos, damageButton);
 
-    bool canAffordDamage = saveData.points >= m_Game.GetDamageUpgradeCost();
+    bool canAffordDamage = saveData.points >= m_Game.GetUpgradeService().GetDamageUpgradeCost();
     Color damageButtonColor = canAffordDamage ? (isDamageHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                               : Color{100, 100, 100, 255};
 
@@ -192,13 +195,13 @@ void UpgradesScreen::Draw() {
     DrawTextEx(m_Font, damageButtonText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - damageButtonTextSize.x / 2), static_cast<float>(damageButtonY + buttonHeight * 0.15f)}, static_cast<float>(buttonTextFontSize), 1, WHITE);
 
     char damageCostText[32];
-    snprintf(damageCostText, sizeof(damageCostText), "Cost: %d points", m_Game.GetDamageUpgradeCost());
+    snprintf(damageCostText, sizeof(damageCostText), "Cost: %d points", m_Game.GetUpgradeService().GetDamageUpgradeCost());
     Vector2 damageCostTextSize = MeasureTextEx(m_Font, damageCostText, static_cast<float>(costTextFontSize), 1);
     DrawTextEx(m_Font, damageCostText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - damageCostTextSize.x / 2), static_cast<float>(damageButtonY + buttonHeight * 0.55f)}, static_cast<float>(costTextFontSize), 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isDamageHovered && canAffordDamage && isMousePressed && !m_WasMousePressed) {
-        if (m_Game.BuyDamageUpgrade()) {
-            saveData = m_Game.GetSaveData();
+        if (m_Game.GetUpgradeService().BuyDamageUpgrade()) {
+            saveData = SaveSystem::LoadProgress();
         }
     }
 

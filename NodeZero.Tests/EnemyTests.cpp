@@ -199,7 +199,7 @@ TEST_F(EnemyDestructionTest, DestroyedEnemiesIncrementCounter) {
 }
 
 TEST_F(EnemyDestructionTest, LevelCounterTracksDestroyedEnemies) {
-    int initialDestroyed = game->GetNodesDestroyedThisLevel();
+    int initialDestroyed = game->GetLevelService().GetNodesDestroyedThisLevel();
 
     game->SpawnNode(400.0f, 300.0f);
     game->SetMousePosition(400.0f, 300.0f);
@@ -211,7 +211,7 @@ TEST_F(EnemyDestructionTest, LevelCounterTracksDestroyedEnemies) {
         game->Update(0.016f);
     }
 
-    EXPECT_GE(game->GetNodesDestroyedThisLevel(), initialDestroyed);
+    EXPECT_GE(game->GetLevelService().GetNodesDestroyedThisLevel(), initialDestroyed);
 }
 
 class EnemyUpdateTest : public ::testing::Test {

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Config/GameConfig.h"
+#include "Services/PickupService.h"
 #include "Widgets/Button.h"
 #include "Widgets/Label.h"
 
@@ -49,7 +50,7 @@ void LevelCompletedScreen::Draw() {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0, 0, 0, 200});
     m_Menu->Draw();
 
-    std::string pointsText = "Points collected: " + std::to_string(m_Game.GetPickupPoints());
+    std::string pointsText = "Points collected: " + std::to_string(m_Game.GetPickupService().GetPickupPoints());
     int pointsFontSize = static_cast<int>(GetScreenHeight() * 0.04f);
     Vector2 textSize = MeasureTextEx(m_Font, pointsText.c_str(), static_cast<float>(pointsFontSize), 1);
     DrawTextEx(m_Font, pointsText.c_str(),

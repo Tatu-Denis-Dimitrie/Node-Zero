@@ -2,6 +2,7 @@
 
 #include "../../NodeZero.Core/include/Game.h"
 #include "../../NodeZero.Core/include/IGame.h"
+#include "../../NodeZero.Core/include/Systems/SaveSystem.h"
 #include "../../NodeZero.Core/include/Types/SaveData.h"
 
 TEST(GameTest, PlaceholderTest) {
@@ -56,11 +57,11 @@ class PickupSystemTest : public ::testing::Test {
 };
 
 TEST_F(PickupSystemTest, InitialPointsIsZero) {
-    EXPECT_EQ(game->GetPickupPoints(), 0);
+    EXPECT_EQ(game->GetPickupService().GetPickupPoints(), 0);
 }
 
 TEST_F(PickupSystemTest, NoPickupsAtStart) {
-    const auto& pickups = game->GetPickups();
+    const auto& pickups = game->GetPickupService().GetPickups();
     EXPECT_EQ(pickups.size(), 0);
 }
 
@@ -83,19 +84,19 @@ class DamageSystemTest : public ::testing::Test {
 };
 
 TEST_F(DamageSystemTest, InitialDamageTimerState) {
-    EXPECT_FALSE(game->ShouldDealDamage());
+    EXPECT_FALSE(game->GetDamageZoneService().ShouldDealDamage());
 }
 
 TEST_F(DamageSystemTest, DamageTimerProgresses) {
-    game->UpdateDamageTimer(1.0f);
-    game->UpdateDamageTimer(0.6f);
-    EXPECT_TRUE(game->ShouldDealDamage());
+    game->GetDamageZoneService().UpdateTimer(1.0f);
+    game->GetDamageZoneService().UpdateTimer(0.6f);
+    EXPECT_TRUE(game->GetDamageZoneService().ShouldDealDamage());
 }
 
 TEST_F(DamageSystemTest, DamageTimerResets) {
-    game->UpdateDamageTimer(2.0f);
-    game->ResetDamageTimer();
-    EXPECT_FALSE(game->ShouldDealDamage());
+    game->GetDamageZoneService().UpdateTimer(2.0f);
+    game->GetDamageZoneService().ResetTimer();
+    EXPECT_FALSE(game->GetDamageZoneService().ShouldDealDamage());
 }
 
 class SaveSystemTest : public ::testing::Test {
@@ -113,12 +114,12 @@ class SaveSystemTest : public ::testing::Test {
 };
 
 TEST_F(SaveSystemTest, GetPointsReturnsValidValue) {
-    int points = game->GetPoints();
+    int points = SaveSystem::LoadProgress().points;
     EXPECT_GE(points, 0);
 }
 
 TEST_F(SaveSystemTest, GetSaveDataReturnsValidData) {
-    SaveData data = game->GetSaveData();
+    SaveData data = SaveSystem::LoadProgress();
     EXPECT_GE(data.points, 0);
     EXPECT_GE(data.highPoints, 0);
     EXPECT_GE(data.gamesPlayed, 0);
@@ -204,20 +205,20 @@ class GameOverTest : public ::testing::Test {
 };
 
 TEST_F(GameOverTest, InitiallyNotGameOver) {
-    EXPECT_FALSE(game->ShouldGameOver());
-    EXPECT_FALSE(game->IsGameOver());
+    EXPECT_FALSE(game->GetHealthService().IsZero());
+    EXPECT_FALSE(game->GetHealthService().IsZero());
 }
 
 TEST_F(GameOverTest, GameOverWhenHealthZero) {
-    game->ReduceHealth(1000.0f);
-    EXPECT_TRUE(game->ShouldGameOver());
+    game->GetHealthService().Reduce(1000.0f);
+    EXPECT_TRUE(game->GetHealthService().IsZero());
 }
 
 TEST_F(GameOverTest, ResetRestoresHealth) {
-    game->ReduceHealth(5.0f);
-    float healthAfterDamage = game->GetCurrentHealth();
+    game->GetHealthService().Reduce(5.0f);
+    float healthAfterDamage = game->GetHealthService().GetCurrent();
     game->Reset();
-    EXPECT_GT(game->GetCurrentHealth(), healthAfterDamage);
+    EXPECT_GT(game->GetHealthService().GetCurrent(), healthAfterDamage);
 }
 
 class AutoSpawnTest : public ::testing::Test {
@@ -235,9 +236,9 @@ class AutoSpawnTest : public ::testing::Test {
 };
 
 TEST_F(AutoSpawnTest, UpdateAutoSpawnDoesNotCrash) {
-    game->UpdateAutoSpawn(0.5f);
-    game->UpdateAutoSpawn(1.0f);
-    game->UpdateAutoSpawn(2.5f);
+    game->GetSpawnService().UpdateAutoSpawn(0.5f);
+    game->GetSpawnService().UpdateAutoSpawn(1.0f);
+    game->GetSpawnService().UpdateAutoSpawn(2.5f);
 }
 
 TEST_F(AutoSpawnTest, NodesCanBeSpawnedManually) {
@@ -269,21 +270,21 @@ class LevelProgressTest : public ::testing::Test {
 };
 
 TEST_F(LevelProgressTest, InitialLevelProgressIsZero) {
-    EXPECT_FLOAT_EQ(game->GetProgressBarPercentage(), 0.0f);
+    EXPECT_FLOAT_EQ(game->GetLevelService().GetProgressBarPercentage(), 0.0f);
 }
 
 TEST_F(LevelProgressTest, NotLevelCompletedAtStart) {
-    EXPECT_FALSE(game->IsLevelCompleted());
+    EXPECT_FALSE(game->GetLevelService().IsLevelCompleted());
 }
 
 TEST_F(LevelProgressTest, NodesDestroyedThisLevelStartsAtZero) {
-    EXPECT_EQ(game->GetNodesDestroyedThisLevel(), 0);
+    EXPECT_EQ(game->GetLevelService().GetNodesDestroyedThisLevel(), 0);
 }
 
 TEST_F(LevelProgressTest, StartNextLevelIncrementsLevel) {
-    int initialLevel = game->GetCurrentLevel();
+    int initialLevel = game->GetLevelService().GetCurrentLevel();
     game->StartNextLevel();
-    EXPECT_EQ(game->GetCurrentLevel(), initialLevel + 1);
+    EXPECT_EQ(game->GetLevelService().GetCurrentLevel(), initialLevel + 1);
 }
 
 class GameUpdateTest : public ::testing::Test {

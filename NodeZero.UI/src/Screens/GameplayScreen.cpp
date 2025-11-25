@@ -8,6 +8,10 @@
 #include "INode.h"
 #include "InputHandler.h"
 #include "Renderer.h"
+#include "Services/HealthService.h"
+#include "Services/LevelService.h"
+#include "Services/PickupService.h"
+#include "Services/UpgradeService.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
@@ -197,7 +201,7 @@ void GameplayScreen::Update(float deltaTime) {
     UpdateShake(deltaTime);
     UpdateParticles(deltaTime);
 
-    if (m_Game.ShouldGameOver()) {
+    if (m_Game.GetHealthService().IsZero()) {
         m_Game.SaveProgress();
         m_StateChangeCallback(GameScreen::GameOver);
         return;
@@ -222,7 +226,7 @@ void GameplayScreen::Update(float deltaTime) {
                        [](const PickupCollectEffect& effect) { return effect.elapsed >= effect.duration; }),
         m_PickupEffects.end());
 
-    if (m_Game.IsLevelCompleted()) {
+    if (m_Game.GetLevelService().IsLevelCompleted()) {
         m_StateChangeCallback(GameScreen::LevelCompleted);
         return;
     }
@@ -237,7 +241,7 @@ void GameplayScreen::Draw() {
     rlTranslatef(m_ShakeOffset.x, m_ShakeOffset.y, 0.0f);
 
     Vector2 mousePos = InputHandler::GetMousePosition();
-    float damageZoneSize = m_Game.GetDamageZoneSize();
+    float damageZoneSize = m_Game.GetUpgradeService().GetDamageZoneSize();
     float damageRectX = mousePos.x - damageZoneSize / 2.0f;
     float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
@@ -276,7 +280,7 @@ void GameplayScreen::Draw() {
         }
     }
 
-    const auto& pickups = m_Game.GetPickups();
+    const auto& pickups = m_Game.GetPickupService().GetPickups();
     for (const PointPickup& pickup : pickups) {
         float lifeRatio = std::clamp(pickup.GetLifeRatio(), 0.0f, 1.0f);
         unsigned char alpha = static_cast<unsigned char>(lifeRatio * 255.0f);
@@ -341,18 +345,18 @@ void GameplayScreen::Draw() {
         static_cast<int>(centerSquareSize),
         WHITE);
 
-    Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
+    Renderer::DrawProgressBar(m_Game.GetLevelService().GetProgressBarPercentage(), m_Game.GetLevelService().GetCurrentLevel(), m_Font);
 
     int healthBarX = static_cast<int>(GetScreenWidth() * 0.01f);
     int healthBarY = static_cast<int>(GetScreenHeight() * 0.01f);
     int healthBarWidth = static_cast<int>(GetScreenWidth() * 0.2f);
     int healthBarHeight = static_cast<int>(GetScreenHeight() * 0.03f);
-    Renderer::DrawHealthBar(m_Game.GetCurrentHealth(), m_Game.GetMaxHealth(), healthBarX, healthBarY, healthBarWidth, healthBarHeight, m_Font);
+    Renderer::DrawHealthBar(m_Game.GetHealthService().GetCurrent(), m_Game.GetUpgradeService().GetMaxHealth(), healthBarX, healthBarY, healthBarWidth, healthBarHeight, m_Font);
 
     int pointsX = static_cast<int>(GetScreenWidth() * 0.01f);
     int pointsY = healthBarY + healthBarHeight + static_cast<int>(GetScreenHeight() * 0.015f);
     int pointsFontSize = static_cast<int>(GetScreenHeight() * 0.025f);
-    Renderer::DrawPoints(m_Game.GetPickupPoints(), pointsX, pointsY, pointsFontSize, WHITE, m_Font);
+    Renderer::DrawPoints(m_Game.GetPickupService().GetPickupPoints(), pointsX, pointsY, pointsFontSize, WHITE, m_Font);
 
     int debugX = GetScreenWidth() - static_cast<int>(GetScreenWidth() * 0.02f);  // 2% margin from right edge
     int debugY = static_cast<int>(GetScreenHeight() * 0.01f);

@@ -18,31 +18,31 @@ class UpgradeSystemTest : public ::testing::Test {
 };
 
 TEST_F(UpgradeSystemTest, InitialDamageZoneSize) {
-    EXPECT_GT(game->GetDamageZoneSize(), 0.0f);
+    EXPECT_GT(game->GetUpgradeService().GetDamageZoneSize(), 0.0f);
 }
 
 TEST_F(UpgradeSystemTest, InitialDamagePerTick) {
-    EXPECT_GT(game->GetDamagePerTick(), 0.0f);
+    EXPECT_GT(game->GetUpgradeService().GetDamagePerTick(), 0.0f);
 }
 
 TEST_F(UpgradeSystemTest, HealthUpgradeCost) {
-    EXPECT_EQ(game->GetHealthUpgradeCost(), 50);
+    EXPECT_EQ(game->GetUpgradeService().GetHealthUpgradeCost(), 50);
 }
 
 TEST_F(UpgradeSystemTest, DamageZoneUpgradeCost) {
-    EXPECT_EQ(game->GetDamageZoneUpgradeCost(), 75);
+    EXPECT_EQ(game->GetUpgradeService().GetDamageZoneUpgradeCost(), 75);
 }
 
 TEST_F(UpgradeSystemTest, DamageUpgradeCost) {
-    EXPECT_EQ(game->GetDamageUpgradeCost(), 60);
+    EXPECT_EQ(game->GetUpgradeService().GetDamageUpgradeCost(), 60);
 }
 
 TEST_F(UpgradeSystemTest, RegenUpgradeCost) {
-    EXPECT_EQ(game->GetRegenUpgradeCost(), 100);
+    EXPECT_EQ(game->GetUpgradeService().GetRegenUpgradeCost(), 100);
 }
 
 TEST_F(UpgradeSystemTest, InitialRegenRate) {
-    EXPECT_GE(game->GetRegenRate(), 0.0f);
+    EXPECT_GE(game->GetUpgradeService().GetRegenRate(), 0.0f);
 }
 
 class UpgradePurchaseTest : public ::testing::Test {
@@ -60,33 +60,33 @@ class UpgradePurchaseTest : public ::testing::Test {
 };
 
 TEST_F(UpgradePurchaseTest, HealthUpgradeIncreasesMaxHealth) {
-    float initialMaxHealth = game->GetMaxHealth();
-    bool success = game->BuyHealthUpgrade();
+    float initialMaxHealth = game->GetUpgradeService().GetMaxHealth();
+    bool success = game->GetUpgradeService().BuyHealthUpgrade();
     if (success) {
-        EXPECT_GT(game->GetMaxHealth(), initialMaxHealth);
+        EXPECT_GT(game->GetUpgradeService().GetMaxHealth(), initialMaxHealth);
     }
 }
 
 TEST_F(UpgradePurchaseTest, RegenUpgradeIncreasesRegenRate) {
-    float initialRegenRate = game->GetRegenRate();
-    bool success = game->BuyRegenUpgrade();
+    float initialRegenRate = game->GetUpgradeService().GetRegenRate();
+    bool success = game->GetUpgradeService().BuyRegenUpgrade();
     if (success) {
-        EXPECT_GT(game->GetRegenRate(), initialRegenRate);
+        EXPECT_GT(game->GetUpgradeService().GetRegenRate(), initialRegenRate);
     }
 }
 
 TEST_F(UpgradePurchaseTest, DamageZoneUpgradeIncreasesSize) {
-    float initialSize = game->GetDamageZoneSize();
-    bool success = game->BuyDamageZoneUpgrade();
+    float initialSize = game->GetUpgradeService().GetDamageZoneSize();
+    bool success = game->GetUpgradeService().BuyDamageZoneUpgrade();
     if (success) {
-        EXPECT_GT(game->GetDamageZoneSize(), initialSize);
+        EXPECT_GT(game->GetUpgradeService().GetDamageZoneSize(), initialSize);
     }
 }
 
 TEST_F(UpgradePurchaseTest, DamageUpgradeIncreasesDamage) {
-    float initialDamage = game->GetDamagePerTick();
-    bool success = game->BuyDamageUpgrade();
+    float initialDamage = game->GetUpgradeService().GetDamagePerTick();
+    bool success = game->GetUpgradeService().BuyDamageUpgrade();
     if (success) {
-        EXPECT_GT(game->GetDamagePerTick(), initialDamage);
+        EXPECT_GT(game->GetUpgradeService().GetDamagePerTick(), initialDamage);
     }
 }
