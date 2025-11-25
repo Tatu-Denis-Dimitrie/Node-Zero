@@ -508,6 +508,8 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
 
     float damageRectX = centerX - zoneSize / 2.0f;
     float damageRectY = centerY - zoneSize / 2.0f;
+    float damageRectRight = damageRectX + zoneSize;
+    float damageRectBottom = damageRectY + zoneSize;
 
     for (INode* node : m_Nodes) {
         if (node->GetState() != NodeState::Active)
@@ -517,10 +519,17 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
         float nodeY = node->GetPosition().y;
         float nodeSize = node->GetSize();
 
-        bool inDamageZone = !(nodeX + nodeSize < damageRectX ||
-                              nodeX - nodeSize > damageRectX + zoneSize ||
-                              nodeY + nodeSize < damageRectY ||
-                              nodeY - nodeSize > damageRectY + zoneSize);
+        // Find closest point in damage zone to node center
+        float closestX = std::max(damageRectX, std::min(nodeX, damageRectRight));
+        float closestY = std::max(damageRectY, std::min(nodeY, damageRectBottom));
+
+        // Calculate distance from node center to closest point
+        float deltaX = nodeX - closestX;
+        float deltaY = nodeY - closestY;
+        float distanceSquared = deltaX * deltaX + deltaY * deltaY;
+
+        // Check if node circle intersects with damage zone rectangle
+        bool inDamageZone = distanceSquared <= (nodeSize * nodeSize);
 
         if (inDamageZone) {
             node->TakeDamage(damage);
