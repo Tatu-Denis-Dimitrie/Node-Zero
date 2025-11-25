@@ -1,4 +1,4 @@
-#include "Services/HealthService.h"
+#include "HealthService.h"
 
 #include "Config/GameConfig.h"
 

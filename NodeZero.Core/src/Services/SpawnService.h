@@ -5,7 +5,7 @@
 
 #include "Enums/NodeShape.h"
 #include "INode.h"
-#include "ISpawnService.h"
+#include "Services/ISpawnService.h"
 
 class SpawnService : public ISpawnService {
    private:

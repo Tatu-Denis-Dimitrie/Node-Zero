@@ -64,6 +64,7 @@ add_library(NodeZero.Core STATIC
 
 target_include_directories(NodeZero.Core PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/src
 )
 
 # =============================================================================
@@ -90,6 +91,7 @@ add_executable(NodeZero.UI
 target_include_directories(NodeZero.UI PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.UI/include
     ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/src
 )
 
 target_link_libraries(NodeZero.UI PRIVATE
@@ -132,6 +134,7 @@ add_executable(NodeZero.Tests
 
 target_include_directories(NodeZero.Tests PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/src
 )
 
 target_link_libraries(NodeZero.Tests PRIVATE

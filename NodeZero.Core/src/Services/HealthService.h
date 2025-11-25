@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IHealthService.h"
+#include "Services/IHealthService.h"
 
 class HealthService : public IHealthService {
    private:

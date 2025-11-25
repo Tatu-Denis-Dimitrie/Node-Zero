@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "IPickupService.h"
+#include "Services/IPickupService.h"
 #include "Types/PointPickup.h"
 #include "Types/Position.h"
 

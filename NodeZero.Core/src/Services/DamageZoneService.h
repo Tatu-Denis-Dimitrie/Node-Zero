@@ -3,7 +3,7 @@
 #include <functional>
 #include <vector>
 
-#include "IDamageZoneService.h"
+#include "Services/IDamageZoneService.h"
 #include "INode.h"
 
 class DamageZoneService : public IDamageZoneService {
