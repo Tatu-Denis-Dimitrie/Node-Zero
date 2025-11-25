@@ -17,7 +17,7 @@ class Game : public IGame {
     float m_ScreenHeight;
     float m_ElapsedTime;
     int m_NextPickupId;
-    int m_PickupScore;
+    int m_PickupPoints;
 
     float m_MaxHealth;
     float m_CurrentHealth;
@@ -27,7 +27,7 @@ class Game : public IGame {
     float m_HealthTimer;
 
     int m_NodesDestroyed;
-    int m_HighScore;
+    int m_HighPoints;
 
     float m_SpawnTimer;
     float m_SpawnInterval;
@@ -79,7 +79,7 @@ class Game : public IGame {
     void Reset() override;
     bool ShouldGameOver() const override;
 
-    int GetPickupScore() const override;
+    int GetPickupPoints() const override;
 
     float GetCurrentHealth() const override;
     float GetMaxHealth() const override;
@@ -89,7 +89,7 @@ class Game : public IGame {
 
     int GetNodesDestroyed() const override;
     void SaveProgress() override;
-    int GetHighScore() const override;
+    int GetHighPoints() const override;
 
     bool BuyHealthUpgrade() override;
     int GetHealthUpgradeCost() const override;
@@ -114,7 +114,7 @@ class Game : public IGame {
     bool IsLevelCompleted() const override;
     void StartNextLevel() override;
 
-    int GetCoins() const override;
+    int GetPoints() const override;
     SaveData GetSaveData() const override;
 
     // Observer pattern - forward to m_Subject

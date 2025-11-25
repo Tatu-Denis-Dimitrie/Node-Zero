@@ -166,9 +166,9 @@ void Renderer::DrawDebugInfo(int posX, int posY, Font font) {
     DrawTextEx(font, fpsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, 20, 1, WHITE);
 }
 
-void Renderer::DrawScore(int score, int posX, int posY, int fontSize, Color color, Font font) {
-    std::string scoreText = "Score: " + std::to_string(score);
-    DrawTextEx(font, scoreText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
+void Renderer::DrawPoints(int points, int posX, int posY, int fontSize, Color color, Font font) {
+    std::string pointsText = "Points: " + std::to_string(points);
+    DrawTextEx(font, pointsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
 }
 
 void Renderer::DrawMultiplier(int multiplier, int posX, int posY, int fontSize, Color color, Font font) {

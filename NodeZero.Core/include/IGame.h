@@ -38,7 +38,7 @@ class IGame : public ISubject {
     virtual void Reset() = 0;
     virtual bool ShouldGameOver() const = 0;
 
-    virtual int GetPickupScore() const = 0;
+    virtual int GetPickupPoints() const = 0;
 
     virtual float GetCurrentHealth() const = 0;
     virtual float GetMaxHealth() const = 0;
@@ -48,7 +48,7 @@ class IGame : public ISubject {
 
     virtual int GetNodesDestroyed() const = 0;
     virtual void SaveProgress() = 0;
-    virtual int GetHighScore() const = 0;
+    virtual int GetHighPoints() const = 0;
 
     virtual bool BuyHealthUpgrade() = 0;
     virtual int GetHealthUpgradeCost() const = 0;
@@ -73,6 +73,6 @@ class IGame : public ISubject {
     virtual bool IsLevelCompleted() const = 0;
     virtual void StartNextLevel() = 0;
 
-    virtual int GetCoins() const = 0;
+    virtual int GetPoints() const = 0;
     virtual SaveData GetSaveData() const = 0;
 };

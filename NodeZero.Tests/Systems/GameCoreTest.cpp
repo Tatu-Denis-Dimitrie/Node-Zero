@@ -56,7 +56,7 @@ class PickupSystemTest : public ::testing::Test {
 };
 
 TEST_F(PickupSystemTest, InitialScoreIsZero) {
-    EXPECT_EQ(game->GetPickupScore(), 0);
+    EXPECT_EQ(game->GetPickupPoints(), 0);
 }
 
 TEST_F(PickupSystemTest, NoPickupsAtStart) {
@@ -112,15 +112,15 @@ class SaveSystemTest : public ::testing::Test {
     std::unique_ptr<IGame> game;
 };
 
-TEST_F(SaveSystemTest, GetCoinsReturnsValidValue) {
-    int coins = game->GetCoins();
-    EXPECT_GE(coins, 0);
+TEST_F(SaveSystemTest, GetPointsReturnsValidValue) {
+    int points = game->GetPoints();
+    EXPECT_GE(points, 0);
 }
 
 TEST_F(SaveSystemTest, GetSaveDataReturnsValidData) {
     SaveData data = game->GetSaveData();
-    EXPECT_GE(data.coins, 0);
-    EXPECT_GE(data.highScore, 0);
+    EXPECT_GE(data.points, 0);
+    EXPECT_GE(data.highPoints, 0);
     EXPECT_GE(data.gamesPlayed, 0);
     EXPECT_GE(data.totalNodesDestroyed, 0);
     EXPECT_GE(data.currentLevel, 1);
@@ -130,9 +130,9 @@ TEST_F(SaveSystemTest, GetSaveDataReturnsValidData) {
     EXPECT_GT(data.damagePerTick, 0.0f);
 }
 
-TEST_F(SaveSystemTest, GetHighScoreReturnsValidValue) {
-    int highScore = game->GetHighScore();
-    EXPECT_GE(highScore, 0);
+TEST_F(SaveSystemTest, GetHighPointsReturnsValidValue) {
+    int highPoints = game->GetHighPoints();
+    EXPECT_GE(highPoints, 0);
 }
 
 class MousePositionTest : public ::testing::Test {

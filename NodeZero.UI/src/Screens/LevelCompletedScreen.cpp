@@ -49,9 +49,9 @@ void LevelCompletedScreen::Draw() {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0, 0, 0, 200});
     m_Menu->Draw();
 
-    std::string scoreText = "Score collected: " + std::to_string(m_Game.GetPickupScore());
-    Vector2 textSize = MeasureTextEx(m_Font, scoreText.c_str(), 30, 1);
-    DrawTextEx(m_Font, scoreText.c_str(),
+    std::string pointsText = "Points collected: " + std::to_string(m_Game.GetPickupPoints());
+    Vector2 textSize = MeasureTextEx(m_Font, pointsText.c_str(), 30, 1);
+    DrawTextEx(m_Font, pointsText.c_str(),
                Vector2{GetScreenWidth() / 2.0f - textSize.x / 2.0f, GetScreenHeight() / 2.0f - 90.0f},
                30, 1, WHITE);
 }

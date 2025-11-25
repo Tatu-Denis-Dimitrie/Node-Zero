@@ -52,8 +52,8 @@ bool SaveSystem::SaveProgress(const SaveData& data) {
     }
 
     file << "{\n";
-    file << "  \"highScore\": " << data.highScore << ",\n";
-    file << "  \"coins\": " << data.coins << ",\n";
+    file << "  \"highPoints\": " << data.highPoints << ",\n";
+    file << "  \"points\": " << data.points << ",\n";
     file << "  \"gamesPlayed\": " << data.gamesPlayed << ",\n";
     file << "  \"totalNodesDestroyed\": " << data.totalNodesDestroyed << ",\n";
     file << "  \"currentLevel\": " << data.currentLevel << ",\n";
@@ -89,10 +89,10 @@ SaveData SaveSystem::LoadProgress() {
         value.erase(std::remove(value.begin(), value.end(), ','), value.end());
         value.erase(std::remove(value.begin(), value.end(), ' '), value.end());
 
-        if (key == "highScore") {
-            data.highScore = std::stoi(value);
-        } else if (key == "coins") {
-            data.coins = std::stoi(value);
+        if (key == "highPoints") {
+            data.highPoints = std::stoi(value);
+        } else if (key == "points") {
+            data.points = std::stoi(value);
         } else if (key == "gamesPlayed") {
             data.gamesPlayed = std::stoi(value);
         } else if (key == "totalNodesDestroyed") {

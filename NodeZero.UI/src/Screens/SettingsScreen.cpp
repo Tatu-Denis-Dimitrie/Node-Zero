@@ -26,13 +26,13 @@ void SettingsScreen::Draw() {
 
     DrawTextEx(m_Font, "STATISTICS", Vector2{static_cast<float>(statsX), static_cast<float>(statsY)}, 28, 1, YELLOW);
 
-    char coinsText[64];
-    snprintf(coinsText, sizeof(coinsText), "Coins: %d", saveData.coins);
-    DrawTextEx(m_Font, coinsText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 50)}, 22, 1, Color{255, 215, 0, 255});
+    char pointsText[64];
+    snprintf(pointsText, sizeof(pointsText), "Points: %d", saveData.points);
+    DrawTextEx(m_Font, pointsText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 50)}, 22, 1, Color{255, 215, 0, 255});
 
-    char highScoreText[64];
-    snprintf(highScoreText, sizeof(highScoreText), "High Score: %d", saveData.highScore);
-    DrawTextEx(m_Font, highScoreText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 85)}, 22, 1, WHITE);
+    char highPointsText[64];
+    snprintf(highPointsText, sizeof(highPointsText), "High Points: %d", saveData.highPoints);
+    DrawTextEx(m_Font, highPointsText, Vector2{static_cast<float>(statsX), static_cast<float>(statsY + 85)}, 22, 1, WHITE);
 
     char gamesPlayedText[64];
     snprintf(gamesPlayedText, sizeof(gamesPlayedText), "Games Played: %d", saveData.gamesPlayed);
@@ -71,7 +71,7 @@ void SettingsScreen::Draw() {
     Vector2 mousePos = GetMousePosition();
     bool isHovered = CheckCollisionPointRec(mousePos, upgradeButton);
 
-    bool canAfford = saveData.coins >= m_Game.GetHealthUpgradeCost();
+    bool canAfford = saveData.points >= m_Game.GetHealthUpgradeCost();
     Color buttonColor = canAfford ? (isHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                   : Color{100, 100, 100, 255};
 
@@ -83,7 +83,7 @@ void SettingsScreen::Draw() {
     DrawTextEx(m_Font, buttonText, Vector2{static_cast<float>(buttonX + 65), static_cast<float>(buttonY + 8)}, 22, 1, WHITE);
 
     char costText[32];
-    snprintf(costText, sizeof(costText), "Cost: %d coins", m_Game.GetHealthUpgradeCost());
+    snprintf(costText, sizeof(costText), "Cost: %d points", m_Game.GetHealthUpgradeCost());
     DrawTextEx(m_Font, costText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(buttonY + 28)}, 18, 1, LIGHTGRAY);
 
     bool isMousePressed = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
@@ -99,7 +99,7 @@ void SettingsScreen::Draw() {
                              static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isRegenHovered = CheckCollisionPointRec(mousePos, regenButton);
 
-    bool canAffordRegen = saveData.coins >= m_Game.GetRegenUpgradeCost();
+    bool canAffordRegen = saveData.points >= m_Game.GetRegenUpgradeCost();
     Color regenButtonColor = canAffordRegen ? (isRegenHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                             : Color{100, 100, 100, 255};
 
@@ -111,7 +111,7 @@ void SettingsScreen::Draw() {
     DrawTextEx(m_Font, regenButtonText, Vector2{static_cast<float>(buttonX + 55), static_cast<float>(regenButtonY + 8)}, 22, 1, WHITE);
 
     char regenCostText[32];
-    snprintf(regenCostText, sizeof(regenCostText), "Cost: %d coins", m_Game.GetRegenUpgradeCost());
+    snprintf(regenCostText, sizeof(regenCostText), "Cost: %d points", m_Game.GetRegenUpgradeCost());
     DrawTextEx(m_Font, regenCostText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(regenButtonY + 28)}, 18, 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isRegenHovered && canAffordRegen && isMousePressed && !m_WasMousePressed) {
@@ -125,7 +125,7 @@ void SettingsScreen::Draw() {
                                   static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageZoneHovered = CheckCollisionPointRec(mousePos, damageZoneButton);
 
-    bool canAffordDamageZone = saveData.coins >= m_Game.GetDamageZoneUpgradeCost();
+    bool canAffordDamageZone = saveData.points >= m_Game.GetDamageZoneUpgradeCost();
     Color damageZoneButtonColor = canAffordDamageZone ? (isDamageZoneHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                                       : Color{100, 100, 100, 255};
 
@@ -137,7 +137,7 @@ void SettingsScreen::Draw() {
     DrawTextEx(m_Font, damageZoneButtonText, Vector2{static_cast<float>(buttonX + 55), static_cast<float>(damageZoneButtonY + 8)}, 22, 1, WHITE);
 
     char damageZoneCostText[32];
-    snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d coins", m_Game.GetDamageZoneUpgradeCost());
+    snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d points", m_Game.GetDamageZoneUpgradeCost());
     DrawTextEx(m_Font, damageZoneCostText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(damageZoneButtonY + 28)}, 18, 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isDamageZoneHovered && canAffordDamageZone && isMousePressed && !m_WasMousePressed) {
@@ -151,7 +151,7 @@ void SettingsScreen::Draw() {
                               static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageHovered = CheckCollisionPointRec(mousePos, damageButton);
 
-    bool canAffordDamage = saveData.coins >= m_Game.GetDamageUpgradeCost();
+    bool canAffordDamage = saveData.points >= m_Game.GetDamageUpgradeCost();
     Color damageButtonColor = canAffordDamage ? (isDamageHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                               : Color{100, 100, 100, 255};
 
@@ -163,7 +163,7 @@ void SettingsScreen::Draw() {
     DrawTextEx(m_Font, damageButtonText, Vector2{static_cast<float>(buttonX + 50), static_cast<float>(damageButtonY + 8)}, 22, 1, WHITE);
 
     char damageCostText[32];
-    snprintf(damageCostText, sizeof(damageCostText), "Cost: %d coins", m_Game.GetDamageUpgradeCost());
+    snprintf(damageCostText, sizeof(damageCostText), "Cost: %d points", m_Game.GetDamageUpgradeCost());
     DrawTextEx(m_Font, damageCostText, Vector2{static_cast<float>(buttonX + 75), static_cast<float>(damageButtonY + 28)}, 18, 1, LIGHTGRAY);
 
     if (!m_IsFirstFrame && isDamageHovered && canAffordDamage && isMousePressed && !m_WasMousePressed) {
