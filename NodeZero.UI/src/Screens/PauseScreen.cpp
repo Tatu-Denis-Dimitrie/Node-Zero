@@ -35,13 +35,13 @@ PauseScreen::PauseScreen(IGame& game, std::function<void(GameScreen)> stateChang
     resumeButton->SetOnClick([this]() { m_StateChangeCallback(GameScreen::Playing); });
     m_Menu->AddWidget(std::move(resumeButton));
 
-    auto mainMenuButton = std::make_unique<Button>(centerX, startY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight, "Main Menu", font);
-    mainMenuButton->SetColors(Color{70, 130, 180, 255}, Color{100, 160, 210, 255}, Color{40, 100, 150, 255}, WHITE);
-    mainMenuButton->SetOnClick([this]() {
-        m_Game.Reset();
-        m_StateChangeCallback(GameScreen::MainMenu);
+    auto terminateButton = std::make_unique<Button>(centerX, startY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight, "Terminate", font);
+    terminateButton->SetColors(Color{180, 50, 50, 255}, Color{210, 80, 80, 255}, Color{150, 30, 30, 255}, WHITE);
+    terminateButton->SetOnClick([this]() {
+        m_Game.SaveProgress();
+        m_StateChangeCallback(GameScreen::GameOver);
     });
-    m_Menu->AddWidget(std::move(mainMenuButton));
+    m_Menu->AddWidget(std::move(terminateButton));
 }
 
 void PauseScreen::Update(float deltaTime) {
