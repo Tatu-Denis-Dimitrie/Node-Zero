@@ -19,7 +19,6 @@ void Subject::Notify(const std::shared_ptr<IEvent>& event) {
         return;
     }
 
-    // Create a copy to avoid issues if observers are modified during notification
     auto observersCopy = m_observers;
     for (const auto& observer : observersCopy) {
         if (observer) {

@@ -117,7 +117,6 @@ class Game : public IGame {
     int GetPoints() const override;
     SaveData GetSaveData() const override;
 
-    // Observer pattern - forward to m_Subject
     void Attach(std::shared_ptr<IObserver> observer) override;
     void Detach(std::shared_ptr<IObserver> observer) override;
     void Notify(const std::shared_ptr<IEvent>& event) override;

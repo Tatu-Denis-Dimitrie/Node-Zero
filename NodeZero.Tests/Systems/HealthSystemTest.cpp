@@ -53,8 +53,6 @@ TEST_F(HealthSystemTest, CombinedHealthReduction) {
 
     game->UpdateHealth(1.0f);
 
-    // After UpdateHealth, health should be less than initial (due to natural depletion)
-    // but possibly more than healthAfterReduction (due to potential regeneration)
     EXPECT_LT(game->GetCurrentHealth(), initialHealth);
 }
 

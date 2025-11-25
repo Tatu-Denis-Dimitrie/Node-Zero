@@ -1,8 +1,5 @@
 #version 330
 
-// CRT Shader pentru NodeZero - inspirat din Nodebuster
-// Efecte: scanlines, barrel distortion, chromatic aberration, bloom, noise
-
 in vec2 fragTexCoord;
 in vec4 fragColor;
 
@@ -13,7 +10,7 @@ uniform float time;
 
 out vec4 finalColor;
 
-// Barrel distortion (ecran curbat) - clasic cu colțuri negre
+// Barrel distortion (ecran curbat) - clasic cu colturi negre
 vec2 barrelDistortion(vec2 coord, float amount) {
     vec2 cc = coord - 0.5;
     float dist = dot(cc, cc);
@@ -52,7 +49,7 @@ float noise(vec2 co) {
     return fract(sin(dot(co.xy, vec2(12.9898, 78.233)) + time) * 43758.5453);
 }
 
-// Vignette (întunecă colțurile)
+// Vignette (intuneca colturile)
 float vignette(vec2 uv, float intensity) {
     vec2 pos = uv - 0.5;
     float dist = length(pos);
@@ -60,25 +57,21 @@ float vignette(vec2 uv, float intensity) {
 }
 
 void main() {
-    // Fără barrel distortion - folosim UV-urile normale
+    // Fara barrel distortion - folosim UV-urile normale
     vec2 uv = fragTexCoord;
 
-    // Chromatic aberration (subtil, ca în Nodebuster)
-    vec3 color = chromaticAberration(texture0, uv, 1.0);
+    // Chromatic aberration (subtil, ca in Nodebuster)
+    vec3 color = chromaticAberration(texture0, uv, 2.0);
 
     // Aplicare scanlines orizontale (subtile)
     float scanH = scanlineHorizontal(uv, 0.15);
     color *= scanH;
 
-    // Aplicare scanlines verticale (foarte subtile)
-    // float scanV = scanlineVertical(uv, 0.08);
-    // color *= scanV;
-
     // Noise flicker foarte fin
     float noiseVal = noise(uv * time * 0.01) * 0.02;
     color += vec3(noiseVal);
 
-    // Vignette ușor
+    // Vignette usor
     float vig = vignette(uv, 0.3);
     color *= vig;
 
