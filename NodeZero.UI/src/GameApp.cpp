@@ -4,8 +4,8 @@
 #include <iostream>
 
 #include "Config/GameConfig.h"
-#include "Game.h"
 #include "EventLogger.h"
+#include "Game.h"
 #include "IGame.h"
 #include "InputHandler.h"
 #include "Renderer.h"
@@ -34,7 +34,7 @@ void GameApp::Initialize() {
     const int monitorWidth = GetMonitorWidth(0);
     const int monitorHeight = GetMonitorHeight(0);
 
-    InitWindow(monitorWidth, monitorHeight, "NodeZero - Nodebuster Clone");
+    InitWindow(monitorWidth, monitorHeight, "NodeZero");
     ToggleFullscreen();
     SetExitKey(KEY_NULL);
     SetTargetFPS(240);

@@ -199,7 +199,10 @@ void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, 
     char healthBuffer[32];
     snprintf(healthBuffer, sizeof(healthBuffer), "%.1f / %.0f", health, maxHealth);
     int healthTextSize = static_cast<int>(height * 0.65f);
-    DrawTextEx(font, healthBuffer, Vector2{static_cast<float>(posX + 5), static_cast<float>(posY + 2)}, static_cast<float>(healthTextSize), 1, WHITE);
+    Vector2 textSize = MeasureTextEx(font, healthBuffer, static_cast<float>(healthTextSize), 1);
+    float textX = posX + (width - textSize.x) / 2.0f;
+    float textY = posY + (height - textSize.y) / 2.0f;
+    DrawTextEx(font, healthBuffer, Vector2{textX, textY}, static_cast<float>(healthTextSize), 1, WHITE);
 }
 
 void Renderer::DrawProgressBar(float percentage, int currentLevel, Font font) {

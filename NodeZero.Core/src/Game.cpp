@@ -34,6 +34,18 @@ Game::~Game() {
 void Game::Initialize(float screenWidth, float screenHeight) {
     m_ScreenWidth = screenWidth;
     m_ScreenHeight = screenHeight;
+
+    float screenScale = screenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT;
+
+    if (m_DamageZoneSize == 50.0f) {
+        m_DamageZoneSize = screenHeight * 0.0625f;
+    } else {
+        m_DamageZoneSize *= screenScale;
+    }
+
+    if (m_DamagePerTick == 40.0f) {
+        m_DamagePerTick = 40.0f;
+    }
 }
 
 void Game::Update(float deltaTime) {
@@ -143,7 +155,8 @@ const std::vector<PointPickup>& Game::GetPickups() const {
 
 void Game::SpawnNode(float x, float y) {
     NodeShape shape = GetRandomShape();
-    INode* node = CreateNode(shape, GameConfig::NODE_DEFAULT_SIZE, GameConfig::NODE_DEFAULT_SPEED);
+    float nodeSize = GameConfig::NODE_DEFAULT_SIZE * (m_ScreenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT);
+    INode* node = CreateNode(shape, nodeSize, GameConfig::NODE_DEFAULT_SPEED);
 
     Node* concreteNode = static_cast<Node*>(node);
     float baseHP = concreteNode->GetHP();
@@ -232,17 +245,18 @@ NodeShape Game::GetRandomShape() {
 
 void Game::SpawnPointPickups(const Position& origin) {
     int pickupCount = 5 + (std::rand() % 6);
+    float screenScale = m_ScreenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT;
 
     for (int i = 0; i < pickupCount; ++i) {
         float angle = RandomRange(0.0f, 6.28318530718f);
-        float radius = RandomRange(10.0f, 40.0f);
+        float radius = RandomRange(10.0f * screenScale, 40.0f * screenScale);
 
         PointPickup pickup{};
         pickup.id = m_NextPickupId++;
         pickup.position.x = origin.x + std::cos(angle) * radius;
         pickup.position.y = origin.y + std::sin(angle) * radius;
         pickup.spawnOrigin = origin;
-        pickup.size = GameConfig::PICKUP_SIZE;
+        pickup.size = GameConfig::PICKUP_SIZE * screenScale;
         pickup.lifetime = GameConfig::PICKUP_LIFETIME;
         pickup.remainingTime = GameConfig::PICKUP_LIFETIME;
         pickup.points = 1;
@@ -612,15 +626,17 @@ void Game::Notify(const std::shared_ptr<IEvent>& event) {
 void Game::SpawnBoss() {
     if (m_BossActive) return;
 
+    float screenScale = m_ScreenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT;
+    float bossSize = GameConfig::BOSS_SIZE * screenScale;
     float bossHP = GameConfig::BOSS_HP_BASE + (m_CurrentLevel - 1) * 100.0f;
-    m_Boss = CreateNode(NodeShape::Boss, GameConfig::BOSS_SIZE, GameConfig::BOSS_SPEED);
+    m_Boss = CreateNode(NodeShape::Boss, bossSize, GameConfig::BOSS_SPEED);
 
     Node* bossNode = static_cast<Node*>(m_Boss);
     bossNode->SetHP(bossHP);
 
     float spawnX, spawnY;
     int edge = std::rand() % 4;
-    float offset = GameConfig::BOSS_SIZE * 1.5f;
+    float offset = bossSize * 1.5f;
 
     switch (edge) {
         case 0:

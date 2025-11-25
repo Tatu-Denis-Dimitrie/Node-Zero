@@ -50,6 +50,7 @@ void GameplayScreen::UpdateShake(float deltaTime) {
 }
 
 void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int count) {
+    float screenScale = GetScreenHeight() / 800.0f;
     for (int i = 0; i < count; ++i) {
         DamageParticle particle;
         particle.position = position;
@@ -62,7 +63,8 @@ void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int
 
         particle.lifetime = 0.0f;
         particle.maxLifetime = PARTICLE_LIFETIME;
-        particle.size = 3.0f + (static_cast<float>(rand()) / RAND_MAX) * 3.0f;
+        float baseSize = 3.0f * screenScale;
+        particle.size = baseSize + (static_cast<float>(rand()) / RAND_MAX) * baseSize;
 
         unsigned char r = baseColor.r + (rand() % 40) - 20;
         unsigned char g = baseColor.g + (rand() % 40) - 20;
