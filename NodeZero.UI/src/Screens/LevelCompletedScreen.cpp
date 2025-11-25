@@ -1,10 +1,10 @@
-#include "../../include/Screens/LevelCompletedScreen.h"
+#include "Screens/LevelCompletedScreen.h"
 
 #include <string>
 
-#include "../../include/Widgets/Button.h"
-#include "../../include/Widgets/Label.h"
 #include "Config/GameConfig.h"
+#include "Widgets/Button.h"
+#include "Widgets/Label.h"
 
 LevelCompletedScreen::LevelCompletedScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font) {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../include/Systems/ICollisionSystem.h"
+#include "Systems/ICollisionSystem.h"
 
 class CollisionSystem : public ICollisionSystem {
    public:

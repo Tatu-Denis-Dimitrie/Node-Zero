@@ -1,19 +1,19 @@
-#include "../../include/Screens/SettingsScreen.h"
+#include "Screens/UpgradesScreen.h"
 
 #include <cstdio>
 
-SettingsScreen::SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
+UpgradesScreen::UpgradesScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_WasMousePressed(false), m_IsFirstFrame(true), m_Font(font) {
 }
 
-void SettingsScreen::Update(float deltaTime) {
+void UpgradesScreen::Update(float deltaTime) {
     if (IsKeyPressed(KEY_ESCAPE)) {
         m_StateChangeCallback(GameScreen::MainMenu);
         m_IsFirstFrame = true;
     }
 }
 
-void SettingsScreen::Draw() {
+void UpgradesScreen::Draw() {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
 

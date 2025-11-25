@@ -1,10 +1,10 @@
-#include "../../include/Screens/PauseMenuScreen.h"
+#include "Screens/PauseScreen.h"
 
-#include "../../include/Widgets/Button.h"
-#include "../../include/Widgets/Label.h"
 #include "Config/GameConfig.h"
+#include "Widgets/Button.h"
+#include "Widgets/Label.h"
 
-PauseMenuScreen::PauseMenuScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
+PauseScreen::PauseScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback) {
     m_Menu = std::make_unique<Menu>();
 
@@ -44,14 +44,14 @@ PauseMenuScreen::PauseMenuScreen(IGame& game, std::function<void(GameScreen)> st
     m_Menu->AddWidget(std::move(mainMenuButton));
 }
 
-void PauseMenuScreen::Update(float deltaTime) {
+void PauseScreen::Update(float deltaTime) {
     m_Menu->Update();
     if (IsKeyPressed(KEY_ESCAPE)) {
         m_StateChangeCallback(GameScreen::Playing);
     }
 }
 
-void PauseMenuScreen::Draw() {
+void PauseScreen::Draw() {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0, 0, 0, 150});
     m_Menu->Draw();
 }

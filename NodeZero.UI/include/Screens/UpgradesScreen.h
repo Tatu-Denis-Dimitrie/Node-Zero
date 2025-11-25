@@ -6,9 +6,9 @@
 #include "IGame.h"
 #include "raylib.h"
 
-class SettingsScreen {
+class UpgradesScreen {
    public:
-    SettingsScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
+    UpgradesScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
 
     void Update(float deltaTime);
     void Draw();

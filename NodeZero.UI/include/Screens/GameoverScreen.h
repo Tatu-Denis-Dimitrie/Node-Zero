@@ -1,20 +1,22 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 
-#include "../../include/Widgets/Menu.h"
 #include "Enums/GameScreen.h"
+#include "IGame.h"
+#include "Widgets/Menu.h"
 #include "raylib.h"
 
-class MainMenuScreen {
+class GameoverScreen {
    public:
-    MainMenuScreen(std::function<void(GameScreen)> stateChangeCallback, Font font);
-
+    GameoverScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font);
     void Update(float deltaTime);
     void Draw();
 
    private:
-    std::unique_ptr<Menu> m_Menu;
+    IGame& m_Game;
     std::function<void(GameScreen)> m_StateChangeCallback;
+    std::unique_ptr<Menu> m_Menu;
     Font m_Font;
 };

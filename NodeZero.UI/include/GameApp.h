@@ -7,11 +7,11 @@
 
 class IGame;
 class GameplayScreen;
-class MainMenuScreen;
-class PauseMenuScreen;
-class SettingsScreen;
+class MainScreen;
+class PauseScreen;
+class UpgradesScreen;
 class LevelCompletedScreen;
-class GameOverScreen;
+class GameoverScreen;
 
 class GameApp {
    public:
@@ -38,11 +38,11 @@ class GameApp {
 
     // Screens
     std::shared_ptr<GameplayScreen> m_GameplayScreen;
-    std::unique_ptr<MainMenuScreen> m_MainMenuScreen;
-    std::unique_ptr<PauseMenuScreen> m_PauseMenuScreen;
-    std::unique_ptr<SettingsScreen> m_SettingsScreen;
+    std::unique_ptr<MainScreen> m_MainScreen;
+    std::unique_ptr<PauseScreen> m_PauseScreen;
+    std::unique_ptr<UpgradesScreen> m_UpgradesScreen;
     std::unique_ptr<LevelCompletedScreen> m_LevelCompletedScreen;
-    std::unique_ptr<GameOverScreen> m_GameOverScreen;
+    std::unique_ptr<GameoverScreen> m_GameoverScreen;
 
     // Rendering
     RenderTexture2D m_RenderTarget;

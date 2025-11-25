@@ -1,10 +1,10 @@
-#include "../../include/Screens/MainMenuScreen.h"
+#include "Screens/MainScreen.h"
 
-#include "../../include/Widgets/Button.h"
-#include "../../include/Widgets/Label.h"
 #include "Config/GameConfig.h"
+#include "Widgets/Button.h"
+#include "Widgets/Label.h"
 
-MainMenuScreen::MainMenuScreen(std::function<void(GameScreen)> stateChangeCallback, Font font)
+MainScreen::MainScreen(std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_StateChangeCallback(stateChangeCallback), m_Font(font) {
     m_Menu = std::make_unique<Menu>();
 
@@ -46,11 +46,11 @@ MainMenuScreen::MainMenuScreen(std::function<void(GameScreen)> stateChangeCallba
     m_Menu->AddWidget(std::move(quitButton));
 }
 
-void MainMenuScreen::Update(float deltaTime) {
+void MainScreen::Update(float deltaTime) {
     m_Menu->Update();
 }
 
-void MainMenuScreen::Draw() {
+void MainScreen::Draw() {
     m_Menu->Draw();
 
     const char* watermarkText = "Made by TeamTBD";

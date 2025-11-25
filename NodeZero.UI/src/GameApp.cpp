@@ -1,20 +1,20 @@
-#include "../include/GameApp.h"
+#include "GameApp.h"
 
 #include <algorithm>
 #include <iostream>
 
-#include "../include/GameEventLogger.h"
-#include "../include/InputHandler.h"
-#include "../include/Renderer.h"
-#include "../include/Screens/GameplayScreen.h"
-#include "../include/Screens/LevelCompletedScreen.h"
-#include "../include/Screens/GameOverScreen.h"
-#include "../include/Screens/MainMenuScreen.h"
-#include "../include/Screens/PauseMenuScreen.h"
-#include "../include/Screens/SettingsScreen.h"
 #include "Config/GameConfig.h"
 #include "Game.h"
+#include "GameEventLogger.h"
 #include "IGame.h"
+#include "InputHandler.h"
+#include "Renderer.h"
+#include "Screens/GameoverScreen.h"
+#include "Screens/GameplayScreen.h"
+#include "Screens/LevelCompletedScreen.h"
+#include "Screens/MainScreen.h"
+#include "Screens/PauseScreen.h"
+#include "Screens/UpgradesScreen.h"
 #include "raymath.h"
 
 GameApp::GameApp()
@@ -52,12 +52,12 @@ void GameApp::Initialize() {
     // Initialize Screens
     auto stateChangeCallback = [this](GameScreen newState) { ChangeState(newState); };
 
-    m_MainMenuScreen = std::make_unique<MainMenuScreen>(stateChangeCallback, m_Font);
+    m_MainScreen = std::make_unique<MainScreen>(stateChangeCallback, m_Font);
     m_GameplayScreen = std::make_shared<GameplayScreen>(*m_Game, stateChangeCallback, m_Font);
-    m_PauseMenuScreen = std::make_unique<PauseMenuScreen>(*m_Game, stateChangeCallback, m_Font);
-    m_SettingsScreen = std::make_unique<SettingsScreen>(*m_Game, stateChangeCallback, m_Font);
+    m_PauseScreen = std::make_unique<PauseScreen>(*m_Game, stateChangeCallback, m_Font);
+    m_UpgradesScreen = std::make_unique<UpgradesScreen>(*m_Game, stateChangeCallback, m_Font);
     m_LevelCompletedScreen = std::make_unique<LevelCompletedScreen>(*m_Game, stateChangeCallback, m_Font);
-    m_GameOverScreen = std::make_unique<GameOverScreen>(*m_Game, stateChangeCallback, m_Font);
+    m_GameoverScreen = std::make_unique<GameoverScreen>(*m_Game, stateChangeCallback, m_Font);
 
     // Attach GameplayScreen as observer to receive game events
     m_Game->Attach(m_GameplayScreen);
@@ -106,22 +106,22 @@ void GameApp::Update() {
 
     switch (m_CurrentState) {
         case GameScreen::MainMenu:
-            m_MainMenuScreen->Update(deltaTime);
+            m_MainScreen->Update(deltaTime);
             break;
         case GameScreen::Playing:
             m_GameplayScreen->Update(deltaTime);
             break;
         case GameScreen::Paused:
-            m_PauseMenuScreen->Update(deltaTime);
+            m_PauseScreen->Update(deltaTime);
             break;
         case GameScreen::LevelCompleted:
             m_LevelCompletedScreen->Update(deltaTime);
             break;
         case GameScreen::Settings:
-            m_SettingsScreen->Update(deltaTime);
+            m_UpgradesScreen->Update(deltaTime);
             break;
         case GameScreen::GameOver:
-            m_GameOverScreen->Update(deltaTime);
+            m_GameoverScreen->Update(deltaTime);
             break;
         case GameScreen::Quit:
             break;
@@ -144,19 +144,19 @@ void GameApp::Draw() {
             // HUD is now drawn inside GameplayScreen::Draw() to be affected by camera shake
             break;
         case GameScreen::Paused:
-            m_PauseMenuScreen->Draw();
+            m_PauseScreen->Draw();
             break;
         case GameScreen::LevelCompleted:
             m_LevelCompletedScreen->Draw();
             break;
         case GameScreen::MainMenu:
-            m_MainMenuScreen->Draw();
+            m_MainScreen->Draw();
             break;
         case GameScreen::Settings:
-            m_SettingsScreen->Draw();
+            m_UpgradesScreen->Draw();
             break;
         case GameScreen::GameOver:
-            m_GameOverScreen->Draw();
+            m_GameoverScreen->Draw();
             break;
         case GameScreen::Quit:
             break;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../include/INode.h"
+#include "INode.h"
 
 class Node : public INode {
    private:

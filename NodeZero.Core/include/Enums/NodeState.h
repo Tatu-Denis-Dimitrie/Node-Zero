@@ -1,7 +1,6 @@
 #pragma once
 
-enum class NodeState
-{
+enum class NodeState {
     Inactive,
 
     Active,

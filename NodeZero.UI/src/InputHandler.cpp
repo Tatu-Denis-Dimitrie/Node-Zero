@@ -1,4 +1,4 @@
-#include "../include/InputHandler.h"
+#include "InputHandler.h"
 
 #include <cmath>
 

@@ -1,7 +1,6 @@
 #pragma once
 
-enum class NodeShape
-{
+enum class NodeShape {
     Circle,
 
     Square,

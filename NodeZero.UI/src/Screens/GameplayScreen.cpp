@@ -1,13 +1,13 @@
-#include "../../include/Screens/GameplayScreen.h"
+#include "Screens/GameplayScreen.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 
-#include "../../include/InputHandler.h"
-#include "../../include/Renderer.h"
 #include "Events/GameEvents.h"
 #include "INode.h"
+#include "InputHandler.h"
+#include "Renderer.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"

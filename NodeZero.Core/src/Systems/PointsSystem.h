@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../include/Systems/IPointsSystem.h"
+#include "Systems/IPointsSystem.h"
 
 class PointsSystem : public IPointsSystem {
    private:

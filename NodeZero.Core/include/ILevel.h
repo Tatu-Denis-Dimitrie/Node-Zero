@@ -1,8 +1,7 @@
 #pragma once
 
-class ILevel
-{
-public:
+class ILevel {
+   public:
     virtual ~ILevel() = default;
 
     virtual void Load() = 0;

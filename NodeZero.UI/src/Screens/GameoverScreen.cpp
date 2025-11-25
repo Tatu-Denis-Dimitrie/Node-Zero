@@ -1,12 +1,12 @@
-#include "../../include/Screens/GameOverScreen.h"
+#include "Screens/GameoverScreen.h"
 
 #include <string>
 
-#include "../../include/Widgets/Button.h"
-#include "../../include/Widgets/Label.h"
 #include "Config/GameConfig.h"
+#include "Widgets/Button.h"
+#include "Widgets/Label.h"
 
-GameOverScreen::GameOverScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
+GameoverScreen::GameoverScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font) {
     m_Menu = std::make_unique<Menu>();
 
@@ -49,11 +49,11 @@ GameOverScreen::GameOverScreen(IGame& game, std::function<void(GameScreen)> stat
     m_Menu->AddWidget(std::move(menuButton));
 }
 
-void GameOverScreen::Update(float deltaTime) {
+void GameoverScreen::Update(float deltaTime) {
     m_Menu->Update();
 }
 
-void GameOverScreen::Draw() {
+void GameoverScreen::Draw() {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0, 0, 0, 200});
     m_Menu->Draw();
 

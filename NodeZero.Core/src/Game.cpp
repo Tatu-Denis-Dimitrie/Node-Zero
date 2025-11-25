@@ -5,9 +5,9 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "../include/Config/GameConfig.h"
-#include "../include/Events/GameEvents.h"
-#include "../include/Systems/SaveSystem.h"
+#include "Config/GameConfig.h"
+#include "Events/GameEvents.h"
+#include "Systems/SaveSystem.h"
 #include "Node.h"
 
 Game::Game()
