@@ -91,6 +91,13 @@ void GameplayScreen::UpdateParticles(float deltaTime) {
         m_DamageParticles.end());
 }
 
+void GameplayScreen::ClearEffects() {
+    m_DamageParticles.clear();
+    m_PickupEffects.clear();
+    m_ShakeTimer = m_ShakeDuration;
+    m_ShakeOffset = Vector2{0.0f, 0.0f};
+}
+
 void GameplayScreen::DrawReflections(const std::vector<INode*>& nodes, Vector2 mousePos, float damageZoneSize, float reflectionOffset) {
     // Draw node reflections
     for (const INode* node : nodes) {
@@ -103,7 +110,7 @@ void GameplayScreen::DrawReflections(const std::vector<INode*>& nodes, Vector2 m
 
             Color reflectionColor = RED;
             if (node->GetShape() == NodeShape::Boss) reflectionColor = Color{200, 50, 200, 255};
-            reflectionColor.a = 15;
+            reflectionColor.a = 5;
 
             switch (node->GetShape()) {
                 case NodeShape::Circle:
@@ -134,14 +141,14 @@ void GameplayScreen::DrawReflections(const std::vector<INode*>& nodes, Vector2 m
         static_cast<int>(damageRectY + reflectionOffset),
         static_cast<int>(damageZoneSize),
         static_cast<int>(damageZoneSize),
-        Color{0, 100, 255, 15});
+        Color{0, 100, 255, 5});
 
     // Draw reflection corners
     float cornerLength = 20.0f;
     float cornerThickness = 3.0f;
     Color cornerColor = Color{0, 200, 255, 255};
     Color reflectionCornerColor = cornerColor;
-    reflectionCornerColor.a = 30;
+    reflectionCornerColor.a = 5;
 
     float rLeft = damageRectX + reflectionOffset;
     float rRight = mousePos.x + damageZoneSize / 2 + reflectionOffset;
@@ -170,13 +177,13 @@ void GameplayScreen::DrawBloom(const std::vector<INode*>& nodes, Vector2 mousePo
             if (node->GetShape() == NodeShape::Boss) glowColor = Color{200, 50, 200, 255};
 
             glowColor.a = 40;
-            DrawCircleGradient(static_cast<int>(x), static_cast<int>(y), size * 3.0f, glowColor, Fade(glowColor, 0.0f));
+            DrawCircleGradient(static_cast<int>(x), static_cast<int>(y), size * 2.0f, glowColor, Fade(glowColor, 0.0f));
         }
     }
 
     // Draw bloom for damage zone
-    Color zoneBloomColor = Color{0, 100, 255, 60};
-    DrawCircleGradient(static_cast<int>(mousePos.x), static_cast<int>(mousePos.y), damageZoneSize * 1.2f, zoneBloomColor, Fade(zoneBloomColor, 0.0f));
+    Color zoneBloomColor = Color{0, 100, 255, 40};
+    DrawCircleGradient(static_cast<int>(mousePos.x), static_cast<int>(mousePos.y), damageZoneSize * 0.8f, zoneBloomColor, Fade(zoneBloomColor, 0.0f));
 }
 
 void GameplayScreen::Update(float deltaTime) {

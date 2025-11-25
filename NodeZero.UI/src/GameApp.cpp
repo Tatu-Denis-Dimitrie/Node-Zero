@@ -96,6 +96,9 @@ void GameApp::Update() {
 
     if (m_CurrentState == GameScreen::Playing && m_PreviousState != GameScreen::Playing) {
         HideCursor();
+        if (m_PreviousState == GameScreen::GameOver || m_PreviousState == GameScreen::MainMenu) {
+            m_GameplayScreen->ClearEffects();
+        }
     } else if (m_CurrentState != GameScreen::Playing && m_PreviousState == GameScreen::Playing) {
         ShowCursor();
     }
@@ -141,11 +144,9 @@ void GameApp::Draw() {
             // HUD is now drawn inside GameplayScreen::Draw() to be affected by camera shake
             break;
         case GameScreen::Paused:
-            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE, m_Font);
             m_PauseMenuScreen->Draw();
             break;
         case GameScreen::LevelCompleted:
-            Renderer::DrawScore(m_Game->GetPickupScore(), 10, 70, 20, WHITE, m_Font);
             m_LevelCompletedScreen->Draw();
             break;
         case GameScreen::MainMenu:

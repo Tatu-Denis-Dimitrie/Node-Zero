@@ -31,6 +31,7 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
 
     void Update(float deltaTime);
     void Draw();
+    void ClearEffects();
 
     void Update(const std::shared_ptr<IEvent>& event) override;
 
