@@ -2,7 +2,7 @@
 
 struct GameConfig {
     // Node settings
-    static constexpr float NODE_DEFAULT_SPEED = 100.0f;
+    static constexpr float NODE_DEFAULT_SPEED = 75.0f;
 
     // Pickup settings
     static constexpr float PICKUP_LIFETIME = 10.0f;

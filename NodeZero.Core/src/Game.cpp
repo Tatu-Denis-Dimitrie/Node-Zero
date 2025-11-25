@@ -460,7 +460,10 @@ float Game::GetProgressBarPercentage() const {
 
 void Game::UpdateAutoSpawn(float deltaTime) {
     m_SpawnTimer += deltaTime;
-    if (m_SpawnTimer >= m_SpawnInterval) {
+
+    float currentSpawnInterval = std::max(0.5f, 2.0f - (m_CurrentLevel - 1) * 0.15f);
+
+    if (m_SpawnTimer >= currentSpawnInterval) {
         m_SpawnTimer = 0.0f;
 
         float centerX = m_ScreenWidth / 2.0f;

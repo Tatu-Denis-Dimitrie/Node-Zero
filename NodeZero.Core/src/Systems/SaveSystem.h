@@ -12,5 +12,5 @@ class SaveSystem {
     static std::string GetSavePath();
 
    private:
-    static constexpr const char* SAVE_FILE_NAME = "save.txt";
+    static constexpr const char* SAVE_FILE_NAME = "save.dat";
 };

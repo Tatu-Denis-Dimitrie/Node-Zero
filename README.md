@@ -74,8 +74,8 @@ The game ends when your health reaches zero. Your final points are saved for fut
 **Save System:**
 Game progress (coins, high points, upgrades, level) is automatically saved to:
 
--   **Windows:** `%APPDATA%\NodeZero\save.txt`
--   **Linux/macOS:** `~/.config/NodeZero/save.txt`
+-   **Windows:** `%APPDATA%\NodeZero\save.dat`
+-   **Linux/macOS:** `~/.config/NodeZero/save.dat`
 
 Your save data persists between sessions, allowing you to accumulate coins and upgrades over multiple playthroughs.
 
@@ -179,8 +179,8 @@ Rebuild: `cmake --build build --config Debug --target NodeZero.Tests`
 **Want to reset game progress?**
 Delete the save file:
 
--   **Windows:** `%APPDATA%\NodeZero\save.txt`
--   **Linux/macOS:** `~/.config/NodeZero/save.txt`
+-   **Windows:** `%APPDATA%\NodeZero\save.dat`
+-   **Linux/macOS:** `~/.config/NodeZero/save.dat`
 
 ---
 
