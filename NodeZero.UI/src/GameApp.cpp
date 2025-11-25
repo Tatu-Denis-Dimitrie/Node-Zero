@@ -31,11 +31,16 @@ GameApp::~GameApp() {
 }
 
 void GameApp::Initialize() {
-    const int monitorWidth = GetMonitorWidth(0);
-    const int monitorHeight = GetMonitorHeight(0);
+    SetConfigFlags(FLAG_WINDOW_UNDECORATED);
+    InitWindow(0, 0, "NodeZero");
 
-    InitWindow(monitorWidth, monitorHeight, "NodeZero");
-    ToggleFullscreen();
+    int monitor = GetCurrentMonitor();
+    int width = GetMonitorWidth(monitor);
+    int height = GetMonitorHeight(monitor);
+
+    SetWindowSize(width, height);
+    SetWindowPosition(0, 0);
+
     SetExitKey(KEY_NULL);
     SetTargetFPS(240);
 
