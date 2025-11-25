@@ -31,12 +31,16 @@ GameApp::~GameApp() {
 }
 
 void GameApp::Initialize() {
-    const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
-    const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
+    const int monitorWidth = GetMonitorWidth(0);
+    const int monitorHeight = GetMonitorHeight(0);
 
-    InitWindow(screenWidth, screenHeight, "NodeZero - Nodebuster Clone");
+    InitWindow(monitorWidth, monitorHeight, "NodeZero - Nodebuster Clone");
+    ToggleFullscreen();
     SetExitKey(KEY_NULL);
     SetTargetFPS(240);
+
+    const int screenWidth = GetScreenWidth();
+    const int screenHeight = GetScreenHeight();
 
     // Load custom font
     m_Font = LoadFont("assets/fonts/ari-w9500-display.ttf");

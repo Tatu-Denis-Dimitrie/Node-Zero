@@ -8,22 +8,22 @@ PauseScreen::PauseScreen(IGame& game, std::function<void(GameScreen)> stateChang
     : m_Game(game), m_StateChangeCallback(stateChangeCallback) {
     m_Menu = std::make_unique<Menu>();
 
-    const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
-    const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
-    const float buttonWidth = 300.0f;
-    const float buttonHeight = 60.0f;
-    const float buttonSpacing = 20.0f;
-    float startY = screenHeight / 2.0f - 50.0f;
+    const int screenWidth = GetScreenWidth();
+    const int screenHeight = GetScreenHeight();
+    const float buttonWidth = screenWidth * 0.25f;
+    const float buttonHeight = screenHeight * 0.08f;
+    const float buttonSpacing = screenHeight * 0.02f;
+    float startY = screenHeight / 2.0f - buttonHeight * 0.5f;
     float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
 
     const char* titleText = "GAME PAUSED";
-    int fontSize = 40;
+    int fontSize = static_cast<int>(screenHeight * 0.06f);
     Vector2 textSize = MeasureTextEx(font, titleText, static_cast<float>(fontSize), 1);
     float titleX = screenWidth / 2.0f - textSize.x / 2.0f;
 
     auto pauseTitle = std::make_unique<Label>(
         titleX,
-        screenHeight / 2.0f - 150.0f,
+        screenHeight * 0.35f,
         titleText,
         font,
         fontSize,

@@ -61,7 +61,7 @@ void main() {
     vec2 uv = fragTexCoord;
 
     // Chromatic aberration (subtil, ca in Nodebuster)
-    vec3 color = chromaticAberration(texture0, uv, 2.0);
+    vec3 color = chromaticAberration(texture0, uv, 1.5);
 
     // Aplicare scanlines orizontale (subtile)
     float scanH = scanlineHorizontal(uv, 0.15);

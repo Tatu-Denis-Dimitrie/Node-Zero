@@ -144,8 +144,8 @@ void GameplayScreen::DrawReflections(const std::vector<INode*>& nodes, Vector2 m
         Color{0, 100, 255, 5});
 
     // Draw reflection corners
-    float cornerLength = 20.0f;
-    float cornerThickness = 3.0f;
+    float cornerLength = GetScreenHeight() * 0.02f;
+    float cornerThickness = GetScreenHeight() * 0.003f;
     Color cornerColor = Color{0, 200, 255, 255};
     Color reflectionCornerColor = cornerColor;
     reflectionCornerColor.a = 5;
@@ -242,7 +242,8 @@ void GameplayScreen::Draw() {
     const auto& nodes = m_Game.GetNodes();
 
     // Apply visual effects (reflections and bloom)
-    DrawReflections(nodes, mousePos, damageZoneSize, 20.0f);
+    float reflectionOffset = GetScreenHeight() * 0.02f;
+    DrawReflections(nodes, mousePos, damageZoneSize, reflectionOffset);
     DrawBloom(nodes, mousePos, damageZoneSize);
 
     for (const INode* node : nodes) {
@@ -312,8 +313,8 @@ void GameplayScreen::Draw() {
         static_cast<int>(damageZoneSize),
         Color{0, 100, 255, 80});
 
-    float cornerLength = 20.0f;
-    float cornerThickness = 3.0f;
+    float cornerLength = GetScreenHeight() * 0.02f;
+    float cornerThickness = GetScreenHeight() * 0.003f;
     Color cornerColor = Color{0, 200, 255, 255};
 
     float left = damageRectX;
@@ -330,7 +331,7 @@ void GameplayScreen::Draw() {
     DrawLineEx(Vector2{right, bottom}, Vector2{right - cornerLength, bottom}, cornerThickness, cornerColor);
     DrawLineEx(Vector2{right, bottom}, Vector2{right, bottom - cornerLength}, cornerThickness, cornerColor);
 
-    float centerSquareSize = 8.0f;
+    float centerSquareSize = GetScreenHeight() * 0.008f;
     DrawRectangle(
         static_cast<int>(mousePos.x - centerSquareSize / 2),
         static_cast<int>(mousePos.y - centerSquareSize / 2),
@@ -340,9 +341,20 @@ void GameplayScreen::Draw() {
 
     Renderer::DrawProgressBar(m_Game.GetProgressBarPercentage(), m_Game.GetCurrentLevel(), m_Font);
 
-    Renderer::DrawHealthBar(m_Game.GetCurrentHealth(), m_Game.GetMaxHealth(), 10, 10, 300, 24, m_Font);
-    Renderer::DrawPoints(m_Game.GetPickupPoints(), 10, 45, 20, WHITE, m_Font);
-    Renderer::DrawDebugInfo(GetScreenWidth() - 100, 10, m_Font);
+    int healthBarX = static_cast<int>(GetScreenWidth() * 0.01f);
+    int healthBarY = static_cast<int>(GetScreenHeight() * 0.01f);
+    int healthBarWidth = static_cast<int>(GetScreenWidth() * 0.2f);
+    int healthBarHeight = static_cast<int>(GetScreenHeight() * 0.03f);
+    Renderer::DrawHealthBar(m_Game.GetCurrentHealth(), m_Game.GetMaxHealth(), healthBarX, healthBarY, healthBarWidth, healthBarHeight, m_Font);
+
+    int pointsX = static_cast<int>(GetScreenWidth() * 0.01f);
+    int pointsY = healthBarY + healthBarHeight + static_cast<int>(GetScreenHeight() * 0.015f);
+    int pointsFontSize = static_cast<int>(GetScreenHeight() * 0.025f);
+    Renderer::DrawPoints(m_Game.GetPickupPoints(), pointsX, pointsY, pointsFontSize, WHITE, m_Font);
+
+    int debugX = GetScreenWidth() - static_cast<int>(GetScreenWidth() * 0.065f);
+    int debugY = static_cast<int>(GetScreenHeight() * 0.01f);
+    Renderer::DrawDebugInfo(debugX, debugY, m_Font);
 
     rlPopMatrix();
 }

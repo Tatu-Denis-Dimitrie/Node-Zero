@@ -31,11 +31,12 @@ void Button::Draw() {
         static_cast<int>(m_Height),
         BLACK);
 
-    Vector2 textSize = MeasureTextEx(m_Font, m_Text.c_str(), 20, 1);
+    float fontSize = m_Height * 0.4f;
+    Vector2 textSize = MeasureTextEx(m_Font, m_Text.c_str(), fontSize, 1);
     float textX = m_X + (m_Width - textSize.x) / 2;
     float textY = m_Y + (m_Height - textSize.y) / 2;
 
-    DrawTextEx(m_Font, m_Text.c_str(), Vector2{textX, textY}, 20, 1, m_TextColor);
+    DrawTextEx(m_Font, m_Text.c_str(), Vector2{textX, textY}, fontSize, 1, m_TextColor);
 }
 
 void Button::Update() {

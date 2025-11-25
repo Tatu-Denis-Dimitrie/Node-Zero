@@ -63,7 +63,8 @@ void Renderer::DrawCircleNode(float x, float y, float size, float hpPercentage, 
         }
     }
 
-    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, color);
+    float borderThickness = GetScreenHeight() * 0.003f;
+    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, borderThickness, color);
 }
 
 void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, Color color, float rotation) {
@@ -90,7 +91,7 @@ void Renderer::DrawSquareNode(float x, float y, float size, float hpPercentage, 
         DrawTriangle(bottomLeft, bottomRight, fillTopRight, color);
     }
 
-    float borderThickness = 3.0f;
+    float borderThickness = GetScreenHeight() * 0.003f;
     DrawLineEx(topLeft, topRight, borderThickness, color);
     DrawLineEx(topRight, bottomRight, borderThickness, color);
     DrawLineEx(bottomRight, bottomLeft, borderThickness, color);
@@ -152,18 +153,20 @@ void Renderer::DrawHexagonNode(float x, float y, float size, float hpPercentage,
         }
     }
 
-    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, 3.0f, color);
+    float borderThickness = GetScreenHeight() * 0.003f;
+    DrawPolyLinesEx(Vector2{x, y}, sides, size, rotation, borderThickness, color);
 }
 
 void Renderer::DrawPickup(float x, float y, float size, Color color) {
-    float thickness = 2.0f;
+    float thickness = GetScreenHeight() * 0.002f;
     DrawLineEx(Vector2{x - size, y}, Vector2{x + size, y}, thickness, color);
     DrawLineEx(Vector2{x, y - size}, Vector2{x, y + size}, thickness, color);
 }
 
 void Renderer::DrawDebugInfo(int posX, int posY, Font font) {
     std::string fpsText = "FPS: " + std::to_string(GetFPS());
-    DrawTextEx(font, fpsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, 20, 1, WHITE);
+    int fontSize = static_cast<int>(GetScreenHeight() * 0.025f);
+    DrawTextEx(font, fpsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, WHITE);
 }
 
 void Renderer::DrawPoints(int points, int posX, int posY, int fontSize, Color color, Font font) {
@@ -195,15 +198,16 @@ void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, 
 
     char healthBuffer[32];
     snprintf(healthBuffer, sizeof(healthBuffer), "%.1f / %.0f", health, maxHealth);
-    DrawTextEx(font, healthBuffer, Vector2{static_cast<float>(posX + 5), static_cast<float>(posY + 2)}, 16, 1, WHITE);
+    int healthTextSize = static_cast<int>(height * 0.65f);
+    DrawTextEx(font, healthBuffer, Vector2{static_cast<float>(posX + 5), static_cast<float>(posY + 2)}, static_cast<float>(healthTextSize), 1, WHITE);
 }
 
 void Renderer::DrawProgressBar(float percentage, int currentLevel, Font font) {
     int screenWidth = GetScreenWidth();
     int screenHeight = GetScreenHeight();
-    int progressBarHeight = 25;
-    int progressBarMargin = 10;
-    int progressBarSideMargin = 20;
+    int progressBarHeight = static_cast<int>(screenHeight * 0.03f);
+    int progressBarMargin = static_cast<int>(screenHeight * 0.02f);
+    int progressBarSideMargin = static_cast<int>(screenWidth * 0.015f);
     int progressBarY = screenHeight - progressBarHeight - progressBarMargin;
     int progressBarX = progressBarSideMargin;
     int progressBarWidth = screenWidth - (progressBarSideMargin * 2);
@@ -217,6 +221,7 @@ void Renderer::DrawProgressBar(float percentage, int currentLevel, Font font) {
 
     char progressLabel[64];
     snprintf(progressLabel, sizeof(progressLabel), "Level %d - progress", currentLevel);
-    Vector2 labelSize = MeasureTextEx(font, progressLabel, 20, 1);
-    DrawTextEx(font, progressLabel, Vector2{static_cast<float>((screenWidth - labelSize.x) / 2), static_cast<float>(progressBarY - 30)}, 20, 1, Color{200, 200, 200, 255});
+    int labelFontSize = static_cast<int>(screenHeight * 0.025f);
+    Vector2 labelSize = MeasureTextEx(font, progressLabel, static_cast<float>(labelFontSize), 1);
+    DrawTextEx(font, progressLabel, Vector2{static_cast<float>((screenWidth - labelSize.x) / 2), static_cast<float>(progressBarY - screenHeight * 0.035f)}, static_cast<float>(labelFontSize), 1, Color{200, 200, 200, 255});
 }

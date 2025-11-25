@@ -10,22 +10,22 @@ LevelCompletedScreen::LevelCompletedScreen(IGame& game, std::function<void(GameS
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font) {
     m_Menu = std::make_unique<Menu>();
 
-    const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
-    const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
-    const float buttonWidth = 300.0f;
-    const float buttonHeight = 60.0f;
-    const float buttonSpacing = 20.0f;
+    const int screenWidth = GetScreenWidth();
+    const int screenHeight = GetScreenHeight();
+    const float buttonWidth = screenWidth * 0.25f;
+    const float buttonHeight = screenHeight * 0.08f;
+    const float buttonSpacing = screenHeight * 0.02f;
     float startY = screenHeight / 2.0f;
     float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
 
     const char* titleText = "LEVEL COMPLETED!";
-    int fontSize = 40;
+    int fontSize = static_cast<int>(screenHeight * 0.06f);
     Vector2 textSize = MeasureTextEx(font, titleText, static_cast<float>(fontSize), 1);
     float titleX = screenWidth / 2.0f - textSize.x / 2.0f;
 
     auto title = std::make_unique<Label>(
         titleX,
-        screenHeight / 2.0f - 150.0f,
+        screenHeight * 0.3f,
         titleText,
         font,
         fontSize,
@@ -50,8 +50,9 @@ void LevelCompletedScreen::Draw() {
     m_Menu->Draw();
 
     std::string pointsText = "Points collected: " + std::to_string(m_Game.GetPickupPoints());
-    Vector2 textSize = MeasureTextEx(m_Font, pointsText.c_str(), 30, 1);
+    int pointsFontSize = static_cast<int>(GetScreenHeight() * 0.04f);
+    Vector2 textSize = MeasureTextEx(m_Font, pointsText.c_str(), static_cast<float>(pointsFontSize), 1);
     DrawTextEx(m_Font, pointsText.c_str(),
-               Vector2{GetScreenWidth() / 2.0f - textSize.x / 2.0f, GetScreenHeight() / 2.0f - 90.0f},
-               30, 1, WHITE);
+               Vector2{GetScreenWidth() / 2.0f - textSize.x / 2.0f, GetScreenHeight() * 0.42f},
+               static_cast<float>(pointsFontSize), 1, WHITE);
 }

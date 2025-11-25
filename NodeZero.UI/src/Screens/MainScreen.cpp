@@ -8,22 +8,22 @@ MainScreen::MainScreen(std::function<void(GameScreen)> stateChangeCallback, Font
     : m_StateChangeCallback(stateChangeCallback), m_Font(font) {
     m_Menu = std::make_unique<Menu>();
 
-    const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
-    const int screenHeight = static_cast<int>(GameConfig::DEFAULT_SCREEN_HEIGHT);
-    const float buttonWidth = 300.0f;
-    const float buttonHeight = 60.0f;
-    const float buttonSpacing = 20.0f;
-    float startY = screenHeight / 2.0f - 100.0f;
+    const int screenWidth = GetScreenWidth();
+    const int screenHeight = GetScreenHeight();
+    const float buttonWidth = screenWidth * 0.25f;
+    const float buttonHeight = screenHeight * 0.08f;
+    const float buttonSpacing = screenHeight * 0.02f;
+    float startY = screenHeight / 2.0f - buttonHeight;
     float centerX = screenWidth / 2.0f - buttonWidth / 2.0f;
 
     const char* titleText = "NodeZero";
-    int fontSize = 40;
+    int fontSize = static_cast<int>(screenHeight * 0.06f);
     Vector2 textSize = MeasureTextEx(font, titleText, static_cast<float>(fontSize), 1);
     float titleX = screenWidth / 2.0f - textSize.x / 2.0f;
 
     auto titleLabel = std::make_unique<Label>(
         titleX,
-        screenHeight / 2.0f - 200.0f,
+        screenHeight * 0.3f,
         titleText,
         font,
         fontSize,
@@ -54,6 +54,6 @@ void MainScreen::Draw() {
     m_Menu->Draw();
 
     const char* watermarkText = "Made by TeamTBD";
-    int fontSize = 18;
-    DrawTextEx(m_Font, watermarkText, Vector2{15.0f, static_cast<float>(GetScreenHeight() - 30)}, static_cast<float>(fontSize), 1, Color{150, 150, 150, 200});
+    int watermarkFontSize = static_cast<int>(GetScreenHeight() * 0.025f);
+    DrawTextEx(m_Font, watermarkText, Vector2{static_cast<float>(GetScreenWidth() * 0.01f), static_cast<float>(GetScreenHeight() * 0.96f)}, static_cast<float>(watermarkFontSize), 1, Color{150, 150, 150, 200});
 }
