@@ -11,7 +11,7 @@ enum class GameScreen {
 
     GameOver,
 
-    Settings,
+    Upgrades,
 
     Quit
 };

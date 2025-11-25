@@ -37,7 +37,7 @@ MainScreen::MainScreen(std::function<void(GameScreen)> stateChangeCallback, Font
 
     auto upgradesButton = std::make_unique<Button>(centerX, startY + buttonHeight + buttonSpacing, buttonWidth, buttonHeight, "Upgrades", font);
     upgradesButton->SetColors(Color{50, 150, 50, 255}, Color{80, 180, 80, 255}, Color{30, 120, 30, 255}, WHITE);
-    upgradesButton->SetOnClick([this]() { m_StateChangeCallback(GameScreen::Settings); });
+    upgradesButton->SetOnClick([this]() { m_StateChangeCallback(GameScreen::Upgrades); });
     m_Menu->AddWidget(std::move(upgradesButton));
 
     auto quitButton = std::make_unique<Button>(centerX, startY + (buttonHeight + buttonSpacing) * 2, buttonWidth, buttonHeight, "Quit", font);

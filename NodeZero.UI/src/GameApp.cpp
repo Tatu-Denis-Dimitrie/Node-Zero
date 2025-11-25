@@ -126,7 +126,7 @@ void GameApp::Update() {
         case GameScreen::LevelCompleted:
             m_LevelCompletedScreen->Update(deltaTime);
             break;
-        case GameScreen::Settings:
+        case GameScreen::Upgrades:
             m_UpgradesScreen->Update(deltaTime);
             break;
         case GameScreen::GameOver:
@@ -161,7 +161,7 @@ void GameApp::Draw() {
         case GameScreen::MainMenu:
             m_MainScreen->Draw();
             break;
-        case GameScreen::Settings:
+        case GameScreen::Upgrades:
             m_UpgradesScreen->Draw();
             break;
         case GameScreen::GameOver:
