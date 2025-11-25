@@ -24,6 +24,7 @@ Game::Game()
     SaveData saveData = m_SaveService.LoadProgress();
     m_HighPoints = saveData.highPoints;
 
+    m_UpgradeService.SetSaveService(&m_SaveService);
     m_UpgradeService.Initialize(saveData.maxHealth, saveData.regenRate, saveData.damageZoneSize, saveData.damagePerTick);
     m_HealthService.Initialize(saveData.maxHealth, saveData.regenRate);
     m_LevelService.Initialize(saveData.currentLevel);

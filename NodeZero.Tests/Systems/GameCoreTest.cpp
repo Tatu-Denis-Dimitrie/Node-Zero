@@ -2,7 +2,7 @@
 
 #include "../../NodeZero.Core/include/Game.h"
 #include "../../NodeZero.Core/include/IGame.h"
-#include "../../NodeZero.Core/include/Systems/SaveSystem.h"
+#include "../../NodeZero.Core/include/Services/ISaveService.h"
 #include "../../NodeZero.Core/include/Types/SaveData.h"
 
 TEST(GameTest, PlaceholderTest) {
@@ -99,7 +99,7 @@ TEST_F(DamageSystemTest, DamageTimerResets) {
     EXPECT_FALSE(game->GetDamageZoneService().ShouldDealDamage());
 }
 
-class SaveSystemTest : public ::testing::Test {
+class SaveServiceTest : public ::testing::Test {
    protected:
     void SetUp() override {
         game = std::make_unique<Game>();
@@ -113,13 +113,13 @@ class SaveSystemTest : public ::testing::Test {
     std::unique_ptr<IGame> game;
 };
 
-TEST_F(SaveSystemTest, GetPointsReturnsValidValue) {
-    int points = SaveSystem::LoadProgress().points;
+TEST_F(SaveServiceTest, GetPointsReturnsValidValue) {
+    int points = game->GetSaveService().GetPoints();
     EXPECT_GE(points, 0);
 }
 
-TEST_F(SaveSystemTest, GetSaveDataReturnsValidData) {
-    SaveData data = SaveSystem::LoadProgress();
+TEST_F(SaveServiceTest, GetSaveDataReturnsValidData) {
+    SaveData data = game->GetSaveService().GetCurrentData();
     EXPECT_GE(data.points, 0);
     EXPECT_GE(data.highPoints, 0);
     EXPECT_GE(data.gamesPlayed, 0);
@@ -131,7 +131,7 @@ TEST_F(SaveSystemTest, GetSaveDataReturnsValidData) {
     EXPECT_GT(data.damagePerTick, 0.0f);
 }
 
-TEST_F(SaveSystemTest, GetHighPointsReturnsValidValue) {
+TEST_F(SaveServiceTest, GetHighPointsReturnsValidValue) {
     int highPoints = game->GetHighPoints();
     EXPECT_GE(highPoints, 0);
 }

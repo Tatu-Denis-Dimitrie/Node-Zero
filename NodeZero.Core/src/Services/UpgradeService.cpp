@@ -1,13 +1,15 @@
 #include "Services/UpgradeService.h"
 
 #include "Config/GameConfig.h"
-#include "Systems/SaveSystem.h"
+#include "Services/ISaveService.h"
+#include "Types/SaveData.h"
 
 UpgradeService::UpgradeService()
     : m_MaxHealth(GameConfig::HEALTH_DEFAULT),
       m_RegenRate(0.0f),
       m_DamageZoneSize(GameConfig::DAMAGE_ZONE_DEFAULT_SIZE),
-      m_DamagePerTick(GameConfig::DAMAGE_PER_TICK_DEFAULT) {
+      m_DamagePerTick(GameConfig::DAMAGE_PER_TICK_DEFAULT),
+      m_SaveService(nullptr) {
 }
 
 void UpgradeService::Initialize(float maxHealth, float regenRate, float damageZoneSize, float damagePerTick) {
@@ -17,8 +19,14 @@ void UpgradeService::Initialize(float maxHealth, float regenRate, float damageZo
     m_DamagePerTick = damagePerTick;
 }
 
+void UpgradeService::SetSaveService(ISaveService* saveService) {
+    m_SaveService = saveService;
+}
+
 bool UpgradeService::BuyHealthUpgrade() {
-    SaveData saveData = SaveSystem::LoadProgress();
+    if (!m_SaveService) return false;
+
+    SaveData saveData = m_SaveService->GetCurrentData();
 
     if (saveData.points < GameConfig::HEALTH_UPGRADE_COST) {
         return false;
@@ -28,7 +36,7 @@ bool UpgradeService::BuyHealthUpgrade() {
     m_MaxHealth += 1.0f;
     saveData.maxHealth = m_MaxHealth;
 
-    SaveSystem::SaveProgress(saveData);
+    m_SaveService->SaveProgress(saveData);
     return true;
 }
 
@@ -41,7 +49,9 @@ float UpgradeService::GetMaxHealth() const {
 }
 
 bool UpgradeService::BuyRegenUpgrade() {
-    SaveData saveData = SaveSystem::LoadProgress();
+    if (!m_SaveService) return false;
+
+    SaveData saveData = m_SaveService->GetCurrentData();
 
     if (saveData.points < GameConfig::REGEN_UPGRADE_COST) {
         return false;
@@ -51,7 +61,7 @@ bool UpgradeService::BuyRegenUpgrade() {
     m_RegenRate += GameConfig::REGEN_UPGRADE_AMOUNT;
     saveData.regenRate = m_RegenRate;
 
-    SaveSystem::SaveProgress(saveData);
+    m_SaveService->SaveProgress(saveData);
     return true;
 }
 
@@ -64,7 +74,9 @@ float UpgradeService::GetRegenRate() const {
 }
 
 bool UpgradeService::BuyDamageZoneUpgrade() {
-    SaveData saveData = SaveSystem::LoadProgress();
+    if (!m_SaveService) return false;
+
+    SaveData saveData = m_SaveService->GetCurrentData();
 
     if (saveData.points < GameConfig::DAMAGE_ZONE_UPGRADE_COST) {
         return false;
@@ -82,7 +94,7 @@ bool UpgradeService::BuyDamageZoneUpgrade() {
     }
 
     saveData.damageZoneSize = m_DamageZoneSize;
-    SaveSystem::SaveProgress(saveData);
+    m_SaveService->SaveProgress(saveData);
     return true;
 }
 
@@ -95,7 +107,9 @@ float UpgradeService::GetDamageZoneSize() const {
 }
 
 bool UpgradeService::BuyDamageUpgrade() {
-    SaveData saveData = SaveSystem::LoadProgress();
+    if (!m_SaveService) return false;
+
+    SaveData saveData = m_SaveService->GetCurrentData();
 
     if (saveData.points < GameConfig::DAMAGE_UPGRADE_COST) {
         return false;
@@ -105,7 +119,7 @@ bool UpgradeService::BuyDamageUpgrade() {
     m_DamagePerTick += GameConfig::DAMAGE_UPGRADE_AMOUNT;
     saveData.damagePerTick = m_DamagePerTick;
 
-    SaveSystem::SaveProgress(saveData);
+    m_SaveService->SaveProgress(saveData);
     return true;
 }
 
@@ -116,8 +130,11 @@ int UpgradeService::GetDamageUpgradeCost() const {
 float UpgradeService::GetDamagePerTick() const {
     return m_DamagePerTick;
 }
+
 void UpgradeService::LoadFromSave() {
-    SaveData saveData = SaveSystem::LoadProgress();
+    if (!m_SaveService) return;
+
+    SaveData saveData = m_SaveService->GetCurrentData();
     m_MaxHealth = saveData.maxHealth;
     m_RegenRate = saveData.regenRate;
     m_DamageZoneSize = saveData.damageZoneSize;

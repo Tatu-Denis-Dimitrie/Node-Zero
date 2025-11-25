@@ -2,18 +2,22 @@
 
 #include "IUpgradeService.h"
 
+class ISaveService;
+
 class UpgradeService : public IUpgradeService {
    private:
     float m_MaxHealth;
     float m_RegenRate;
     float m_DamageZoneSize;
     float m_DamagePerTick;
+    ISaveService* m_SaveService;
 
    public:
     UpgradeService();
     ~UpgradeService() override = default;
 
     void Initialize(float maxHealth, float regenRate, float damageZoneSize, float damagePerTick);
+    void SetSaveService(ISaveService* saveService);
 
     bool BuyHealthUpgrade() override;
     int GetHealthUpgradeCost() const override;
