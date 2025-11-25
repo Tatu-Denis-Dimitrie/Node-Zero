@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../NodeZero.Core/include/Game.h"
+#include "../NodeZero.Core/src/Game.h"
 #include "../NodeZero.Core/include/IGame.h"
 #include "../NodeZero.Core/include/INode.h"
 

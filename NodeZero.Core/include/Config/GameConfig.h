@@ -22,7 +22,7 @@ struct GameConfig {
     static constexpr int DAMAGE_ZONE_UPGRADE_COST = 75;
     static constexpr float DAMAGE_ZONE_UPGRADE_AMOUNT = 10.0f;
     static constexpr float DAMAGE_ZONE_MAX_SIZE = 300.0f;
-    static constexpr float DAMAGE_PER_TICK_DEFAULT = 40.0f;
+    static constexpr float DAMAGE_PER_TICK_DEFAULT = 50.0f;
     static constexpr int DAMAGE_UPGRADE_COST = 60;
     static constexpr float DAMAGE_UPGRADE_AMOUNT = 5.0f;
 
