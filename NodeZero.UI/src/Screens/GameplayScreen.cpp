@@ -91,6 +91,94 @@ void GameplayScreen::UpdateParticles(float deltaTime) {
         m_DamageParticles.end());
 }
 
+void GameplayScreen::DrawReflections(const std::vector<INode*>& nodes, Vector2 mousePos, float damageZoneSize, float reflectionOffset) {
+    // Draw node reflections
+    for (const INode* node : nodes) {
+        if (node->GetState() == NodeState::Active) {
+            float x = node->GetPosition().x + reflectionOffset;
+            float y = node->GetPosition().y + reflectionOffset;
+            float size = node->GetSize();
+            float hpPercentage = node->GetHP() / node->GetMaxHP();
+            float rotation = node->GetRotation();
+
+            Color reflectionColor = RED;
+            if (node->GetShape() == NodeShape::Boss) reflectionColor = Color{200, 50, 200, 255};
+            reflectionColor.a = 15;
+
+            switch (node->GetShape()) {
+                case NodeShape::Circle:
+                    Renderer::DrawCircleNode(x, y, size, hpPercentage, reflectionColor, rotation);
+                    break;
+                case NodeShape::Square:
+                    Renderer::DrawSquareNode(x, y, size, hpPercentage, reflectionColor, rotation);
+                    break;
+                case NodeShape::Hexagon:
+                    Renderer::DrawHexagonNode(x, y, size, hpPercentage, reflectionColor, rotation);
+                    break;
+                case NodeShape::Boss:
+                    Renderer::DrawSquareNode(x, y, size, hpPercentage, reflectionColor, rotation);
+                    break;
+                default:
+                    Renderer::DrawCircleNode(x, y, size, hpPercentage, reflectionColor, rotation);
+                    break;
+            }
+        }
+    }
+
+    // Draw damage zone reflection
+    float damageRectX = mousePos.x - damageZoneSize / 2.0f;
+    float damageRectY = mousePos.y - damageZoneSize / 2.0f;
+
+    DrawRectangle(
+        static_cast<int>(damageRectX + reflectionOffset),
+        static_cast<int>(damageRectY + reflectionOffset),
+        static_cast<int>(damageZoneSize),
+        static_cast<int>(damageZoneSize),
+        Color{0, 100, 255, 15});
+
+    // Draw reflection corners
+    float cornerLength = 20.0f;
+    float cornerThickness = 3.0f;
+    Color cornerColor = Color{0, 200, 255, 255};
+    Color reflectionCornerColor = cornerColor;
+    reflectionCornerColor.a = 30;
+
+    float rLeft = damageRectX + reflectionOffset;
+    float rRight = mousePos.x + damageZoneSize / 2 + reflectionOffset;
+    float rTop = damageRectY + reflectionOffset;
+    float rBottom = mousePos.y + damageZoneSize / 2 + reflectionOffset;
+
+    DrawLineEx(Vector2{rLeft, rTop}, Vector2{rLeft + cornerLength, rTop}, cornerThickness, reflectionCornerColor);
+    DrawLineEx(Vector2{rLeft, rTop}, Vector2{rLeft, rTop + cornerLength}, cornerThickness, reflectionCornerColor);
+    DrawLineEx(Vector2{rRight, rTop}, Vector2{rRight - cornerLength, rTop}, cornerThickness, reflectionCornerColor);
+    DrawLineEx(Vector2{rRight, rTop}, Vector2{rRight, rTop + cornerLength}, cornerThickness, reflectionCornerColor);
+    DrawLineEx(Vector2{rLeft, rBottom}, Vector2{rLeft + cornerLength, rBottom}, cornerThickness, reflectionCornerColor);
+    DrawLineEx(Vector2{rLeft, rBottom}, Vector2{rLeft, rBottom - cornerLength}, cornerThickness, reflectionCornerColor);
+    DrawLineEx(Vector2{rRight, rBottom}, Vector2{rRight - cornerLength, rBottom}, cornerThickness, reflectionCornerColor);
+    DrawLineEx(Vector2{rRight, rBottom}, Vector2{rRight, rBottom - cornerLength}, cornerThickness, reflectionCornerColor);
+}
+
+void GameplayScreen::DrawBloom(const std::vector<INode*>& nodes, Vector2 mousePos, float damageZoneSize) {
+    // Draw bloom for nodes
+    for (const INode* node : nodes) {
+        if (node->GetState() == NodeState::Active) {
+            float x = node->GetPosition().x;
+            float y = node->GetPosition().y;
+            float size = node->GetSize();
+
+            Color glowColor = RED;
+            if (node->GetShape() == NodeShape::Boss) glowColor = Color{200, 50, 200, 255};
+
+            glowColor.a = 40;
+            DrawCircleGradient(static_cast<int>(x), static_cast<int>(y), size * 3.0f, glowColor, Fade(glowColor, 0.0f));
+        }
+    }
+
+    // Draw bloom for damage zone
+    Color zoneBloomColor = Color{0, 100, 255, 60};
+    DrawCircleGradient(static_cast<int>(mousePos.x), static_cast<int>(mousePos.y), damageZoneSize * 1.2f, zoneBloomColor, Fade(zoneBloomColor, 0.0f));
+}
+
 void GameplayScreen::Update(float deltaTime) {
     Vector2 mousePos = InputHandler::GetMousePosition();
     m_Game.SetMousePosition(mousePos.x, mousePos.y);
@@ -145,6 +233,11 @@ void GameplayScreen::Draw() {
     float damageRectY = mousePos.y - damageZoneSize / 2.0f;
 
     const auto& nodes = m_Game.GetNodes();
+
+    // Apply visual effects (reflections and bloom)
+    DrawReflections(nodes, mousePos, damageZoneSize, 20.0f);
+    DrawBloom(nodes, mousePos, damageZoneSize);
+
     for (const INode* node : nodes) {
         if (node->GetState() == NodeState::Active) {
             float x = node->GetPosition().x;

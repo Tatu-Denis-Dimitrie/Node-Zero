@@ -51,6 +51,9 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
     void SpawnDamageParticles(Vector2 position, Color baseColor, int count);
     void UpdateParticles(float deltaTime);
 
+    void DrawReflections(const std::vector<INode*>& nodes, Vector2 mousePos, float damageZoneSize, float reflectionOffset);
+    void DrawBloom(const std::vector<INode*>& nodes, Vector2 mousePos, float damageZoneSize);
+
     static constexpr float DAMAGE_ZONE_SIZE = 150.0f;
     static constexpr float DAMAGE_PER_TICK = 40.0f;
     static constexpr float PICKUP_COLLECT_EFFECT_DURATION = 1.0f;
