@@ -5,10 +5,10 @@
 #include "Events/GameEvents.h"
 #include "Events/IObserver.h"
 
-class GameEventLogger : public IObserver {
+class EventLogger : public IObserver {
    public:
-    GameEventLogger() = default;
-    virtual ~GameEventLogger() = default;
+    EventLogger() = default;
+    virtual ~EventLogger() = default;
 
     void Update(const std::shared_ptr<IEvent>& event) override {
         if (!event) return;
@@ -21,10 +21,12 @@ class GameEventLogger : public IObserver {
             HandleNodeDestroyed(std::static_pointer_cast<NodeDestroyedEvent>(event));
         } else if (eventType == "NodeDamaged") {
             HandleNodeDamaged(std::static_pointer_cast<NodeDamagedEvent>(event));
-        } else if (eventType == "PointsChanged") {
-            HandlePointsChanged(std::static_pointer_cast<PointsChangedEvent>(event));
-        } else if (eventType == "GameStateChanged") {
-            HandleGameStateChanged(std::static_pointer_cast<GameStateChangedEvent>(event));
+        } else if (eventType == "BossSpawned") {
+            HandleBossSpawned(std::static_pointer_cast<BossSpawnedEvent>(event));
+        } else if (eventType == "BossDefeated") {
+            HandleBossDefeated(std::static_pointer_cast<BossDefeatedEvent>(event));
+        } else if (eventType == "LevelCompleted") {
+            HandleLevelCompleted(std::static_pointer_cast<LevelCompletedEvent>(event));
         }
     }
 
@@ -52,17 +54,21 @@ class GameEventLogger : public IObserver {
                   << std::endl;
     }
 
-    void HandlePointsChanged(const std::shared_ptr<PointsChangedEvent>& event) {
-        std::cout << "[EVENT] Points changed | New Points: " << event->GetNewPoints()
-                  << " | Delta: " << event->GetDelta()
-                  << " | Multiplier: " << event->GetMultiplier()
+    void HandleBossSpawned(const std::shared_ptr<BossSpawnedEvent>& event) {
+        std::cout << "[EVENT] Boss spawned | Level: " << event->GetLevel()
+                  << " | HP: " << event->GetBossHP()
                   << std::endl;
     }
 
-    void HandleGameStateChanged(const std::shared_ptr<GameStateChangedEvent>& event) {
-        std::cout << "[EVENT] Game state changed | New State: "
-                  << static_cast<int>(event->GetNewState())
-                  << " | Old State: " << static_cast<int>(event->GetOldState())
+    void HandleBossDefeated(const std::shared_ptr<BossDefeatedEvent>& event) {
+        std::cout << "[EVENT] Boss defeated | Level: " << event->GetLevel()
+                  << " | Points gained: " << event->GetPointsGained()
+                  << std::endl;
+    }
+
+    void HandleLevelCompleted(const std::shared_ptr<LevelCompletedEvent>& event) {
+        std::cout << "[EVENT] Level completed | Old Level: " << event->GetOldLevel()
+                  << " | New Level: " << event->GetNewLevel()
                   << std::endl;
     }
 };

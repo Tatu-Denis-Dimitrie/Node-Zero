@@ -5,7 +5,7 @@
 
 #include "Config/GameConfig.h"
 #include "Game.h"
-#include "GameEventLogger.h"
+#include "EventLogger.h"
 #include "IGame.h"
 #include "InputHandler.h"
 #include "Renderer.h"
@@ -46,7 +46,7 @@ void GameApp::Initialize() {
     m_Game->Initialize(static_cast<float>(screenWidth), static_cast<float>(screenHeight));
 
     // Observer Logger
-    auto eventLogger = std::make_shared<GameEventLogger>();
+    auto eventLogger = std::make_shared<EventLogger>();
     m_Game->Attach(eventLogger);
 
     // Initialize Screens
