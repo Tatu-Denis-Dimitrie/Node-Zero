@@ -35,12 +35,12 @@ void Game::Initialize(float screenWidth, float screenHeight) {
     m_ScreenWidth = screenWidth;
     m_ScreenHeight = screenHeight;
 
-    float screenScale = screenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT;
-
     if (m_DamageZoneSize == 50.0f) {
         m_DamageZoneSize = screenHeight * 0.0625f;
     } else {
-        m_DamageZoneSize *= screenScale;
+        // Re-scale when resolution changes
+        float oldPercentage = m_DamageZoneSize / m_ScreenHeight;
+        m_DamageZoneSize = screenHeight * oldPercentage;
     }
 
     if (m_DamagePerTick == 40.0f) {
@@ -155,7 +155,7 @@ const std::vector<PointPickup>& Game::GetPickups() const {
 
 void Game::SpawnNode(float x, float y) {
     NodeShape shape = GetRandomShape();
-    float nodeSize = GameConfig::NODE_DEFAULT_SIZE * (m_ScreenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT);
+    float nodeSize = m_ScreenHeight * 0.0375f;  // 3.75% of screen height (30/800)
     INode* node = CreateNode(shape, nodeSize, GameConfig::NODE_DEFAULT_SPEED);
 
     Node* concreteNode = static_cast<Node*>(node);
@@ -245,18 +245,17 @@ NodeShape Game::GetRandomShape() {
 
 void Game::SpawnPointPickups(const Position& origin) {
     int pickupCount = 5 + (std::rand() % 6);
-    float screenScale = m_ScreenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT;
 
     for (int i = 0; i < pickupCount; ++i) {
         float angle = RandomRange(0.0f, 6.28318530718f);
-        float radius = RandomRange(10.0f * screenScale, 40.0f * screenScale);
+        float radius = RandomRange(m_ScreenHeight * 0.0125f, m_ScreenHeight * 0.05f);  // 1.25% to 5% of screen height
 
         PointPickup pickup{};
         pickup.id = m_NextPickupId++;
         pickup.position.x = origin.x + std::cos(angle) * radius;
         pickup.position.y = origin.y + std::sin(angle) * radius;
         pickup.spawnOrigin = origin;
-        pickup.size = GameConfig::PICKUP_SIZE * screenScale;
+        pickup.size = m_ScreenHeight * 0.0075f;  // 0.75% of screen height (6/800)
         pickup.lifetime = GameConfig::PICKUP_LIFETIME;
         pickup.remainingTime = GameConfig::PICKUP_LIFETIME;
         pickup.points = 1;
@@ -626,8 +625,7 @@ void Game::Notify(const std::shared_ptr<IEvent>& event) {
 void Game::SpawnBoss() {
     if (m_BossActive) return;
 
-    float screenScale = m_ScreenHeight / GameConfig::DEFAULT_SCREEN_HEIGHT;
-    float bossSize = GameConfig::BOSS_SIZE * screenScale;
+    float bossSize = m_ScreenHeight * 0.15f;  // 15% of screen height (120/800)
     float bossHP = GameConfig::BOSS_HP_BASE + (m_CurrentLevel - 1) * 100.0f;
     m_Boss = CreateNode(NodeShape::Boss, bossSize, GameConfig::BOSS_SPEED);
 
