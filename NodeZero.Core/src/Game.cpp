@@ -90,21 +90,19 @@ void Game::Update(float deltaTime) {
 
                                    if (isBoss) {
                                        int pointsGained = 500 * m_CurrentLevel;
-                                       auto event = std::make_shared<BossDefeatedEvent>(
-                                           m_ElapsedTime,
-                                           m_CurrentLevel,
-                                           pointsGained);
+                                       auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::BossDefeated);
+                                       event->level = m_CurrentLevel;
+                                       event->points = pointsGained;
                                        Notify(event);
 
                                        m_BossActive = false;
                                        m_Boss = nullptr;
                                        m_LevelCompleted = true;
                                    } else {
-                                       auto event = std::make_shared<NodeDestroyedEvent>(
-                                           m_ElapsedTime,
-                                           node->GetShape(),
-                                           position,
-                                           100);
+                                       auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::NodeDestroyed);
+                                       event->shape = node->GetShape();
+                                       event->position = position;
+                                       event->points = 100;
                                        Notify(event);
                                        SpawnPointPickups(position);
                                        m_NodesDestroyed++;
@@ -158,12 +156,11 @@ void Game::SpawnNode(float x, float y) {
     node->Spawn(x, y);
     m_Nodes.push_back(node);
 
-    auto event = std::make_shared<NodeSpawnedEvent>(
-        m_ElapsedTime,
-        node->GetShape(),
-        Position{x, y},
-        node->GetSize(),
-        static_cast<int>(node->GetHP()));
+    auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::NodeSpawned);
+    event->shape = node->GetShape();
+    event->position = Position{x, y};
+    event->size = node->GetSize();
+    event->hp = static_cast<int>(node->GetHP());
     Notify(event);
 }
 
@@ -557,11 +554,10 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
             node->TakeDamage(damage);
 
             Position nodePos = node->GetPosition();
-            auto event = std::make_shared<NodeDamagedEvent>(
-                m_ElapsedTime,
-                nodePos,
-                static_cast<int>(damage),
-                static_cast<int>(node->GetHP()));
+            auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::NodeDamaged);
+            event->position = nodePos;
+            event->damage = static_cast<int>(damage);
+            event->hp = static_cast<int>(node->GetHP());
             Notify(event);
 
             float healthCost = 0.5f;
@@ -684,7 +680,9 @@ void Game::SpawnBoss() {
     m_Nodes.push_back(m_Boss);
     m_BossActive = true;
 
-    auto event = std::make_shared<BossSpawnedEvent>(m_ElapsedTime, m_CurrentLevel, bossHP);
+    auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::BossSpawned);
+    event->level = m_CurrentLevel;
+    event->bossHP = bossHP;
     Notify(event);
 }
 
@@ -714,7 +712,9 @@ void Game::StartNextLevel() {
     m_BossActive = false;
     m_Boss = nullptr;
 
-    auto event = std::make_shared<LevelCompletedEvent>(m_ElapsedTime, oldLevel, m_CurrentLevel);
+    auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::LevelCompleted);
+    event->level = oldLevel;
+    event->nextLevel = m_CurrentLevel;
     Notify(event);
 }
 

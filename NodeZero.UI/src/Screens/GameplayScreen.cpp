@@ -17,11 +17,11 @@ GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stat
 }
 
 void GameplayScreen::Update(const std::shared_ptr<IEvent>& event) {
-    if (event->GetType() == "NodeDamaged") {
+    auto gameEvent = std::static_pointer_cast<GameEvent>(event);
+    if (gameEvent->type == EventType::NodeDamaged) {
         TriggerShake(SHAKE_INTENSITY, SHAKE_DURATION);
 
-        auto damageEvent = std::static_pointer_cast<NodeDamagedEvent>(event);
-        Position nodePos = damageEvent->GetPosition();
+        Position nodePos = gameEvent->position;
         Vector2 particlePos = {nodePos.x, nodePos.y};
         SpawnDamageParticles(particlePos, RED, PARTICLE_COUNT);
     }
