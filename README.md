@@ -33,43 +33,49 @@ cmake --build build --config Debug
 ### How to Play
 
 **Controls:**
-- **Mouse Movement** - Move your damage zone (circular area around cursor)
-- **ESC** - Pause game / Access settings menu
+
+-   **Mouse Movement** - Move your damage zone (circular area around cursor)
+-   **ESC** - Pause game / Access settings menu
 
 **Game Objective:**
 Survive as long as possible by destroying enemy nodes before they escape the screen. Your goal is to progress through increasingly difficult levels while managing your health and upgrading your abilities.
 
 **Core Mechanics:**
+
 1. **Destroy Nodes** - Hover your damage zone over enemy nodes to deal damage
 2. **Collect Pickups** - Destroyed nodes drop pickups for points
 3. **Complete Levels** - Destroy the required number of nodes to face the level boss and advance
 
 **Enemy Nodes:**
-- Have different shapes (Circle, Square, Hexagon) with varying HP
-- Boss nodes appear at the end of each level with significantly more HP
-- Enemy HP scales up with each level, increasing difficulty
+
+-   Have different shapes (Circle, Square, Hexagon) with varying HP
+-   Boss nodes appear at the end of each level with significantly more HP
+-   Enemy HP scales up with each level, increasing difficulty
 
 **Upgrade System:**
 Spend coins earned from destroyed nodes on permanent upgrades:
-- **Health Upgrade (50 coins)** - Increases maximum health
-- **Regeneration Upgrade (100 coins)** - Adds health regeneration over time
-- **Damage Upgrade (60 coins)** - Increases damage per tick to nodes
-- **Damage Zone Upgrade (75 coins)** - Expands the size of your damage zone
+
+-   **Health Upgrade (50 coins)** - Increases maximum health
+-   **Regeneration Upgrade (100 coins)** - Adds health regeneration over time
+-   **Damage Upgrade (60 coins)** - Increases damage per tick to nodes
+-   **Damage Zone Upgrade (75 coins)** - Expands the size of your damage zone
 
 **Difficulty Scaling:**
 As you progress through levels:
-- Nodes gain more HP (scaling factor based on level)
-- More nodes spawn per level
-- Spawn rate increases
-- Damage received increases
+
+-   Nodes gain more HP (scaling factor based on level)
+-   More nodes spawn per level
+-   Spawn rate increases
+-   Damage received increases
 
 **Game Over:**
 The game ends when your health reaches zero. Your final points are saved for future upgrade purchases.
 
 **Save System:**
 Game progress (coins, high points, upgrades, level) is automatically saved to:
-- **Windows:** `%APPDATA%\NodeZero\save.txt`
-- **Linux/macOS:** `~/.config/NodeZero/save.txt`
+
+-   **Windows:** `%APPDATA%\NodeZero\save.txt`
+-   **Linux/macOS:** `~/.config/NodeZero/save.txt`
 
 Your save data persists between sessions, allowing you to accumulate coins and upgrades over multiple playthroughs.
 
@@ -93,7 +99,7 @@ NodeZero.Core/
 │   ├── Config/GameConfig.h          # Tuning constants
 │   ├── Enums/                       # NodeShape, NodeState, GameScreen
 │   ├── Events/                      # Observer pattern implementation
-│   ├── Systems/                     # SaveSystem, CollisionSystem, PointsSystem
+│   ├── Systems/                     # CollisionSystem, PointsSystem
 │   ├── Types/                       # Data structures (Position, SaveData, PointPickup)
 │   └── IGame.h, INode.h, ILevel.h   # Core interfaces
 └── src/
@@ -114,10 +120,10 @@ NodeZero.Tests/
 
 ### Rules
 
-- **Core isolation:** Never include Raylib or rendering code in `NodeZero.Core`
-- **Interface-driven:** UI depends on abstractions (`IGame`), not implementations (`Game`)
-- **Stateless systems:** Pass data as parameters, no global state
-- **Test coverage:** Add tests for new core logic
+-   **Core isolation:** Never include Raylib or rendering code in `NodeZero.Core`
+-   **Interface-driven:** UI depends on abstractions (`IGame`), not implementations (`Game`)
+-   **Stateless systems:** Pass data as parameters, no global state
+-   **Test coverage:** Add tests for new core logic
 
 ### Code Conventions
 
@@ -139,8 +145,8 @@ static constexpr float NODE_SPAWN_INTERVAL = 2.0f;
 Game balance tuning in [GameConfig.h](NodeZero.Core/include/Config/GameConfig.h):
 
 ```cpp
-static constexpr float NODE_SPAWN_INTERVAL = 2.0f;
-static constexpr int POINTS_PER_NODE_DESTROYED = 100;
+static constexpr float NODE_DEFAULT_SPEED = 100.0f;
+static constexpr int POINTS_MULTIPLIER_MAX = 5;
 static constexpr int HEALTH_UPGRADE_COST = 50;
 static constexpr float DAMAGE_ZONE_UPGRADE_AMOUNT = 10.0f;
 ```
@@ -172,8 +178,9 @@ Rebuild: `cmake --build build --config Debug --target NodeZero.Tests`
 
 **Want to reset game progress?**
 Delete the save file:
-- **Windows:** `%APPDATA%\NodeZero\save.txt`
-- **Linux/macOS:** `~/.config/NodeZero/save.txt`
+
+-   **Windows:** `%APPDATA%\NodeZero\save.txt`
+-   **Linux/macOS:** `~/.config/NodeZero/save.txt`
 
 ---
 

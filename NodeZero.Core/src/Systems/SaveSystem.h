@@ -1,15 +1,16 @@
 #pragma once
 
 #include <string>
-#include "../Types/SaveData.h"
+
+#include "Types/SaveData.h"
 
 class SaveSystem {
-public:
+   public:
     static bool SaveProgress(const SaveData& data);
     static SaveData LoadProgress();
     static bool HasSaveFile();
     static std::string GetSavePath();
 
-private:
+   private:
     static constexpr const char* SAVE_FILE_NAME = "save.txt";
 };

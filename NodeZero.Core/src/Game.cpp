@@ -7,11 +7,11 @@
 
 #include "Config/GameConfig.h"
 #include "Events/GameEvents.h"
-#include "Systems/SaveSystem.h"
 #include "Node.h"
+#include "Systems/SaveSystem.h"
 
 Game::Game()
-    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupPoints(0), m_MaxHealth(15.0f), m_CurrentHealth(15.0f), m_RegenRate(0.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighPoints(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(50.0f), m_DamagePerTick(40.0f), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION), m_LevelCompleted(false), m_MouseX(0.0f), m_MouseY(0.0f) {
+    : m_ScreenWidth(0.0f), m_ScreenHeight(0.0f), m_ElapsedTime(0.0f), m_NextPickupId(0), m_PickupPoints(0), m_MaxHealth(GameConfig::HEALTH_DEFAULT), m_CurrentHealth(GameConfig::HEALTH_DEFAULT), m_RegenRate(0.0f), m_HealthDepletionRate(0.1f), m_HealthDepletionInterval(0.3f), m_HealthTimer(0.0f), m_NodesDestroyed(0), m_HighPoints(0), m_SpawnTimer(0.0f), m_SpawnInterval(2.0f), m_DamageTimer(0.0f), m_DamageInterval(1.5f), m_DamageZoneSize(GameConfig::DAMAGE_ZONE_DEFAULT_SIZE), m_DamagePerTick(GameConfig::DAMAGE_PER_TICK_DEFAULT), m_ProgressBarPercentage(0.0f), m_CurrentLevel(1), m_NodesDestroyedThisLevel(0), m_BossActive(false), m_Boss(nullptr), m_LevelTimer(0.0f), m_LevelDuration(GameConfig::LEVEL_DURATION), m_LevelCompleted(false), m_MouseX(0.0f), m_MouseY(0.0f) {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
 
     SaveData saveData = SaveSystem::LoadProgress();
@@ -35,15 +35,8 @@ void Game::Initialize(float screenWidth, float screenHeight) {
     m_ScreenWidth = screenWidth;
     m_ScreenHeight = screenHeight;
 
-    if (m_DamageZoneSize == 50.0f) {
-        m_DamageZoneSize = screenHeight * 0.0625f;
-    } else {
-        float oldPercentage = m_DamageZoneSize / m_ScreenHeight;
-        m_DamageZoneSize = screenHeight * oldPercentage;
-    }
-
-    if (m_DamagePerTick == 40.0f) {
-        m_DamagePerTick = 40.0f;
+    if (m_DamagePerTick == GameConfig::DAMAGE_PER_TICK_DEFAULT) {
+        m_DamagePerTick = GameConfig::DAMAGE_PER_TICK_DEFAULT;
     }
 }
 
@@ -413,9 +406,18 @@ bool Game::BuyDamageZoneUpgrade() {
         return false;
     }
 
+    if (m_DamageZoneSize >= GameConfig::DAMAGE_ZONE_MAX_SIZE) {
+        return false;
+    }
+
     saveData.points -= GameConfig::DAMAGE_ZONE_UPGRADE_COST;
 
     m_DamageZoneSize += GameConfig::DAMAGE_ZONE_UPGRADE_AMOUNT;
+
+    if (m_DamageZoneSize > GameConfig::DAMAGE_ZONE_MAX_SIZE) {
+        m_DamageZoneSize = GameConfig::DAMAGE_ZONE_MAX_SIZE;
+    }
+
     saveData.damageZoneSize = m_DamageZoneSize;
 
     SaveSystem::SaveProgress(saveData);
@@ -531,14 +533,11 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
         float nodeY = node->GetPosition().y;
         float nodeSize = node->GetSize();
 
-        // Calculate bounding circle radius based on shape
         float boundingRadius = nodeSize;
         NodeShape shape = node->GetShape();
         if (shape == NodeShape::Square) {
-            // For squares, diagonal distance from center to corner
-            boundingRadius = nodeSize * 1.414f;  // sqrt(2) * nodeSize
+            boundingRadius = nodeSize * 1.414f;
         } else if (shape == NodeShape::Boss) {
-            // Boss is also square-shaped
             boundingRadius = nodeSize * 1.414f;
         }
 

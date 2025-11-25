@@ -141,7 +141,9 @@ void UpgradesScreen::Draw() {
                                   static_cast<float>(buttonWidth), static_cast<float>(buttonHeight)};
     bool isDamageZoneHovered = CheckCollisionPointRec(mousePos, damageZoneButton);
 
-    bool canAffordDamageZone = saveData.points >= m_Game.GetDamageZoneUpgradeCost();
+    bool isDamageZoneMaxed = m_Game.GetDamageZoneSize() >= 300.0f;
+
+    bool canAffordDamageZone = saveData.points >= m_Game.GetDamageZoneUpgradeCost() && !isDamageZoneMaxed;
     Color damageZoneButtonColor = canAffordDamageZone ? (isDamageZoneHovered ? Color{80, 180, 80, 255} : Color{60, 160, 60, 255})
                                                       : Color{100, 100, 100, 255};
 
@@ -149,12 +151,20 @@ void UpgradesScreen::Draw() {
     DrawRectangleLinesEx(damageZoneButton, 1, WHITE);
 
     char damageZoneButtonText[64];
-    snprintf(damageZoneButtonText, sizeof(damageZoneButtonText), "Upgrade +10 Zone");
+    if (isDamageZoneMaxed) {
+        snprintf(damageZoneButtonText, sizeof(damageZoneButtonText), "MAX LEVEL");
+    } else {
+        snprintf(damageZoneButtonText, sizeof(damageZoneButtonText), "Upgrade +10 Zone");
+    }
     Vector2 damageZoneButtonTextSize = MeasureTextEx(m_Font, damageZoneButtonText, static_cast<float>(buttonTextFontSize), 1);
     DrawTextEx(m_Font, damageZoneButtonText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - damageZoneButtonTextSize.x / 2), static_cast<float>(damageZoneButtonY + buttonHeight * 0.15f)}, static_cast<float>(buttonTextFontSize), 1, WHITE);
 
     char damageZoneCostText[32];
-    snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d points", m_Game.GetDamageZoneUpgradeCost());
+    if (isDamageZoneMaxed) {
+        snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Maxed out");
+    } else {
+        snprintf(damageZoneCostText, sizeof(damageZoneCostText), "Cost: %d points", m_Game.GetDamageZoneUpgradeCost());
+    }
     Vector2 damageZoneCostTextSize = MeasureTextEx(m_Font, damageZoneCostText, static_cast<float>(costTextFontSize), 1);
     DrawTextEx(m_Font, damageZoneCostText, Vector2{static_cast<float>(buttonX + buttonWidth / 2 - damageZoneCostTextSize.x / 2), static_cast<float>(damageZoneButtonY + buttonHeight * 0.55f)}, static_cast<float>(costTextFontSize), 1, LIGHTGRAY);
 

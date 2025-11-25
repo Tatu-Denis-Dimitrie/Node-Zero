@@ -176,13 +176,6 @@ void Renderer::DrawPoints(int points, int posX, int posY, int fontSize, Color co
     DrawTextEx(font, pointsText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
 }
 
-void Renderer::DrawMultiplier(int multiplier, int posX, int posY, int fontSize, Color color, Font font) {
-    if (multiplier > 1) {
-        std::string multiplierText = "x" + std::to_string(multiplier);
-        DrawTextEx(font, multiplierText.c_str(), Vector2{static_cast<float>(posX), static_cast<float>(posY)}, static_cast<float>(fontSize), 1, color);
-    }
-}
-
 void Renderer::DrawHealthBar(float health, float maxHealth, int posX, int posY, int width, int height, Font font) {
     DrawRectangle(posX, posY, width, height, Color{60, 60, 60, 255});
 
