@@ -297,7 +297,7 @@ void Game::UpdateHealth(float deltaTime) {
 
     m_HealthTimer += deltaTime;
     if (m_HealthTimer >= m_HealthDepletionInterval) {
-        float scaledDepletionRate = m_HealthDepletionRate * (1.0f + (m_CurrentLevel - 1) * 0.15f);
+        float scaledDepletionRate = m_HealthDepletionRate * (1.0f + (m_CurrentLevel - 1) * 0.20f);
         m_CurrentHealth -= scaledDepletionRate;
         m_HealthTimer = 0.0f;
 
@@ -547,7 +547,7 @@ void Game::ProcessDamageZone(float centerX, float centerY, float zoneSize, float
                 healthCost *= 8.0f;
             }
 
-            float scaledHealthCost = healthCost * (1.0f + (m_CurrentLevel - 1) * 0.15f);
+            float scaledHealthCost = healthCost * (1.0f + (m_CurrentLevel - 1) * 0.20f);
             ReduceHealth(scaledHealthCost);
         }
     }
