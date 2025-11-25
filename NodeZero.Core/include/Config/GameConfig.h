@@ -20,7 +20,7 @@ struct GameConfig {
     static constexpr float PICKUP_SIZE = 6.0f;
     static constexpr float PICKUP_COLLECT_DELAY = 0.1f;
 
-    // Score settings
+    // Points settings
     static constexpr int POINTS_PER_NODE_DESTROYED = 100;
     static constexpr int POINTS_MULTIPLIER_MAX = 5;
 

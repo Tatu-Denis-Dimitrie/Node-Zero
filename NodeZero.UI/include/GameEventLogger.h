@@ -21,8 +21,8 @@ class GameEventLogger : public IObserver {
             HandleNodeDestroyed(std::static_pointer_cast<NodeDestroyedEvent>(event));
         } else if (eventType == "NodeDamaged") {
             HandleNodeDamaged(std::static_pointer_cast<NodeDamagedEvent>(event));
-        } else if (eventType == "ScoreChanged") {
-            HandleScoreChanged(std::static_pointer_cast<ScoreChangedEvent>(event));
+        } else if (eventType == "PointsChanged") {
+            HandlePointsChanged(std::static_pointer_cast<PointsChangedEvent>(event));
         } else if (eventType == "GameStateChanged") {
             HandleGameStateChanged(std::static_pointer_cast<GameStateChangedEvent>(event));
         }
@@ -42,7 +42,7 @@ class GameEventLogger : public IObserver {
         std::cout << "[EVENT] Node destroyed at ("
                   << event->GetPosition().x << ", "
                   << event->GetPosition().y
-                  << ") | Score gained: " << event->GetScoreGained()
+                  << ") | Points gained: " << event->GetPointsGained()
                   << std::endl;
     }
 
@@ -52,8 +52,8 @@ class GameEventLogger : public IObserver {
                   << std::endl;
     }
 
-    void HandleScoreChanged(const std::shared_ptr<ScoreChangedEvent>& event) {
-        std::cout << "[EVENT] Score changed | New Score: " << event->GetNewScore()
+    void HandlePointsChanged(const std::shared_ptr<PointsChangedEvent>& event) {
+        std::cout << "[EVENT] Points changed | New Points: " << event->GetNewPoints()
                   << " | Delta: " << event->GetDelta()
                   << " | Multiplier: " << event->GetMultiplier()
                   << std::endl;

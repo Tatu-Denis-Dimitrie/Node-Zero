@@ -55,7 +55,7 @@ class PickupSystemTest : public ::testing::Test {
     std::unique_ptr<IGame> game;
 };
 
-TEST_F(PickupSystemTest, InitialScoreIsZero) {
+TEST_F(PickupSystemTest, InitialPointsIsZero) {
     EXPECT_EQ(game->GetPickupPoints(), 0);
 }
 

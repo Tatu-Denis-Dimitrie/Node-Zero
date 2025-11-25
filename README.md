@@ -41,7 +41,7 @@ Survive as long as possible by destroying enemy nodes before they escape the scr
 
 **Core Mechanics:**
 1. **Destroy Nodes** - Hover your damage zone over enemy nodes to deal damage
-2. **Collect Pickups** - Destroyed nodes drop pickups for coins and score points
+2. **Collect Pickups** - Destroyed nodes drop pickups for points
 3. **Complete Levels** - Destroy the required number of nodes to face the level boss and advance
 
 **Enemy Nodes:**
@@ -64,10 +64,10 @@ As you progress through levels:
 - Damage received increases
 
 **Game Over:**
-The game ends when your health reaches zero. Your final score and coins are saved for future upgrade purchases.
+The game ends when your health reaches zero. Your final points are saved for future upgrade purchases.
 
 **Save System:**
-Game progress (coins, high score, upgrades, level) is automatically saved to:
+Game progress (coins, high points, upgrades, level) is automatically saved to:
 - **Windows:** `%APPDATA%\NodeZero\save.txt`
 - **Linux/macOS:** `~/.config/NodeZero/save.txt`
 
@@ -93,7 +93,7 @@ NodeZero.Core/
 │   ├── Config/GameConfig.h          # Tuning constants
 │   ├── Enums/                       # NodeShape, NodeState, GameScreen
 │   ├── Events/                      # Observer pattern implementation
-│   ├── Systems/                     # SaveSystem, CollisionSystem, ScoreSystem
+│   ├── Systems/                     # SaveSystem, CollisionSystem, PointsSystem
 │   ├── Types/                       # Data structures (Position, SaveData, PointPickup)
 │   └── IGame.h, INode.h, ILevel.h   # Core interfaces
 └── src/

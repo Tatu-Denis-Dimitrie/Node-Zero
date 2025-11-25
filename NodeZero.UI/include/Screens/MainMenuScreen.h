@@ -16,4 +16,5 @@ class MainMenuScreen {
    private:
     std::unique_ptr<Menu> m_Menu;
     std::function<void(GameScreen)> m_StateChangeCallback;
+    Font m_Font;
 };

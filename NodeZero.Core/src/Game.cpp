@@ -85,11 +85,11 @@ void Game::Update(float deltaTime) {
                                    Position position{node->GetPosition().x, node->GetPosition().y};
 
                                    if (isBoss) {
-                                       int scoreGained = 500 * m_CurrentLevel;
+                                       int pointsGained = 500 * m_CurrentLevel;
                                        auto event = std::make_shared<BossDefeatedEvent>(
                                            m_ElapsedTime,
                                            m_CurrentLevel,
-                                           scoreGained);
+                                           pointsGained);
                                        Notify(event);
 
                                        m_BossActive = false;

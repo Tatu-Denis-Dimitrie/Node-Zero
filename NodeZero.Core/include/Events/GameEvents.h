@@ -54,34 +54,34 @@ class NodeDamagedEvent : public GameEvent {
 
 class NodeDestroyedEvent : public GameEvent {
    public:
-    NodeDestroyedEvent(float timestamp, NodeShape shape, Position position, int scoreGained)
-        : GameEvent(timestamp), m_shape(shape), m_position(position), m_scoreGained(scoreGained) {}
+    NodeDestroyedEvent(float timestamp, NodeShape shape, Position position, int pointsGained)
+        : GameEvent(timestamp), m_shape(shape), m_position(position), m_pointsGained(pointsGained) {}
 
     std::string GetType() const override { return "NodeDestroyed"; }
 
     NodeShape GetShape() const { return m_shape; }
     Position GetPosition() const { return m_position; }
-    int GetScoreGained() const { return m_scoreGained; }
+    int GetPointsGained() const { return m_pointsGained; }
 
    private:
     NodeShape m_shape;
     Position m_position;
-    int m_scoreGained;
+    int m_pointsGained;
 };
 
-class ScoreChangedEvent : public GameEvent {
+class PointsChangedEvent : public GameEvent {
    public:
-    ScoreChangedEvent(float timestamp, int newScore, int delta, float multiplier)
-        : GameEvent(timestamp), m_newScore(newScore), m_delta(delta), m_multiplier(multiplier) {}
+    PointsChangedEvent(float timestamp, int newPoints, int delta, float multiplier)
+        : GameEvent(timestamp), m_newPoints(newPoints), m_delta(delta), m_multiplier(multiplier) {}
 
-    std::string GetType() const override { return "ScoreChanged"; }
+    std::string GetType() const override { return "PointsChanged"; }
 
-    int GetNewScore() const { return m_newScore; }
+    int GetNewPoints() const { return m_newPoints; }
     int GetDelta() const { return m_delta; }
     float GetMultiplier() const { return m_multiplier; }
 
    private:
-    int m_newScore;
+    int m_newPoints;
     int m_delta;
     float m_multiplier;
 };
@@ -118,15 +118,15 @@ class GameStateChangedEvent : public GameEvent {
 
 class GameOverEvent : public GameEvent {
    public:
-    GameOverEvent(float timestamp, int finalScore)
-        : GameEvent(timestamp), m_finalScore(finalScore) {}
+    GameOverEvent(float timestamp, int finalPoints)
+        : GameEvent(timestamp), m_finalPoints(finalPoints) {}
 
     std::string GetType() const override { return "GameOver"; }
 
-    int GetFinalScore() const { return m_finalScore; }
+    int GetFinalPoints() const { return m_finalPoints; }
 
    private:
-    int m_finalScore;
+    int m_finalPoints;
 };
 
 class BossSpawnedEvent : public GameEvent {
@@ -146,17 +146,17 @@ class BossSpawnedEvent : public GameEvent {
 
 class BossDefeatedEvent : public GameEvent {
    public:
-    BossDefeatedEvent(float timestamp, int level, int scoreGained)
-        : GameEvent(timestamp), m_level(level), m_scoreGained(scoreGained) {}
+    BossDefeatedEvent(float timestamp, int level, int pointsGained)
+        : GameEvent(timestamp), m_level(level), m_pointsGained(pointsGained) {}
 
     std::string GetType() const override { return "BossDefeated"; }
 
     int GetLevel() const { return m_level; }
-    int GetScoreGained() const { return m_scoreGained; }
+    int GetPointsGained() const { return m_pointsGained; }
 
    private:
     int m_level;
-    int m_scoreGained;
+    int m_pointsGained;
 };
 
 class LevelCompletedEvent : public GameEvent {

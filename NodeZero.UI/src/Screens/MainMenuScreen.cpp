@@ -5,7 +5,7 @@
 #include "Config/GameConfig.h"
 
 MainMenuScreen::MainMenuScreen(std::function<void(GameScreen)> stateChangeCallback, Font font)
-    : m_StateChangeCallback(stateChangeCallback) {
+    : m_StateChangeCallback(stateChangeCallback), m_Font(font) {
     m_Menu = std::make_unique<Menu>();
 
     const int screenWidth = static_cast<int>(GameConfig::DEFAULT_SCREEN_WIDTH);
@@ -52,4 +52,8 @@ void MainMenuScreen::Update(float deltaTime) {
 
 void MainMenuScreen::Draw() {
     m_Menu->Draw();
+
+    const char* watermarkText = "Made by TeamTBD";
+    int fontSize = 18;
+    DrawTextEx(m_Font, watermarkText, Vector2{15.0f, static_cast<float>(GetScreenHeight() - 30)}, static_cast<float>(fontSize), 1, Color{150, 150, 150, 200});
 }
