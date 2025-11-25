@@ -89,7 +89,7 @@ NodeZero.UI/      → Raylib rendering + input handling
 NodeZero.Tests/   → Google Test suite
 ```
 
-Core exposes interfaces (`IGame`, `INode`, `ILevel`) consumed by UI. Event system uses Observer pattern for decoupled communication.
+Core exposes interfaces (`IGame`, `INode`) consumed by UI. Event system uses Observer pattern for decoupled communication.
 
 ## Project Structure
 
@@ -101,9 +101,9 @@ NodeZero.Core/
 │   ├── Events/                      # Observer pattern implementation
 │   ├── Systems/                     # CollisionSystem, PointsSystem
 │   ├── Types/                       # Data structures (Position, SaveData, PointPickup)
-│   └── IGame.h, INode.h, ILevel.h   # Core interfaces
+│   └── IGame.h, INode.h   # Core interfaces
 └── src/
-    └── Game.cpp, Node.cpp, Level.cpp, Systems/
+    └── Game.cpp, Node.cpp, Systems/
 
 NodeZero.UI/
 ├── include/Screens/                 # Screen states (Gameplay, MainMenu, Pause, etc.)

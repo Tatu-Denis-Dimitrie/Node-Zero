@@ -7,7 +7,6 @@
 #include "Types/SaveData.h"
 
 class INode;
-class ILevel;
 
 class IGame : public ISubject {
    public:
