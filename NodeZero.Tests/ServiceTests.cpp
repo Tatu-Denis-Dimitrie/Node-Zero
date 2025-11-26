@@ -6,9 +6,6 @@
 #include "../NodeZero.Core/include/Config/GameConfig.h"
 #include "../NodeZero.Core/include/Types/SaveData.h"
 
-// ============================================================================
-// HealthService Tests
-// ============================================================================
 class HealthServiceTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -61,9 +58,6 @@ TEST_F(HealthServiceTest, RestoreToMaxWorks) {
     EXPECT_FLOAT_EQ(healthService->GetCurrent(), 100.0f);
 }
 
-// ============================================================================
-// UpgradeService Tests
-// ============================================================================
 class MockSaveService : public ISaveService {
 private:
     SaveData m_Data;
@@ -146,9 +140,6 @@ TEST_F(UpgradeServiceTest, DamageZoneSizeCannotExceedMaximum) {
     EXPECT_FALSE(upgradeService->BuyDamageZoneUpgrade());
 }
 
-// ============================================================================
-// SaveService Tests
-// ============================================================================
 class SaveServiceTest : public ::testing::Test {
 protected:
     void SetUp() override {

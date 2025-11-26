@@ -105,7 +105,6 @@ void GameplayScreen::ClearEffects() {
 }
 
 void GameplayScreen::DrawReflections(const std::vector<INode*>& nodes, Vector2 mousePos, float damageZoneSize, float reflectionOffset) {
-    // Draw node reflections
     for (const INode* node : nodes) {
         if (node->GetState() == NodeState::Active) {
             float x = node->GetPosition().x + reflectionOffset;

@@ -18,9 +18,6 @@ public:
     int GetEventCount() const { return m_EventCount; }
 };
 
-// ============================================================================
-// Game Initialization and Basic Functionality Tests
-// ============================================================================
 class GameTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -106,9 +103,6 @@ TEST_F(GameTest, SaveProgressWorks) {
     EXPECT_NO_THROW(game->SaveProgress());
 }
 
-// ============================================================================
-// Service Integration Tests
-// ============================================================================
 TEST_F(GameTest, AllServicesAreAccessible) {
     EXPECT_NO_THROW(game->GetHealthService());
     EXPECT_NO_THROW(game->GetLevelService());
@@ -137,9 +131,6 @@ TEST_F(GameTest, SaveServiceIntegration) {
     EXPECT_GE(saveService.GetHighPoints(), 0);
 }
 
-// ============================================================================
-// Observer Pattern Tests
-// ============================================================================
 TEST_F(GameTest, ObserverPatternWorks) {
     auto observer = std::make_shared<MockObserver>();
 
@@ -155,9 +146,6 @@ TEST_F(GameTest, ObserverPatternWorks) {
     game->Detach(observer);
 }
 
-// ============================================================================
-// Complete Game Cycle Tests
-// ============================================================================
 TEST_F(GameTest, CompleteGameCycleWorks) {
     int initialLevel = game->GetLevelService().GetCurrentLevel();
 
@@ -189,9 +177,6 @@ TEST_F(GameTest, MultiLevelProgression) {
     EXPECT_EQ(game->GetLevelService().GetCurrentLevel(), startLevel + 2);
 }
 
-// ============================================================================
-// Stress Tests
-// ============================================================================
 TEST_F(GameTest, ManyNodesDoNotCrash) {
     for (int i = 0; i < 50; ++i) {
         game->SpawnNode(400.0f + i * 10, 300.0f);
