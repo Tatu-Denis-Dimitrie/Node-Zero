@@ -8,9 +8,6 @@
 #include "../NodeZero.Core/include/Config/GameConfig.h"
 #include "../NodeZero.Core/include/Enums/NodeShape.h"
 
-// ============================================================================
-// LevelService Tests
-// ============================================================================
 class LevelServiceTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -86,9 +83,6 @@ TEST_F(LevelServiceTest, TimerDoesNotAdvanceWhenBossIsActive) {
     EXPECT_FLOAT_EQ(progress1, progress2);
 }
 
-// ============================================================================
-// SpawnService Tests
-// ============================================================================
 class SpawnServiceTest : public ::testing::Test {
 protected:
     void SetUp() override {

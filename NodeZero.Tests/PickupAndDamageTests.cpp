@@ -11,9 +11,6 @@
 #include "../NodeZero.Core/include/Types/PointPickup.h"
 #include "../NodeZero.Core/include/Types/Position.h"
 
-// ============================================================================
-// PickupService Tests
-// ============================================================================
 class PickupServiceTest : public ::testing::Test {
 protected:
     void SetUp() override {
@@ -122,10 +119,6 @@ TEST_F(PickupServiceTest, ProcessCollectionWorks) {
 
     EXPECT_GT(collected.size(), 0);
 }
-
-// ============================================================================
-// DamageZoneService Tests with Node
-// ============================================================================
 
 class DamageZoneServiceTest : public ::testing::Test {
 protected:
