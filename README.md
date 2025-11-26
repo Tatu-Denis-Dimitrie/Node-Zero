@@ -17,10 +17,14 @@ Inspired by [Nodebuster](https://store.steampowered.com/app/268070/Nodebuster/) 
 cmake -B build -G "Visual Studio 17 2022"
 cmake --build build --config Debug
 
-# Run
+# Run (Windows)
+build\bin\Debug\NodeZero.UI.exe
+# Or with forward slashes (works in Git Bash)
 ./build/bin/Debug/NodeZero.UI.exe
 
-# Test
+# Test (Windows)
+build\bin\Debug\NodeZero.Tests.exe
+# Or with forward slashes (works in Git Bash)
 ./build/bin/Debug/NodeZero.Tests.exe
 ```
 
@@ -97,33 +101,44 @@ Core exposes interfaces (`IGame`, `INode`) consumed by UI. Event system uses Obs
 NodeZero.Core/
 ├── include/
 │   ├── Config/GameConfig.h          # Tuning constants
-│   ├── Enums/                       # NodeShape, NodeState, GameScreen
-│   ├── Events/                      # Observer pattern implementation
-│   ├── Systems/                     # CollisionSystem, PointsSystem
+│   ├── Enums/                       # NodeShape, NodeState, GameScreen, EventType
+│   ├── Events/                      # Observer pattern (IEvent, IObserver, Subject)
+│   ├── Services/                    # Service interfaces (Health, Upgrade, Level, etc.)
 │   ├── Types/                       # Data structures (Position, SaveData, PointPickup)
-│   └── IGame.h, INode.h   # Core interfaces
+│   └── IGame.h, INode.h             # Core interfaces
 └── src/
-    └── Game.cpp, Node.cpp, Systems/
+    ├── Game.cpp, Node.cpp
+    ├── Events/Subject.cpp           # Event system implementation
+    └── Services/                    # Service implementations
 
 NodeZero.UI/
-├── include/Screens/                 # Screen states (Gameplay, MainMenu, Pause, etc.)
-├── include/Widgets/                 # UI components (Button, Label, Menu)
+├── include/
+│   ├── Screens/                     # Screen states (Gameplay, MainMenu, Pause, etc.)
+│   ├── Widgets/                     # UI components (Button, Label, Menu)
+│   └── GameApp.h, Renderer.h, InputHandler.h
 └── src/ + main.cpp
 
 NodeZero.Tests/
-└── GameTests.cpp, PositionTests.cpp
+├── EnemyTests.cpp                   # Enemy/Node behavior (16 tests)
+├── ServiceTests.cpp                 # Health, Upgrade, Save services (15 tests)
+├── LevelAndSpawnTests.cpp           # Level progression & spawning (14 tests)
+├── PickupAndDamageTests.cpp         # Pickup collection & damage zones (16 tests)
+├── GameTests.cpp                    # Game integration & stress tests (20 tests)
+└── PlayerTests.cpp, PositionTests.cpp   # Placeholder tests (2 tests)
 ```
 
 **Dependencies:** CMake auto-fetches Raylib 5.5 and Google Test 1.14.0
+
+**Test Coverage:** 83 tests covering core game logic, services, and integration scenarios
 
 ## Development
 
 ### Rules
 
 -   **Core isolation:** Never include Raylib or rendering code in `NodeZero.Core`
--   **Interface-driven:** UI depends on abstractions (`IGame`), not implementations (`Game`)
--   **Stateless systems:** Pass data as parameters, no global state
--   **Test coverage:** Add tests for new core logic
+-   **Interface-driven:** UI depends on abstractions (`IGame`, `INode`), not implementations
+-   **Service-based:** Services are stateless where possible, data passed as parameters
+-   **Test coverage:** Add tests for new core logic and services
 
 ### Code Conventions
 
@@ -145,7 +160,7 @@ static constexpr float NODE_SPAWN_INTERVAL = 2.0f;
 Game balance tuning in [GameConfig.h](NodeZero.Core/include/Config/GameConfig.h):
 
 ```cpp
-static constexpr float NODE_DEFAULT_SPEED = 100.0f;
+static constexpr float NODE_DEFAULT_SPEED = 75.0f;
 static constexpr int POINTS_MULTIPLIER_MAX = 5;
 static constexpr int HEALTH_UPGRADE_COST = 50;
 static constexpr float DAMAGE_ZONE_UPGRADE_AMOUNT = 10.0f;
@@ -154,11 +169,16 @@ static constexpr float DAMAGE_ZONE_UPGRADE_AMOUNT = 10.0f;
 ## Testing
 
 ```bash
-# Run all tests
+# Run all tests (Windows)
+build\bin\Debug\NodeZero.Tests.exe
+# Or with forward slashes (works in Git Bash)
 ./build/bin/Debug/NodeZero.Tests.exe
 
 # Filter tests
-./build/bin/Debug/NodeZero.Tests.exe --gtest_filter=GameTest.*
+build\bin\Debug\NodeZero.Tests.exe --gtest_filter=GameTest.*
+
+# List all tests
+build\bin\Debug\NodeZero.Tests.exe --gtest_list_tests
 
 # CTest integration
 ctest --test-dir build -C Debug --output-on-failure
