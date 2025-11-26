@@ -7,8 +7,6 @@
 
 #include "Config/GameConfig.h"
 #include "Events/GameEvents.h"
-#include "Node.h"
-
 
 Game::Game()
     : m_ScreenWidth(0.0f),

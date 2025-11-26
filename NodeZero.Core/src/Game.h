@@ -5,7 +5,7 @@
 
 #include "Events/Subject.h"
 #include "IGame.h"
-#include "INode.h"
+#include "Node.h"
 #include "Services/DamageZoneService.h"
 #include "Services/HealthService.h"
 #include "Services/LevelService.h"
