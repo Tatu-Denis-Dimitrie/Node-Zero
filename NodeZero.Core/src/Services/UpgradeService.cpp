@@ -130,13 +130,3 @@ int UpgradeService::GetDamageUpgradeCost() const {
 float UpgradeService::GetDamagePerTick() const {
     return m_DamagePerTick;
 }
-
-void UpgradeService::LoadFromSave() {
-    if (!m_SaveService) return;
-
-    SaveData saveData = m_SaveService->GetCurrentData();
-    m_MaxHealth = saveData.maxHealth;
-    m_RegenRate = saveData.regenRate;
-    m_DamageZoneSize = saveData.damageZoneSize;
-    m_DamagePerTick = saveData.damagePerTick;
-}

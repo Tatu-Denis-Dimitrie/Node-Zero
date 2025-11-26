@@ -7,7 +7,6 @@ class ISpawnService {
     virtual ~ISpawnService() = default;
 
     virtual void UpdateAutoSpawn(float deltaTime) = 0;
-    virtual void ResetAutoSpawnTimer() = 0;
 
     virtual NodeShape GetRandomShape() const = 0;
     virtual float CalculateNodeHP(float baseHP) const = 0;

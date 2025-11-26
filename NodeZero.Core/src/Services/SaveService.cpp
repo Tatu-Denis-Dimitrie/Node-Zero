@@ -133,35 +133,6 @@ void SaveService::SaveProgress(const SaveData& data) {
     SaveProgressToFile(data);
 }
 
-void SaveService::UpdatePoints(int points) {
-    m_CurrentData.points = points;
-    SaveProgressToFile(m_CurrentData);
-}
-
-void SaveService::UpdateHighPoints(int highPoints) {
-    m_CurrentData.highPoints = highPoints;
-    SaveProgressToFile(m_CurrentData);
-}
-
-void SaveService::UpdateGamesPlayed(int gamesPlayed) {
-    m_CurrentData.gamesPlayed = gamesPlayed;
-    SaveProgressToFile(m_CurrentData);
-}
-
-void SaveService::UpdateTotalNodesDestroyed(int totalNodesDestroyed) {
-    m_CurrentData.totalNodesDestroyed = totalNodesDestroyed;
-    SaveProgressToFile(m_CurrentData);
-}
-
-void SaveService::UpdateStats(float maxHealth, float regenRate, float damageZoneSize, float damagePerTick, int currentLevel) {
-    m_CurrentData.maxHealth = maxHealth;
-    m_CurrentData.regenRate = regenRate;
-    m_CurrentData.damageZoneSize = damageZoneSize;
-    m_CurrentData.damagePerTick = damagePerTick;
-    m_CurrentData.currentLevel = currentLevel;
-    SaveProgressToFile(m_CurrentData);
-}
-
 int SaveService::GetPoints() const {
     return m_CurrentData.points;
 }

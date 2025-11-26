@@ -72,17 +72,6 @@ public:
 
     SaveData LoadProgress() override { return m_Data; }
     void SaveProgress(const SaveData& data) override { m_Data = data; }
-    void UpdatePoints(int points) override { m_Data.points = points; }
-    void UpdateHighPoints(int highPoints) override { m_Data.highPoints = highPoints; }
-    void UpdateGamesPlayed(int gamesPlayed) override { m_Data.gamesPlayed = gamesPlayed; }
-    void UpdateTotalNodesDestroyed(int totalNodesDestroyed) override { m_Data.totalNodesDestroyed = totalNodesDestroyed; }
-    void UpdateStats(float maxHealth, float regenRate, float damageZoneSize, float damagePerTick, int currentLevel) override {
-        m_Data.maxHealth = maxHealth;
-        m_Data.regenRate = regenRate;
-        m_Data.damageZoneSize = damageZoneSize;
-        m_Data.damagePerTick = damagePerTick;
-        m_Data.currentLevel = currentLevel;
-    }
     int GetPoints() const override { return m_Data.points; }
     int GetHighPoints() const override { return m_Data.highPoints; }
     SaveData GetCurrentData() const override { return m_Data; }
@@ -154,6 +143,8 @@ TEST_F(SaveServiceTest, SaveAndLoadData) {
     data.highPoints = 800;
     data.gamesPlayed = 15;
     data.currentLevel = 7;
+    data.maxHealth = 75.0f;
+    data.regenRate = 5.0f;
 
     saveService->SaveProgress(data);
     SaveData loadedData = saveService->GetCurrentData();
@@ -162,23 +153,6 @@ TEST_F(SaveServiceTest, SaveAndLoadData) {
     EXPECT_EQ(loadedData.highPoints, 800);
     EXPECT_EQ(loadedData.gamesPlayed, 15);
     EXPECT_EQ(loadedData.currentLevel, 7);
-}
-
-TEST_F(SaveServiceTest, UpdatePointsWorks) {
-    saveService->UpdatePoints(500);
-    EXPECT_EQ(saveService->GetPoints(), 500);
-}
-
-TEST_F(SaveServiceTest, UpdateHighPointsWorks) {
-    saveService->UpdateHighPoints(1000);
-    EXPECT_EQ(saveService->GetHighPoints(), 1000);
-}
-
-TEST_F(SaveServiceTest, UpdateStatsWorks) {
-    saveService->UpdateStats(75.0f, 5.0f, 150.0f, 80.0f, 10);
-
-    SaveData data = saveService->GetCurrentData();
-    EXPECT_FLOAT_EQ(data.maxHealth, 75.0f);
-    EXPECT_FLOAT_EQ(data.regenRate, 5.0f);
-    EXPECT_EQ(data.currentLevel, 10);
+    EXPECT_FLOAT_EQ(loadedData.maxHealth, 75.0f);
+    EXPECT_FLOAT_EQ(loadedData.regenRate, 5.0f);
 }

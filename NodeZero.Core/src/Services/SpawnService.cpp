@@ -112,9 +112,6 @@ void SpawnService::SpawnRandomNode() {
         m_OnNodeSpawned(spawnX, spawnY, shape, dirX, dirY);
     }
 }
-void SpawnService::ResetAutoSpawnTimer() {
-    m_SpawnTimer = 0.0f;
-}
 
 bool SpawnService::ShouldAutoSpawn() const {
     float currentSpawnInterval = std::max(0.5f, 2.0f - (m_CurrentLevel - 1) * 0.15f);

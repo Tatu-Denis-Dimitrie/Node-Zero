@@ -141,19 +141,15 @@ void GameApp::Update() {
 }
 
 void GameApp::Draw() {
-    // Draw EVERYTHING to the render target first (so CRT shader applies to all)
     BeginTextureMode(m_RenderTarget);
     ClearBackground(Color{40, 40, 40, 255});
 
-    // Always draw gameplay if playing or paused (so pause menu has game background)
     if (m_CurrentState == GameScreen::Playing || m_CurrentState == GameScreen::Paused || m_CurrentState == GameScreen::LevelCompleted || m_CurrentState == GameScreen::GameOver) {
         m_GameplayScreen->Draw();
     }
 
-    // Draw all UI elements inside the render target (before shader)
     switch (m_CurrentState) {
         case GameScreen::Playing:
-            // HUD is now drawn inside GameplayScreen::Draw() to be affected by camera shake
             break;
         case GameScreen::Paused:
             m_PauseScreen->Draw();
@@ -176,7 +172,6 @@ void GameApp::Draw() {
 
     EndTextureMode();
 
-    // Now draw the render target with CRT shader applied
     BeginDrawing();
     ClearBackground(BLACK);
 

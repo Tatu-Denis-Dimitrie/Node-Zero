@@ -34,6 +34,4 @@ class UpgradeService : public IUpgradeService {
     bool BuyDamageUpgrade() override;
     int GetDamageUpgradeCost() const override;
     float GetDamagePerTick() const override;
-
-    void LoadFromSave() override;
 };

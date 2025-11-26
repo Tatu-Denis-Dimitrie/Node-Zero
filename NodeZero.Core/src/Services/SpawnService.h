@@ -23,7 +23,6 @@ class SpawnService : public ISpawnService {
 
     void Initialize(float screenWidth, float screenHeight);
     void UpdateAutoSpawn(float deltaTime) override;
-    void ResetAutoSpawnTimer() override;
     void Reset();
 
     void SetCurrentLevel(int level);

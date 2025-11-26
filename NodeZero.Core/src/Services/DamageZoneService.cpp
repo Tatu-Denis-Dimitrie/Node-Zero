@@ -82,9 +82,6 @@ void DamageZoneService::ProcessDamageZone(
 void DamageZoneService::ProcessDamageZone(float mouseX, float mouseY, float damageZoneSize,
                                          float damagePerTick,
                                          std::function<void(int nodeIndex, float damage)> onDamageNode) {
-    // Simplified interface implementation - actual logic is in the other overload
-    // This is here to satisfy the interface but isn't actively used
     if (onDamageNode) {
-        // Placeholder - real implementation uses the other overload with full node access
     }
 }

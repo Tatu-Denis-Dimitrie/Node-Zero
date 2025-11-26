@@ -18,6 +18,4 @@ class IUpgradeService {
     virtual int GetRegenUpgradeCost() const = 0;
     virtual int GetDamageZoneUpgradeCost() const = 0;
     virtual int GetDamageUpgradeCost() const = 0;
-
-    virtual void LoadFromSave() = 0;
 };
