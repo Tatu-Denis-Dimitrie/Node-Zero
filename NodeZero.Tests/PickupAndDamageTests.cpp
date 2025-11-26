@@ -5,7 +5,7 @@
 
 #include "../NodeZero.Core/src/Services/PickupService.h"
 #include "../NodeZero.Core/src/Services/DamageZoneService.h"
-#include "../NodeZero.Core/include/INode.h"
+#include "../NodeZero.Core/src/Node.h"
 #include "../NodeZero.Core/include/Config/GameConfig.h"
 #include "../NodeZero.Core/include/Enums/NodeShape.h"
 #include "../NodeZero.Core/include/Enums/NodeState.h"
@@ -125,50 +125,8 @@ TEST_F(PickupServiceTest, ProcessCollectionWorks) {
 }
 
 // ============================================================================
-// DamageZoneService Tests with Mock Node
+// DamageZoneService Tests with Node
 // ============================================================================
-class MockNode : public INode {
-private:
-    Position m_Position;
-    NodeShape m_Shape;
-    NodeState m_State;
-    float m_Size;
-    float m_HP;
-    float m_MaxHP;
-
-public:
-    MockNode(float x, float y, NodeShape shape, float size, float hp)
-        : m_Position{x, y}, m_Shape(shape), m_State(NodeState::Active), m_Size(size), m_HP(hp), m_MaxHP(hp) {}
-
-    Position& GetPosition() override { return m_Position; }
-    const Position& GetPosition() const override { return m_Position; }
-    NodeShape GetShape() const override { return m_Shape; }
-    NodeState GetState() const override { return m_State; }
-    float GetSize() const override { return m_Size; }
-    float GetSpeed() const override { return 0.0f; }
-    float GetRotation() const override { return 0.0f; }
-    float GetHP() const override { return m_HP; }
-    float GetMaxHP() const override { return m_MaxHP; }
-
-    void TakeDamage(float damage) override {
-        m_HP -= damage;
-        if (m_HP < 0.0f) {
-            m_HP = 0.0f;
-            m_State = NodeState::Dead;
-        }
-    }
-
-    void Spawn(float x, float y) override {
-        m_Position.x = x;
-        m_Position.y = y;
-        m_State = NodeState::Active;
-    }
-
-    void SetDirection(float dirX, float dirY) override {}
-    void Kill() override { m_State = NodeState::Dead; }
-    void Update(float deltaTime) override {}
-    void SetState(NodeState state) { m_State = state; }
-};
 
 class DamageZoneServiceTest : public ::testing::Test {
 protected:
@@ -191,11 +149,13 @@ TEST_F(DamageZoneServiceTest, TimerWorks) {
 }
 
 TEST_F(DamageZoneServiceTest, NodeInZoneTakesDamage) {
-    auto node = std::make_unique<MockNode>(400.0f, 300.0f, NodeShape::Circle, 30.0f, 100.0f);
-    std::vector<INode*> nodes = {node.get()};
+    auto node = std::make_unique<Node>(NodeShape::Circle, 30.0f, 0.0f);
+    node->SetHP(100.0f);
+    node->Spawn(400.0f, 300.0f);
+    std::vector<Node*> nodes = {node.get()};
 
     float healthCost = 0.0f;
-    auto onDamaged = [&](INode* n, float cost) {
+    auto onDamaged = [&](Node* n, float cost) {
         healthCost = cost;
     };
 
@@ -206,61 +166,75 @@ TEST_F(DamageZoneServiceTest, NodeInZoneTakesDamage) {
 }
 
 TEST_F(DamageZoneServiceTest, NodeOutsideZoneTakesNoDamage) {
-    auto node = std::make_unique<MockNode>(400.0f, 300.0f, NodeShape::Circle, 30.0f, 100.0f);
-    std::vector<INode*> nodes = {node.get()};
+    auto node = std::make_unique<Node>(NodeShape::Circle, 30.0f, 0.0f);
+    node->SetHP(100.0f);
+    node->Spawn(400.0f, 300.0f);
+    std::vector<Node*> nodes = {node.get()};
 
-    damageZoneService->ProcessDamageZone(1000.0f, 1000.0f, 50.0f, 50.0f, 1, nodes, [](INode*, float){});
+    damageZoneService->ProcessDamageZone(1000.0f, 1000.0f, 50.0f, 50.0f, 1, nodes, [](Node*, float){});
 
     EXPECT_FLOAT_EQ(node->GetHP(), 100.0f);
 }
 
 TEST_F(DamageZoneServiceTest, InactiveNodeTakesNoDamage) {
-    auto node = std::make_unique<MockNode>(400.0f, 300.0f, NodeShape::Circle, 30.0f, 100.0f);
-    node->SetState(NodeState::Dead);
+    auto node = std::make_unique<Node>(NodeShape::Circle, 30.0f, 0.0f);
+    node->SetHP(100.0f);
+    node->Spawn(400.0f, 300.0f);
+    node->Kill();
 
-    std::vector<INode*> nodes = {node.get()};
+    std::vector<Node*> nodes = {node.get()};
 
-    damageZoneService->ProcessDamageZone(400.0f, 300.0f, 100.0f, 50.0f, 1, nodes, [](INode*, float){});
+    damageZoneService->ProcessDamageZone(400.0f, 300.0f, 100.0f, 50.0f, 1, nodes, [](Node*, float){});
 
     EXPECT_FLOAT_EQ(node->GetHP(), 100.0f);
 }
 
 TEST_F(DamageZoneServiceTest, HealthCostScalesWithLevel) {
-    auto node = std::make_unique<MockNode>(400.0f, 300.0f, NodeShape::Circle, 30.0f, 100.0f);
-    std::vector<INode*> nodes = {node.get()};
+    auto node = std::make_unique<Node>(NodeShape::Circle, 30.0f, 0.0f);
+    node->SetHP(100.0f);
+    node->Spawn(400.0f, 300.0f);
+    std::vector<Node*> nodes = {node.get()};
 
     float healthCostLevel1 = 0.0f;
     damageZoneService->ProcessDamageZone(400.0f, 300.0f, 100.0f, 50.0f, 1, nodes,
-        [&](INode*, float cost) { healthCostLevel1 = cost; });
+        [&](Node*, float cost) { healthCostLevel1 = cost; });
 
     node->Spawn(400.0f, 300.0f);
 
     float healthCostLevel5 = 0.0f;
     damageZoneService->ProcessDamageZone(400.0f, 300.0f, 100.0f, 50.0f, 5, nodes,
-        [&](INode*, float cost) { healthCostLevel5 = cost; });
+        [&](Node*, float cost) { healthCostLevel5 = cost; });
 
     EXPECT_GT(healthCostLevel5, healthCostLevel1);
 }
 
 TEST_F(DamageZoneServiceTest, BossNodeCostsMoreHealth) {
-    auto bossNode = std::make_unique<MockNode>(400.0f, 300.0f, NodeShape::Boss, 30.0f, 200.0f);
-    std::vector<INode*> nodes = {bossNode.get()};
+    auto bossNode = std::make_unique<Node>(NodeShape::Boss, 30.0f, 0.0f);
+    bossNode->SetHP(200.0f);
+    bossNode->Spawn(400.0f, 300.0f);
+    std::vector<Node*> nodes = {bossNode.get()};
 
     float healthCost = 0.0f;
     damageZoneService->ProcessDamageZone(400.0f, 300.0f, 100.0f, 50.0f, 1, nodes,
-        [&](INode*, float cost) { healthCost = cost; });
+        [&](Node*, float cost) { healthCost = cost; });
 
     EXPECT_GT(healthCost, 1.0f);
 }
 
 TEST_F(DamageZoneServiceTest, MultipleNodesCanTakeDamage) {
-    auto node1 = std::make_unique<MockNode>(400.0f, 300.0f, NodeShape::Circle, 30.0f, 100.0f);
-    auto node2 = std::make_unique<MockNode>(450.0f, 300.0f, NodeShape::Square, 30.0f, 100.0f);
-    std::vector<INode*> nodes = {node1.get(), node2.get()};
+    auto node1 = std::make_unique<Node>(NodeShape::Circle, 30.0f, 0.0f);
+    node1->SetHP(100.0f);
+    node1->Spawn(400.0f, 300.0f);
+
+    auto node2 = std::make_unique<Node>(NodeShape::Square, 30.0f, 0.0f);
+    node2->SetHP(100.0f);
+    node2->Spawn(450.0f, 300.0f);
+
+    std::vector<Node*> nodes = {node1.get(), node2.get()};
 
     int damageCount = 0;
     damageZoneService->ProcessDamageZone(425.0f, 300.0f, 100.0f, 50.0f, 1, nodes,
-        [&](INode*, float) { damageCount++; });
+        [&](Node*, float) { damageCount++; });
 
     EXPECT_EQ(damageCount, 2);
     EXPECT_LT(node1->GetHP(), 100.0f);
