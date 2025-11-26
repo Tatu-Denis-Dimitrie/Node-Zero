@@ -121,7 +121,6 @@ TEST_F(PickupServiceTest, ProcessCollectionWorks) {
     EXPECT_GT(collected.size(), 0);
 }
 
-
 class DamageZoneServiceTest : public ::testing::Test {
 protected:
     void SetUp() override {
