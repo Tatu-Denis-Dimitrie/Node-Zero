@@ -42,6 +42,9 @@ class GameplayScreen : public IObserver, public std::enable_shared_from_this<Gam
     std::vector<DamageParticle> m_DamageParticles;
     Font m_Font;
 
+    static constexpr size_t MAX_PARTICLES = 500;
+    static constexpr size_t MAX_PICKUP_EFFECTS = 100;
+
     float m_ShakeIntensity;
     float m_ShakeDuration;
     float m_ShakeTimer;

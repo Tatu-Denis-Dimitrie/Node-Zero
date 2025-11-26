@@ -18,6 +18,8 @@
 
 GameplayScreen::GameplayScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
     : m_Game(game), m_StateChangeCallback(stateChangeCallback), m_Font(font), m_ShakeIntensity(0.0f), m_ShakeDuration(0.0f), m_ShakeTimer(0.0f), m_ShakeOffset{0.0f, 0.0f} {
+    m_DamageParticles.reserve(MAX_PARTICLES);
+    m_PickupEffects.reserve(MAX_PICKUP_EFFECTS);
 }
 
 void GameplayScreen::Update(const std::shared_ptr<IEvent>& event) {
@@ -54,8 +56,14 @@ void GameplayScreen::UpdateShake(float deltaTime) {
 }
 
 void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int count) {
+    if (m_DamageParticles.size() >= MAX_PARTICLES) {
+        return;
+    }
+
     float screenScale = GetScreenHeight() / 800.0f;
-    for (int i = 0; i < count; ++i) {
+    int particlesToSpawn = std::min(count, static_cast<int>(MAX_PARTICLES - m_DamageParticles.size()));
+
+    for (int i = 0; i < particlesToSpawn; ++i) {
         DamageParticle particle;
         particle.position = position;
 
@@ -80,21 +88,29 @@ void GameplayScreen::SpawnDamageParticles(Vector2 position, Color baseColor, int
 }
 
 void GameplayScreen::UpdateParticles(float deltaTime) {
-    for (auto& particle : m_DamageParticles) {
+    size_t writeIndex = 0;
+    for (size_t readIndex = 0; readIndex < m_DamageParticles.size(); ++readIndex) {
+        auto& particle = m_DamageParticles[readIndex];
+
         particle.lifetime += deltaTime;
-        particle.position.x += particle.velocity.x * deltaTime;
-        particle.position.y += particle.velocity.y * deltaTime;
 
-        particle.velocity.y += 200.0f * deltaTime;
+        if (particle.lifetime < particle.maxLifetime) {
+            particle.position.x += particle.velocity.x * deltaTime;
+            particle.position.y += particle.velocity.y * deltaTime;
 
-        float lifeRatio = particle.lifetime / particle.maxLifetime;
-        particle.color.a = static_cast<unsigned char>((1.0f - lifeRatio) * 255.0f);
+            particle.velocity.y += 200.0f * deltaTime;
+
+            float lifeRatio = particle.lifetime / particle.maxLifetime;
+            particle.color.a = static_cast<unsigned char>((1.0f - lifeRatio) * 255.0f);
+
+            if (writeIndex != readIndex) {
+                m_DamageParticles[writeIndex] = particle;
+            }
+            ++writeIndex;
+        }
     }
 
-    m_DamageParticles.erase(
-        std::remove_if(m_DamageParticles.begin(), m_DamageParticles.end(),
-                       [](const DamageParticle& p) { return p.lifetime >= p.maxLifetime; }),
-        m_DamageParticles.end());
+    m_DamageParticles.resize(writeIndex);
 }
 
 void GameplayScreen::ClearEffects() {
@@ -208,6 +224,10 @@ void GameplayScreen::Update(float deltaTime) {
 
     std::vector<PointPickup> collectedPickups = m_Game.GetCollectedPickupsThisFrame();
     for (const PointPickup& pickup : collectedPickups) {
+        if (m_PickupEffects.size() >= MAX_PICKUP_EFFECTS) {
+            break;
+        }
+
         PickupCollectEffect effect{};
         effect.startPosition = Vector2{pickup.position.x, pickup.position.y};
         effect.elapsed = 0.0f;
@@ -216,14 +236,20 @@ void GameplayScreen::Update(float deltaTime) {
         m_PickupEffects.push_back(effect);
     }
 
-    for (auto& effect : m_PickupEffects) {
+    size_t writeIndex = 0;
+    for (size_t readIndex = 0; readIndex < m_PickupEffects.size(); ++readIndex) {
+        auto& effect = m_PickupEffects[readIndex];
         effect.elapsed += deltaTime;
+
+        if (effect.elapsed < effect.duration) {
+            if (writeIndex != readIndex) {
+                m_PickupEffects[writeIndex] = effect;
+            }
+            ++writeIndex;
+        }
     }
 
-    m_PickupEffects.erase(
-        std::remove_if(m_PickupEffects.begin(), m_PickupEffects.end(),
-                       [](const PickupCollectEffect& effect) { return effect.elapsed >= effect.duration; }),
-        m_PickupEffects.end());
+    m_PickupEffects.resize(writeIndex);
 
     if (m_Game.GetLevelService().IsLevelCompleted()) {
         m_StateChangeCallback(GameScreen::LevelCompleted);
