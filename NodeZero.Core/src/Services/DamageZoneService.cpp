@@ -5,6 +5,7 @@
 
 #include "Enums/NodeShape.h"
 #include "Enums/NodeState.h"
+#include "Node.h"
 
 DamageZoneService::DamageZoneService()
     : m_DamageTimer(0.0f),
@@ -29,15 +30,15 @@ void DamageZoneService::ProcessDamageZone(
     float zoneSize,
     float damage,
     int currentLevel,
-    const std::vector<INode*>& nodes,
-    std::function<void(INode*, float)> onNodeDamaged) {
+    const std::vector<Node*>& nodes,
+    std::function<void(Node*, float)> onNodeDamaged) {
 
     float damageRectX = centerX - zoneSize / 2.0f;
     float damageRectY = centerY - zoneSize / 2.0f;
     float damageRectRight = damageRectX + zoneSize;
     float damageRectBottom = damageRectY + zoneSize;
 
-    for (INode* node : nodes) {
+    for (Node* node : nodes) {
         if (node->GetState() != NodeState::Active)
             continue;
 

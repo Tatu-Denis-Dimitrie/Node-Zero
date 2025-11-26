@@ -4,7 +4,8 @@
 #include <vector>
 
 #include "Services/IDamageZoneService.h"
-#include "INode.h"
+
+class Node;
 
 class DamageZoneService : public IDamageZoneService {
    private:
@@ -29,6 +30,6 @@ class DamageZoneService : public IDamageZoneService {
         float zoneSize,
         float damage,
         int currentLevel,
-        const std::vector<INode*>& nodes,
-        std::function<void(INode*, float)> onNodeDamaged);
+        const std::vector<Node*>& nodes,
+        std::function<void(Node*, float)> onNodeDamaged);
 };

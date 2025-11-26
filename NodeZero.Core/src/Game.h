@@ -18,7 +18,7 @@
 class Game : public IGame {
    private:
     Subject m_Subject;
-    std::vector<INode*> m_Nodes;
+    std::vector<Node*> m_Nodes;
     float m_ScreenWidth;
     float m_ScreenHeight;
     float m_ElapsedTime;
@@ -26,7 +26,7 @@ class Game : public IGame {
     int m_NodesDestroyed;
     int m_HighPoints;
 
-    INode* m_Boss;
+    Node* m_Boss;
 
     float m_MouseX;
     float m_MouseY;
@@ -75,7 +75,7 @@ class Game : public IGame {
     void Notify(const std::shared_ptr<IEvent>& event) override;
 
    private:
-    INode* CreateNode(NodeShape shape, float size, float speed);
+    Node* CreateNode(NodeShape shape, float size, float speed);
     void SpawnBoss();
     void OnNodeSpawned(float x, float y, NodeShape shape, float dirX, float dirY);
 };

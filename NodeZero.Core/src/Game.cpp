@@ -29,7 +29,7 @@ Game::Game()
 }
 
 Game::~Game() {
-    for (INode* node : m_Nodes) {
+    for (Node* node : m_Nodes) {
         delete node;
     }
     m_Nodes.clear();
@@ -64,7 +64,7 @@ void Game::Update(float deltaTime) {
     if (shouldDealDamage) {
         m_DamageZoneService.ResetTimer();
 
-        auto onNodeDamaged = [this](INode* node, float healthCost) {
+        auto onNodeDamaged = [this](Node* node, float healthCost) {
             Position nodePos = node->GetPosition();
             auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::NodeDamaged);
             event->position = nodePos;
@@ -91,13 +91,13 @@ void Game::Update(float deltaTime) {
 
     m_LevelService.Update(deltaTime, m_LevelService.IsBossActive());
 
-    for (INode* node : m_Nodes) {
+    for (Node* node : m_Nodes) {
         node->Update(deltaTime);
     }
 
     m_Nodes.erase(
         std::remove_if(m_Nodes.begin(), m_Nodes.end(),
-                       [this](INode* node) {
+                       [this](Node* node) {
                            bool isBoss = node->GetShape() == NodeShape::Boss;
                            bool isOffScreen = node->GetPosition().x < -200.0f;
 
@@ -155,18 +155,17 @@ float Game::GetScreenHeight() const {
 }
 
 const std::vector<INode*>& Game::GetNodes() const {
-    return m_Nodes;
+    return reinterpret_cast<const std::vector<INode*>&>(m_Nodes);
 }
 
 void Game::SpawnNode(float x, float y) {
     NodeShape shape = m_SpawnService.GetRandomShape();
     float nodeSize = m_ScreenHeight * 0.0375f;
-    INode* node = CreateNode(shape, nodeSize, GameConfig::NODE_DEFAULT_SPEED);
+    Node* node = CreateNode(shape, nodeSize, GameConfig::NODE_DEFAULT_SPEED);
 
-    Node* concreteNode = static_cast<Node*>(node);
-    float baseHP = concreteNode->GetHP();
+    float baseHP = node->GetHP();
     float scaledHP = m_SpawnService.CalculateNodeHP(baseHP);
-    concreteNode->SetHP(scaledHP);
+    node->SetHP(scaledHP);
 
     node->Spawn(x, y);
     m_Nodes.push_back(node);
@@ -180,7 +179,7 @@ void Game::SpawnNode(float x, float y) {
 }
 
 void Game::Reset() {
-    for (INode* node : m_Nodes) {
+    for (Node* node : m_Nodes) {
         delete node;
     }
     m_Nodes.clear();
@@ -201,7 +200,7 @@ void Game::Reset() {
     m_Boss = nullptr;
 }
 
-INode* Game::CreateNode(NodeShape shape, float size, float speed) {
+Node* Game::CreateNode(NodeShape shape, float size, float speed) {
     return new Node(shape, size, speed);
 }
 
@@ -280,8 +279,7 @@ void Game::SpawnBoss() {
     float bossHP = GameConfig::BOSS_HP_BASE + (m_LevelService.GetCurrentLevel() - 1) * 100.0f;
     m_Boss = CreateNode(NodeShape::Boss, bossSize, GameConfig::BOSS_SPEED);
 
-    Node* bossNode = static_cast<Node*>(m_Boss);
-    bossNode->SetHP(bossHP);
+    m_Boss->SetHP(bossHP);
 
     float spawnX, spawnY;
     int edge = std::rand() % 4;
@@ -335,7 +333,7 @@ void Game::StartNextLevel() {
 
     SaveProgress();
 
-    for (INode* node : m_Nodes) {
+    for (Node* node : m_Nodes) {
         delete node;
     }
     m_Nodes.clear();
@@ -368,7 +366,7 @@ void Game::OnNodeSpawned(float x, float y, NodeShape shape, float dirX, float di
     SpawnNode(x, y);
 
     if (!m_Nodes.empty()) {
-        INode* lastNode = m_Nodes.back();
+        Node* lastNode = m_Nodes.back();
         lastNode->SetDirection(dirX, dirY);
     }
 }
