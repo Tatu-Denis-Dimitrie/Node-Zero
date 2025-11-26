@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Config/GameConfig.h"
-#include "Services/PickupService.h"
+#include "Services/IPickupService.h"
 #include "Widgets/Button.h"
 #include "Widgets/Label.h"
 

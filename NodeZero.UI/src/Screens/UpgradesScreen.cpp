@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-#include "Services/UpgradeService.h"
+#include "Services/IUpgradeService.h"
 #include "Services/ISaveService.h"
 
 UpgradesScreen::UpgradesScreen(IGame& game, std::function<void(GameScreen)> stateChangeCallback, Font font)
