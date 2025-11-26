@@ -4,7 +4,6 @@
 #include "Enums/EventType.h"
 #include "Enums/GameScreen.h"
 #include "Enums/NodeShape.h"
-#include "Enums/NodeState.h"
 #include "IEvent.h"
 #include "Types/Position.h"
 

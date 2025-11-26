@@ -8,7 +8,6 @@
 #include "../NodeZero.Core/src/Node.h"
 #include "../NodeZero.Core/include/Config/GameConfig.h"
 #include "../NodeZero.Core/include/Enums/NodeShape.h"
-#include "../NodeZero.Core/include/Enums/NodeState.h"
 #include "../NodeZero.Core/include/Types/PointPickup.h"
 #include "../NodeZero.Core/include/Types/Position.h"
 
