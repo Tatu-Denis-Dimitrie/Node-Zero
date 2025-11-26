@@ -108,6 +108,9 @@ void GameApp::Update() {
         if (m_PreviousState == GameScreen::GameOver || m_PreviousState == GameScreen::MainMenu) {
             m_GameplayScreen->ClearEffects();
         }
+        m_Game->GetHealthService().SetMaxHealth(m_Game->GetUpgradeService().GetMaxHealth());
+        m_Game->GetHealthService().SetRegenRate(m_Game->GetUpgradeService().GetRegenRate());
+        m_Game->GetHealthService().RestoreToMax();
     } else if (m_CurrentState != GameScreen::Playing && m_PreviousState == GameScreen::Playing) {
         ShowCursor();
     }

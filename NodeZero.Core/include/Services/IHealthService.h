@@ -8,6 +8,8 @@ class IHealthService {
     virtual void Update(float deltaTime) = 0;
     virtual void Reduce(float amount) = 0;
     virtual void RestoreToMax() = 0;
+    virtual void SetMaxHealth(float maxHealth) = 0;
+    virtual void SetRegenRate(float regenRate) = 0;
 
     virtual float GetCurrent() const = 0;
     virtual float GetMax() const = 0;
