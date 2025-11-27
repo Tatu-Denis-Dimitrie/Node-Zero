@@ -123,8 +123,7 @@ NodeZero.Tests/
 ├── ServiceTests.cpp                 # Health, Upgrade, Save services (15 tests)
 ├── LevelAndSpawnTests.cpp           # Level progression & spawning (14 tests)
 ├── PickupAndDamageTests.cpp         # Pickup collection & damage zones (16 tests)
-├── GameTests.cpp                    # Game integration & stress tests (20 tests)
-└── PlayerTests.cpp, PositionTests.cpp   # Placeholder tests (2 tests)
+└── GameTests.cpp                    # Game integration & stress tests (20 tests)
 ```
 
 **Dependencies:** CMake auto-fetches Raylib 5.5 and Google Test 1.14.0
