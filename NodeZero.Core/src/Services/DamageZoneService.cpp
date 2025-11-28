@@ -79,9 +79,3 @@ void DamageZoneService::ProcessDamageZone(
         }
     }
 }
-void DamageZoneService::ProcessDamageZone(float mouseX, float mouseY, float damageZoneSize,
-                                         float damagePerTick,
-                                         std::function<void(int nodeIndex, float damage)> onDamageNode) {
-    if (onDamageNode) {
-    }
-}

@@ -20,10 +20,6 @@ class DamageZoneService : public IDamageZoneService {
     void ResetTimer() override;
     bool ShouldDealDamage() const override;
 
-    void ProcessDamageZone(float mouseX, float mouseY, float damageZoneSize,
-                          float damagePerTick,
-                          std::function<void(int nodeIndex, float damage)> onDamageNode) override;
-
     void ProcessDamageZone(
         float centerX,
         float centerY,
@@ -31,5 +27,5 @@ class DamageZoneService : public IDamageZoneService {
         float damage,
         int currentLevel,
         const std::vector<Node*>& nodes,
-        std::function<void(Node*, float)> onNodeDamaged);
+        std::function<void(Node*, float)> onNodeDamaged) override;
 };
