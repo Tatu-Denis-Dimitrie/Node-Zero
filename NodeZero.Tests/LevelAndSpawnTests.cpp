@@ -7,6 +7,7 @@
 #include "../NodeZero.Core/src/Services/SpawnService.h"
 #include "../NodeZero.Core/include/Config/GameConfig.h"
 #include "../NodeZero.Core/include/Enums/NodeShape.h"
+#include "../NodeZero.Core/include/Types/SpawnInfo.h"
 
 class LevelServiceTest : public ::testing::Test {
 protected:
@@ -98,46 +99,34 @@ TEST_F(SpawnServiceTest, InitiallyNotReadyToSpawn) {
 }
 
 TEST_F(SpawnServiceTest, AutoSpawnWorks) {
-    int spawnCount = 0;
-    spawnService->SetOnNodeSpawnedCallback([&](float x, float y, NodeShape shape, float dx, float dy) {
-        spawnCount++;
-    });
-
     spawnService->UpdateAutoSpawn(1.0f);
-    EXPECT_EQ(spawnCount, 0);
+    EXPECT_FALSE(spawnService->ShouldAutoSpawn());
 
     spawnService->UpdateAutoSpawn(1.1f);
-    EXPECT_EQ(spawnCount, 1);
+    EXPECT_TRUE(spawnService->ShouldAutoSpawn());
 }
 
 TEST_F(SpawnServiceTest, HigherLevelsSpawnFaster) {
-    int spawnCount1 = 0;
-    int spawnCount5 = 0;
-
     spawnService->SetCurrentLevel(1);
-    spawnService->SetOnNodeSpawnedCallback([&](float x, float y, NodeShape shape, float dx, float dy) {
-        spawnCount1++;
-    });
     spawnService->UpdateAutoSpawn(1.5f);
+    bool shouldSpawnLevel1 = spawnService->ShouldAutoSpawn();
 
-    spawnService->Reset();
+    spawnService->ResetSpawnTimer();
 
     spawnService->SetCurrentLevel(5);
-    spawnService->SetOnNodeSpawnedCallback([&](float x, float y, NodeShape shape, float dx, float dy) {
-        spawnCount5++;
-    });
     spawnService->UpdateAutoSpawn(1.5f);
+    bool shouldSpawnLevel5 = spawnService->ShouldAutoSpawn();
 
-    EXPECT_EQ(spawnCount1, 0);
-    EXPECT_EQ(spawnCount5, 1);
+    EXPECT_FALSE(shouldSpawnLevel1);
+    EXPECT_TRUE(shouldSpawnLevel5);
 }
 
 TEST_F(SpawnServiceTest, GetRandomShapeReturnsValidShape) {
     for (int i = 0; i < 50; ++i) {
-        NodeShape shape = spawnService->GetRandomShape();
-        EXPECT_TRUE(shape == NodeShape::Circle ||
-                   shape == NodeShape::Square ||
-                   shape == NodeShape::Hexagon);
+        SpawnInfo info = spawnService->GetNextSpawn();
+        EXPECT_TRUE(info.shape == NodeShape::Circle ||
+                   info.shape == NodeShape::Square ||
+                   info.shape == NodeShape::Hexagon);
     }
 }
 
@@ -154,27 +143,18 @@ TEST_F(SpawnServiceTest, HPScalesWithLevel) {
 
 TEST_F(SpawnServiceTest, ResetClearsTimer) {
     spawnService->UpdateAutoSpawn(1.9f);
-    spawnService->Reset();
+    spawnService->ResetSpawnTimer();
 
     EXPECT_FALSE(spawnService->ShouldAutoSpawn());
 }
 
-TEST_F(SpawnServiceTest, CallbackRecievesValidData) {
-    bool callbackInvoked = false;
-    float spawnX = 0.0f, spawnY = 0.0f;
-    NodeShape spawnShape = NodeShape::Circle;
+TEST_F(SpawnServiceTest, GetNextSpawnReturnsValidData) {
+    SpawnInfo info = spawnService->GetNextSpawn();
 
-    spawnService->SetOnNodeSpawnedCallback([&](float x, float y, NodeShape shape, float dx, float dy) {
-        callbackInvoked = true;
-        spawnX = x;
-        spawnY = y;
-        spawnShape = shape;
+    EXPECT_TRUE(info.shape == NodeShape::Circle ||
+               info.shape == NodeShape::Square ||
+               info.shape == NodeShape::Hexagon);
 
-        float length = std::sqrt(dx * dx + dy * dy);
-        EXPECT_NEAR(length, 1.0f, 0.001f);
-    });
-
-    spawnService->UpdateAutoSpawn(2.0f);
-
-    EXPECT_TRUE(callbackInvoked);
+    float length = std::sqrt(info.directionX * info.directionX + info.directionY * info.directionY);
+    EXPECT_NEAR(length, 1.0f, 0.001f);
 }

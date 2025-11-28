@@ -1,5 +1,6 @@
 #include "SpawnService.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 
@@ -9,7 +10,6 @@ SpawnService::SpawnService()
     : m_ScreenWidth(0.0f),
       m_ScreenHeight(0.0f),
       m_SpawnTimer(0.0f),
-      m_SpawnInterval(2.0f),
       m_CurrentLevel(1) {
 }
 
@@ -20,16 +20,9 @@ void SpawnService::Initialize(float screenWidth, float screenHeight) {
 
 void SpawnService::UpdateAutoSpawn(float deltaTime) {
     m_SpawnTimer += deltaTime;
-
-    float currentSpawnInterval = std::max(0.5f, 2.0f - (m_CurrentLevel - 1) * 0.15f);
-
-    if (m_SpawnTimer >= currentSpawnInterval) {
-        m_SpawnTimer = 0.0f;
-        SpawnRandomNode();
-    }
 }
 
-void SpawnService::Reset() {
+void SpawnService::ResetSpawnTimer() {
     m_SpawnTimer = 0.0f;
 }
 
@@ -37,8 +30,57 @@ void SpawnService::SetCurrentLevel(int level) {
     m_CurrentLevel = level;
 }
 
-void SpawnService::SetOnNodeSpawnedCallback(std::function<void(float, float, NodeShape, float, float)> callback) {
-    m_OnNodeSpawned = callback;
+SpawnInfo SpawnService::GetNextSpawn() const {
+    float centerX = m_ScreenWidth / 2.0f;
+    float centerY = m_ScreenHeight / 2.0f;
+
+    // Pick random edge to spawn from
+    int edge = std::rand() % 4;
+    float spawnX, spawnY;
+
+    switch (edge) {
+        case 0:  // Top
+            spawnX = RandomRange(50.0f, m_ScreenWidth - 50.0f);
+            spawnY = -50.0f;
+            break;
+        case 1:  // Right
+            spawnX = m_ScreenWidth + 50.0f;
+            spawnY = RandomRange(50.0f, m_ScreenHeight - 50.0f);
+            break;
+        case 2:  // Bottom
+            spawnX = RandomRange(50.0f, m_ScreenWidth - 50.0f);
+            spawnY = m_ScreenHeight + 50.0f;
+            break;
+        case 3:  // Left
+            spawnX = -50.0f;
+            spawnY = RandomRange(50.0f, m_ScreenHeight - 50.0f);
+            break;
+        default:
+            spawnX = centerX;
+            spawnY = -50.0f;
+            break;
+    }
+
+    // Calculate direction towards center (with some randomness)
+    float offsetRange = 150.0f;
+    float targetX = centerX + RandomRange(-offsetRange, offsetRange);
+    float targetY = centerY + RandomRange(-offsetRange, offsetRange);
+
+    float dirX = targetX - spawnX;
+    float dirY = targetY - spawnY;
+
+    float length = std::sqrt(dirX * dirX + dirY * dirY);
+    if (length > 0.0f) {
+        dirX /= length;
+        dirY /= length;
+    }
+
+    return SpawnInfo{
+        Position{spawnX, spawnY},
+        GetRandomShape(),
+        dirX,
+        dirY
+    };
 }
 
 NodeShape SpawnService::GetRandomShape() const {
@@ -60,57 +102,6 @@ float SpawnService::CalculateNodeHP(float baseHP) const {
 float SpawnService::RandomRange(float minValue, float maxValue) const {
     float t = static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX);
     return minValue + (maxValue - minValue) * t;
-}
-
-void SpawnService::SpawnRandomNode() {
-    float centerX = m_ScreenWidth / 2.0f;
-    float centerY = m_ScreenHeight / 2.0f;
-
-    int edge = std::rand() % 4;
-    float spawnX, spawnY;
-
-    switch (edge) {
-        case 0:
-            spawnX = RandomRange(50.0f, m_ScreenWidth - 50.0f);
-            spawnY = -50.0f;
-            break;
-        case 1:
-            spawnX = m_ScreenWidth + 50.0f;
-            spawnY = RandomRange(50.0f, m_ScreenHeight - 50.0f);
-            break;
-        case 2:
-            spawnX = RandomRange(50.0f, m_ScreenWidth - 50.0f);
-            spawnY = m_ScreenHeight + 50.0f;
-            break;
-        case 3:
-            spawnX = -50.0f;
-            spawnY = RandomRange(50.0f, m_ScreenHeight - 50.0f);
-            break;
-        default:
-            spawnX = centerX;
-            spawnY = -50.0f;
-            break;
-    }
-
-    float offsetRange = 150.0f;
-    float targetX = centerX + RandomRange(-offsetRange, offsetRange);
-    float targetY = centerY + RandomRange(-offsetRange, offsetRange);
-
-    float dirX = targetX - spawnX;
-    float dirY = targetY - spawnY;
-
-    float length = std::sqrt(dirX * dirX + dirY * dirY);
-    if (length > 0.0f) {
-        dirX /= length;
-        dirY /= length;
-    }
-
-    NodeShape shape = GetRandomShape();
-    float nodeSize = m_ScreenHeight * 0.0375f;
-
-    if (m_OnNodeSpawned) {
-        m_OnNodeSpawned(spawnX, spawnY, shape, dirX, dirY);
-    }
 }
 
 bool SpawnService::ShouldAutoSpawn() const {

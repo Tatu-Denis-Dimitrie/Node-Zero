@@ -7,6 +7,17 @@
 #include "../NodeZero.Core/include/INode.h"
 #include "../NodeZero.Core/include/Events/IObserver.h"
 #include "../NodeZero.Core/include/Events/IEvent.h"
+#include "../NodeZero.Core/include/Types/SpawnInfo.h"
+
+// Helper function to create SpawnInfo for tests
+static SpawnInfo CreateTestSpawnInfo(float x, float y) {
+    SpawnInfo info;
+    info.position = Position{x, y};
+    info.shape = NodeShape::Circle;
+    info.directionX = 0.0f;
+    info.directionY = 0.0f;
+    return info;
+}
 
 class MockObserver : public IObserver {
 private:
@@ -36,7 +47,7 @@ TEST_F(GameTest, InitializeWorks) {
 }
 
 TEST_F(GameTest, SpawnNodeWorks) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
 
     const auto& nodes = game->GetNodes();
     EXPECT_EQ(nodes.size(), 1);
@@ -45,9 +56,9 @@ TEST_F(GameTest, SpawnNodeWorks) {
 }
 
 TEST_F(GameTest, MultipleNodesCanSpawn) {
-    game->SpawnNode(100.0f, 100.0f);
-    game->SpawnNode(200.0f, 200.0f);
-    game->SpawnNode(300.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(100.0f, 100.0f));
+    game->SpawnNode(CreateTestSpawnInfo(200.0f, 200.0f));
+    game->SpawnNode(CreateTestSpawnInfo(300.0f, 300.0f));
 
     EXPECT_EQ(game->GetNodes().size(), 3);
 }
@@ -76,8 +87,8 @@ TEST_F(GameTest, UpdateSpawnsNodesOverTime) {
 }
 
 TEST_F(GameTest, ResetClearsNodes) {
-    game->SpawnNode(100.0f, 100.0f);
-    game->SpawnNode(200.0f, 200.0f);
+    game->SpawnNode(CreateTestSpawnInfo(100.0f, 100.0f));
+    game->SpawnNode(CreateTestSpawnInfo(200.0f, 200.0f));
     game->Update(10.0f);
 
     game->Reset();
@@ -179,7 +190,7 @@ TEST_F(GameTest, MultiLevelProgression) {
 
 TEST_F(GameTest, ManyNodesDoNotCrash) {
     for (int i = 0; i < 50; ++i) {
-        game->SpawnNode(400.0f + i * 10, 300.0f);
+        game->SpawnNode(CreateTestSpawnInfo(400.0f + i * 10, 300.0f));
     }
 
     EXPECT_NO_THROW(game->Update(0.016f));
@@ -195,7 +206,7 @@ TEST_F(GameTest, LongRunningGameWorks) {
 
 TEST_F(GameTest, MultipleResetsCycleCorrectly) {
     for (int i = 0; i < 5; ++i) {
-        game->SpawnNode(100.0f, 100.0f);
+        game->SpawnNode(CreateTestSpawnInfo(100.0f, 100.0f));
         game->Update(1.0f);
         game->Reset();
 

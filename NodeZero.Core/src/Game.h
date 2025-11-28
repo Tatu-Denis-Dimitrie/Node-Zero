@@ -50,7 +50,7 @@ class Game : public IGame {
     void StartNextLevel() override;
 
     void SetMousePosition(float x, float y) override;
-    void SpawnNode(float x, float y) override;
+    void SpawnNode(const SpawnInfo& info) override;
 
     float GetScreenWidth() const override;
     float GetScreenHeight() const override;
@@ -77,5 +77,4 @@ class Game : public IGame {
    private:
     Node* CreateNode(NodeShape shape, float size, float speed);
     void SpawnBoss();
-    void OnNodeSpawned(float x, float y, NodeShape shape, float dirX, float dirY);
 };

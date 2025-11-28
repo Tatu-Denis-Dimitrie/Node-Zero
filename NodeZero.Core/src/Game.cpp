@@ -42,11 +42,6 @@ void Game::Initialize(float screenWidth, float screenHeight) {
     m_PickupService.Initialize(screenHeight);
     m_SpawnService.Initialize(screenWidth, screenHeight);
     m_SpawnService.SetCurrentLevel(m_LevelService.GetCurrentLevel());
-
-    auto spawnCallback = [this](float x, float y, NodeShape shape, float dirX, float dirY) {
-        OnNodeSpawned(x, y, shape, dirX, dirY);
-    };
-    m_SpawnService.SetOnNodeSpawnedCallback(spawnCallback);
 }
 
 void Game::Update(float deltaTime) {
@@ -57,6 +52,12 @@ void Game::Update(float deltaTime) {
 
     m_SpawnService.UpdateAutoSpawn(deltaTime);
     m_SpawnService.SetCurrentLevel(m_LevelService.GetCurrentLevel());
+
+    if (m_SpawnService.ShouldAutoSpawn()) {
+        SpawnInfo info = m_SpawnService.GetNextSpawn();
+        SpawnNode(info);
+        m_SpawnService.ResetSpawnTimer();
+    }
 
     m_DamageZoneService.UpdateTimer(deltaTime);
 
@@ -158,21 +159,21 @@ const std::vector<INode*>& Game::GetNodes() const {
     return reinterpret_cast<const std::vector<INode*>&>(m_Nodes);
 }
 
-void Game::SpawnNode(float x, float y) {
-    NodeShape shape = m_SpawnService.GetRandomShape();
+void Game::SpawnNode(const SpawnInfo& info) {
     float nodeSize = m_ScreenHeight * 0.0375f;
-    Node* node = CreateNode(shape, nodeSize, GameConfig::NODE_DEFAULT_SPEED);
+    Node* node = CreateNode(info.shape, nodeSize, GameConfig::NODE_DEFAULT_SPEED);
 
     float baseHP = node->GetHP();
     float scaledHP = m_SpawnService.CalculateNodeHP(baseHP);
     node->SetHP(scaledHP);
 
-    node->Spawn(x, y);
+    node->Spawn(info.position.x, info.position.y);
+    node->SetDirection(info.directionX, info.directionY);
     m_Nodes.push_back(node);
 
     auto event = std::make_shared<GameEvent>(m_ElapsedTime, EventType::NodeSpawned);
     event->shape = node->GetShape();
-    event->position = Position{x, y};
+    event->position = info.position;
     event->size = node->GetSize();
     event->hp = static_cast<int>(node->GetHP());
     Notify(event);
@@ -191,7 +192,7 @@ void Game::Reset() {
 
     m_NodesDestroyed = 0;
 
-    m_SpawnService.Reset();
+    m_SpawnService.ResetSpawnTimer();
     m_DamageZoneService.ResetTimer();
 
     SaveData saveData = m_SaveService.LoadProgress();
@@ -340,7 +341,7 @@ void Game::StartNextLevel() {
 
     m_PickupService.Reset();
 
-    m_SpawnService.Reset();
+    m_SpawnService.ResetSpawnTimer();
     m_SpawnService.SetCurrentLevel(m_LevelService.GetCurrentLevel());
 
     m_HealthService.RestoreToMax();
@@ -360,13 +361,4 @@ void Game::SetMousePosition(float x, float y) {
 
 std::vector<PointPickup> Game::GetCollectedPickupsThisFrame() const {
     return m_CollectedPickupsThisFrame;
-}
-
-void Game::OnNodeSpawned(float x, float y, NodeShape shape, float dirX, float dirY) {
-    SpawnNode(x, y);
-
-    if (!m_Nodes.empty()) {
-        Node* lastNode = m_Nodes.back();
-        lastNode->SetDirection(dirX, dirY);
-    }
 }

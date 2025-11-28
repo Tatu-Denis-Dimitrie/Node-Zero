@@ -4,6 +4,7 @@
 
 #include "Events/ISubject.h"
 #include "Types/PointPickup.h"
+#include "Types/SpawnInfo.h"
 
 class INode;
 class IUpgradeService;
@@ -24,7 +25,7 @@ class IGame : public ISubject {
     virtual void StartNextLevel() = 0;
 
     virtual void SetMousePosition(float x, float y) = 0;
-    virtual void SpawnNode(float x, float y) = 0;
+    virtual void SpawnNode(const SpawnInfo& info) = 0;
 
     virtual float GetScreenWidth() const = 0;
     virtual float GetScreenHeight() const = 0;

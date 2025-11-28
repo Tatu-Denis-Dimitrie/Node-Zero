@@ -3,6 +3,17 @@
 #include "../NodeZero.Core/src/Game.h"
 #include "../NodeZero.Core/include/IGame.h"
 #include "../NodeZero.Core/include/INode.h"
+#include "../NodeZero.Core/include/Types/SpawnInfo.h"
+
+// Helper function to create SpawnInfo for tests
+static SpawnInfo CreateTestSpawnInfo(float x, float y) {
+    SpawnInfo info;
+    info.position = Position{x, y};
+    info.shape = NodeShape::Circle;
+    info.directionX = 0.0f;
+    info.directionY = 0.0f;
+    return info;
+}
 
 class EnemySpawnTest : public ::testing::Test {
    protected:
@@ -19,7 +30,7 @@ class EnemySpawnTest : public ::testing::Test {
 };
 
 TEST_F(EnemySpawnTest, EnemySpawnsAtSpecifiedPosition) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -28,16 +39,16 @@ TEST_F(EnemySpawnTest, EnemySpawnsAtSpecifiedPosition) {
 }
 
 TEST_F(EnemySpawnTest, MultipleEnemiesCanSpawn) {
-    game->SpawnNode(100.0f, 100.0f);
-    game->SpawnNode(200.0f, 200.0f);
-    game->SpawnNode(300.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(100.0f, 100.0f));
+    game->SpawnNode(CreateTestSpawnInfo(200.0f, 200.0f));
+    game->SpawnNode(CreateTestSpawnInfo(300.0f, 300.0f));
 
     const auto& nodes = game->GetNodes();
     EXPECT_EQ(nodes.size(), 3);
 }
 
 TEST_F(EnemySpawnTest, EnemyHasValidInitialState) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -64,7 +75,7 @@ class EnemyDamageTest : public ::testing::Test {
 };
 
 TEST_F(EnemyDamageTest, EnemyTakesDamage) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -78,7 +89,7 @@ TEST_F(EnemyDamageTest, EnemyTakesDamage) {
 }
 
 TEST_F(EnemyDamageTest, EnemyHPCannotGoBelowZero) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -89,7 +100,7 @@ TEST_F(EnemyDamageTest, EnemyHPCannotGoBelowZero) {
 }
 
 TEST_F(EnemyDamageTest, EnemyDiesWhenHPReachesZero) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     game->SetMousePosition(400.0f, 300.0f);
 
     const auto& nodes = game->GetNodes();
@@ -103,7 +114,7 @@ TEST_F(EnemyDamageTest, EnemyDiesWhenHPReachesZero) {
 }
 
 TEST_F(EnemyDamageTest, MultipleDamageApplications) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -132,7 +143,7 @@ class EnemyPropertiesTest : public ::testing::Test {
 };
 
 TEST_F(EnemyPropertiesTest, EnemyHasValidSpeed) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -140,7 +151,7 @@ TEST_F(EnemyPropertiesTest, EnemyHasValidSpeed) {
 }
 
 TEST_F(EnemyPropertiesTest, EnemyHasValidSize) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -148,7 +159,7 @@ TEST_F(EnemyPropertiesTest, EnemyHasValidSize) {
 }
 
 TEST_F(EnemyPropertiesTest, EnemyHasShape) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -160,7 +171,7 @@ TEST_F(EnemyPropertiesTest, EnemyHasShape) {
 }
 
 TEST_F(EnemyPropertiesTest, EnemyHasRotation) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -185,7 +196,7 @@ class EnemyDestructionTest : public ::testing::Test {
 TEST_F(EnemyDestructionTest, DestroyedEnemiesIncrementCounter) {
     int initialDestroyed = game->GetNodesDestroyed();
 
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     game->SetMousePosition(400.0f, 300.0f);
 
     const auto& nodes = game->GetNodes();
@@ -201,7 +212,7 @@ TEST_F(EnemyDestructionTest, DestroyedEnemiesIncrementCounter) {
 TEST_F(EnemyDestructionTest, LevelCounterTracksDestroyedEnemies) {
     int initialDestroyed = game->GetLevelService().GetNodesDestroyedThisLevel();
 
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     game->SetMousePosition(400.0f, 300.0f);
 
     const auto& nodes = game->GetNodes();
@@ -229,7 +240,7 @@ class EnemyUpdateTest : public ::testing::Test {
 };
 
 TEST_F(EnemyUpdateTest, EnemyUpdateDoesNotCrash) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
@@ -237,9 +248,9 @@ TEST_F(EnemyUpdateTest, EnemyUpdateDoesNotCrash) {
 }
 
 TEST_F(EnemyUpdateTest, MultipleEnemiesUpdateWithoutCrash) {
-    game->SpawnNode(100.0f, 100.0f);
-    game->SpawnNode(200.0f, 200.0f);
-    game->SpawnNode(300.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(100.0f, 100.0f));
+    game->SpawnNode(CreateTestSpawnInfo(200.0f, 200.0f));
+    game->SpawnNode(CreateTestSpawnInfo(300.0f, 300.0f));
 
     const auto& nodes = game->GetNodes();
     ASSERT_EQ(nodes.size(), 3);
@@ -250,7 +261,7 @@ TEST_F(EnemyUpdateTest, MultipleEnemiesUpdateWithoutCrash) {
 }
 
 TEST_F(EnemyUpdateTest, EnemyPositionValidAfterUpdate) {
-    game->SpawnNode(400.0f, 300.0f);
+    game->SpawnNode(CreateTestSpawnInfo(400.0f, 300.0f));
     const auto& nodes = game->GetNodes();
 
     ASSERT_EQ(nodes.size(), 1);
