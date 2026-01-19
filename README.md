@@ -34,6 +34,11 @@ build\bin\Debug\NodeZero.Tests.exe
 
 ## Gameplay
 
+<div align="center">
+  <img src="docs/images/gameplay1.png" alt="Gameplay Screenshot 1" width="45%">
+  <img src="docs/images/gameplay2.png" alt="Gameplay Screenshot 2" width="45%">
+</div>
+
 ### How to Play
 
 **Controls:**
