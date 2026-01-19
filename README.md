@@ -8,6 +8,13 @@ Inspired by [Nodebuster](https://store.steampowered.com/app/268070/Nodebuster/) 
 ![Raylib](https://img.shields.io/badge/Raylib-5.5-red.svg)
 ![CMake](https://img.shields.io/badge/CMake-3.15%2B-green.svg)
 
+## Gameplay
+
+<div align="center">
+  <img src="docs/images/gameplay1.png" alt="Gameplay Screenshot 1" width="100%">
+  <img src="docs/images/gameplay2.png" alt="Gameplay Screenshot 2" width="100%">
+</div>
+
 ## Quick Start
 
 **Prerequisites:** CMake 3.15+, Visual Studio 2022 (Windows) or GCC 8+/Clang 7+ (Linux/macOS)
@@ -32,19 +39,12 @@ build\bin\Debug\NodeZero.Tests.exe
 
 **Visual Studio:** Open folder → `Ctrl+Shift+B` → `F5`
 
-## Gameplay
-
-<div align="center">
-  <img src="docs/images/gameplay1.png" alt="Gameplay Screenshot 1" width="45%">
-  <img src="docs/images/gameplay2.png" alt="Gameplay Screenshot 2" width="45%">
-</div>
-
 ### How to Play
 
 **Controls:**
 
--   **Mouse Movement** - Move your damage zone (circular area around cursor)
--   **ESC** - Pause game / Access settings menu
+- **Mouse Movement** - Move your damage zone (circular area around cursor)
+- **ESC** - Pause game / Access settings menu
 
 **Game Objective:**
 Survive as long as possible by destroying enemy nodes before they escape the screen. Your goal is to progress through increasingly difficult levels while managing your health and upgrading your abilities.
@@ -57,25 +57,25 @@ Survive as long as possible by destroying enemy nodes before they escape the scr
 
 **Enemy Nodes:**
 
--   Have different shapes (Circle, Square, Hexagon) with varying HP
--   Boss nodes appear at the end of each level with significantly more HP
--   Enemy HP scales up with each level, increasing difficulty
+- Have different shapes (Circle, Square, Hexagon) with varying HP
+- Boss nodes appear at the end of each level with significantly more HP
+- Enemy HP scales up with each level, increasing difficulty
 
 **Upgrade System:**
 Spend coins earned from destroyed nodes on permanent upgrades:
 
--   **Health Upgrade (50 coins)** - Increases maximum health
--   **Regeneration Upgrade (100 coins)** - Adds health regeneration over time
--   **Damage Upgrade (60 coins)** - Increases damage per tick to nodes
--   **Damage Zone Upgrade (75 coins)** - Expands the size of your damage zone
+- **Health Upgrade (50 coins)** - Increases maximum health
+- **Regeneration Upgrade (100 coins)** - Adds health regeneration over time
+- **Damage Upgrade (60 coins)** - Increases damage per tick to nodes
+- **Damage Zone Upgrade (75 coins)** - Expands the size of your damage zone
 
 **Difficulty Scaling:**
 As you progress through levels:
 
--   Nodes gain more HP (scaling factor based on level)
--   More nodes spawn per level
--   Spawn rate increases
--   Damage received increases
+- Nodes gain more HP (scaling factor based on level)
+- More nodes spawn per level
+- Spawn rate increases
+- Damage received increases
 
 **Game Over:**
 The game ends when your health reaches zero. Your final points are saved for future upgrade purchases.
@@ -83,8 +83,8 @@ The game ends when your health reaches zero. Your final points are saved for fut
 **Save System:**
 Game progress (coins, high points, upgrades, level) is automatically saved to:
 
--   **Windows:** `%APPDATA%\NodeZero\save.dat`
--   **Linux/macOS:** `~/.config/NodeZero/save.dat`
+- **Windows:** `%APPDATA%\NodeZero\save.dat`
+- **Linux/macOS:** `~/.config/NodeZero/save.dat`
 
 Your save data persists between sessions, allowing you to accumulate coins and upgrades over multiple playthroughs.
 
@@ -139,10 +139,10 @@ NodeZero.Tests/
 
 ### Rules
 
--   **Core isolation:** Never include Raylib or rendering code in `NodeZero.Core`
--   **Interface-driven:** UI depends on abstractions (`IGame`, `INode`), not implementations
--   **Service-based:** Services are stateless where possible, data passed as parameters
--   **Test coverage:** Add tests for new core logic and services
+- **Core isolation:** Never include Raylib or rendering code in `NodeZero.Core`
+- **Interface-driven:** UI depends on abstractions (`IGame`, `INode`), not implementations
+- **Service-based:** Services are stateless where possible, data passed as parameters
+- **Test coverage:** Add tests for new core logic and services
 
 ### Code Conventions
 
@@ -203,8 +203,8 @@ Rebuild: `cmake --build build --config Debug --target NodeZero.Tests`
 **Want to reset game progress?**
 Delete the save file:
 
--   **Windows:** `%APPDATA%\NodeZero\save.dat`
--   **Linux/macOS:** `~/.config/NodeZero/save.dat`
+- **Windows:** `%APPDATA%\NodeZero\save.dat`
+- **Linux/macOS:** `~/.config/NodeZero/save.dat`
 
 ---
 
