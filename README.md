@@ -1,12 +1,13 @@
 # NodeZero
 
+![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
+![Raylib](https://img.shields.io/badge/Raylib-5.5-red.svg)
+![CMake](https://img.shields.io/badge/CMake-3.15%2B-green.svg)
+
 A 2D arcade game built with C++17 and Raylib 5.5. Destroy nodes, collect pickups, and progress through levels.
 
 Inspired by [Nodebuster](https://store.steampowered.com/app/268070/Nodebuster/) on Steam.
 
-![C++](https://img.shields.io/badge/C%2B%2B-17-blue.svg)
-![Raylib](https://img.shields.io/badge/Raylib-5.5-red.svg)
-![CMake](https://img.shields.io/badge/CMake-3.15%2B-green.svg)
 
 ## In-Game Screenshots
 
