@@ -8,7 +8,7 @@ Inspired by [Nodebuster](https://store.steampowered.com/app/268070/Nodebuster/) 
 ![Raylib](https://img.shields.io/badge/Raylib-5.5-red.svg)
 ![CMake](https://img.shields.io/badge/CMake-3.15%2B-green.svg)
 
-## Gameplay
+## In-Game Screenshots
 
 <div align="center">
   <img src="docs/images/gameplay1.png" alt="Gameplay Screenshot 1" width="100%">
