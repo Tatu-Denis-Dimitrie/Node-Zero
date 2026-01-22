@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run NodeZero.UI (Debug)",
+            "name": "Run NodeZero (Debug)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Debug/NodeZero.UI.exe",
+            "program": "${workspaceFolder}/build/bin/Debug/NodeZero.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build/bin/Debug",
@@ -14,10 +14,10 @@
             "preLaunchTask": "CMake: Build (Debug)"
         },
         {
-            "name": "Run NodeZero.UI (Release)",
+            "name": "Run NodeZero (Release)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Release/NodeZero.UI.exe",
+            "program": "${workspaceFolder}/build/bin/Release/NodeZero.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build/bin/Release",
@@ -26,7 +26,7 @@
             "preLaunchTask": "CMake: Build (Release)"
         },
         {
-            "name": "Run Tests (Debug)",
+            "name": "Run Tests",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/Debug/NodeZero.Tests.exe",
@@ -36,18 +36,6 @@
             "environment": [],
             "console": "integratedTerminal",
             "preLaunchTask": "CMake: Build Tests (Debug)"
-        },
-        {
-            "name": "Run Tests (Release)",
-            "type": "cppvsdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Release/NodeZero.Tests.exe",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "console": "integratedTerminal",
-            "preLaunchTask": "CMake: Build Tests (Release)"
         }
     ]
 }

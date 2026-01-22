@@ -88,6 +88,10 @@ add_executable(NodeZero.UI
     ${UI_HEADERS}
 )
 
+set_target_properties(NodeZero.UI PROPERTIES
+    OUTPUT_NAME "NodeZero"
+)
+
 target_include_directories(NodeZero.UI PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.UI/include
     ${CMAKE_CURRENT_SOURCE_DIR}/NodeZero.Core/include
@@ -128,7 +132,7 @@ file(GLOB_RECURSE GAMETESTS_SOURCES
     "NodeZero.Tests/*.cpp"
 )
 
-add_executable(NodeZero.Tests
+add_executable(NodeZero.Tests EXCLUDE_FROM_ALL
     ${GAMETESTS_SOURCES}
 )
 
